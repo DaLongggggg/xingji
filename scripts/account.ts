@@ -1,5 +1,5 @@
 /**
- * 移动端内测账号 CLI（T1，连续实施任务书 §4.1）。管理员=在服务器主机上运行命令的人。
+ * 服务账户管理 CLI。管理员是在服务器主机上运行命令的人。
  * 与 HTTP 认证共用 beta-data/auth-store 实现；密码仅终端输出一次，不进日志/文件。
  *
  * 命令：
@@ -28,7 +28,7 @@ const args = argv.slice(1);
 try {
   if (command === "init") {
     const result = initBetaRoot();
-    emit({ ok: true, root: result.root, serverId: result.serverId, created: result.created, note: "beta 根已就绪；用 account create 建立测试账号" });
+    emit({ ok: true, root: result.root, serverId: result.serverId, created: result.created, note: "服务数据目录已就绪；用 account create 创建账户" });
   } else if (command === "account") {
     const sub = args[0];
     const root = resolveBetaRoot();

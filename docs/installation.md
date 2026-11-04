@@ -46,6 +46,26 @@ pnpm start:beta
 
 App 需要设备可访问的服务地址；对外部署请使用 HTTPS 地址。
 
+## 添加与管理账户
+
+账户由服务管理员在主机上创建，应用内没有自行注册入口。使用与服务启动时相同的 `XINGJI_BETA_ROOT`，在项目根目录执行：
+
+```bash
+export XINGJI_BETA_ROOT="$PWD/.local/service"
+pnpm account account create traveler
+```
+
+`traveler` 可替换为 3–32 位字母、数字、下划线或短横线组成的用户名。已有服务无需再次初始化；若使用其他数据目录，请替换为该服务的实际绝对路径。新密码只显示一次，交给对应使用者后即可登录。
+
+查看账户或重置某个账户的密码：
+
+```bash
+pnpm account account list
+pnpm account account reset-password traveler
+```
+
+重置密码会生成新的随机密码，并撤销该账户的全部登录会话。以上命令只在服务主机执行，普通使用者向服务管理员申请账户即可。
+
 ## 登录与模型
 
 用创建的账户登录，按需要在隐私协议中同意 AI 与图片功能。在“设置 → 模型”填写供应商地址、模型名称和凭据，再选择可用模型。模型请求由所连服务处理，费用由相应供应商账户承担；源码不附带模型密钥或额度。
