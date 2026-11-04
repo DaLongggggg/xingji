@@ -1,0 +1,2059 @@
+.atlas-state {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  max-width: 420px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.atlas-state--error {
+  color: var(--red);
+}
+
+.atlas-state-note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+@media (max-width: 620px) {
+  .atlas-state-note {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+}
+
+/* 超小屏状态提示收紧。 */
+@media (max-width: 380px) {
+  .atlas-state {
+    gap: 4px;
+  }
+
+  .atlas-state svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .atlas-state-note {
+    font-size: 11px;
+  }
+}
+.atlas-slot {
+  display: grid;
+  gap: 12px;
+}
+
+.atlas-map-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.atlas-map {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+}
+
+.atlas-map:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.atlas-dev-file {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.atlas-dev-file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.atlas-dev-file:focus-within {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+@media (max-width: 620px) {
+  .atlas-map {
+    min-height: 240px;
+  }
+}
+
+/* 地名签只用于读名称：不吃鼠标事件，也不改变选中逻辑。
+   默认暗底 + 深色填充地区用亮字（#f3f5ef）；亮底地区的标签在下面单独覆盖。 */
+.leaflet-tooltip.atlas-region-label {
+  border: 0;
+  border-radius: var(--radius-xs);
+  padding: 1px 6px;
+  background: var(--sky-map-label);
+  color: #f2f8fd;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.leaflet-tooltip.atlas-region-label::before {
+  display: none;
+}
+
+/* 有手帐（亮填充 #8fc3e8）地区上的标签换成深色字，保证对比度。 */
+.atlas-map.has-journal .leaflet-tooltip.atlas-region-label,
+.leaflet-tooltip.atlas-region-label.is-on-journal {
+  background: var(--sky-map-label-on-journal);
+  color: #17324a;
+}
+
+/*
+ * 窄屏标签度量：必须放在上面基础规则**之后**（同特异性，靠后者生效），并与
+ * `leaflet-region-adapter` 的 LABEL_COMPACT_* 保持一致：
+ * 10px/行高 16px + 1px/5px 内边距 → 最长省名约 90×18，预留 92×20。
+ * 桌面 12px 的省名在 390px 宽的地图上占比近三成，会叠成一团无法辨认。
+ */
+@media (max-width: 620px) {
+  .leaflet-tooltip.atlas-region-label {
+    padding: 1px 5px;
+    font-size: 10px;
+    line-height: 16px;
+  }
+}
+
+/* 地图覆盖层仅保留返回路径和按需状态，地图始终使用全部工作区。 */
+.atlas-overlay-layer.atlas-map-header { inset: 12px; z-index: 810; }
+.atlas-map-context { width: fit-content; max-width: 100%; }
+.atlas-map-status { position: absolute; top: 44px; left: 4px; max-width: min(420px, calc(100% - 8px)); max-height: min(40dvh, 240px); overflow: auto; pointer-events: auto; }
+.atlas-map-status:empty { display: none; }
+.atlas-map-status .atlas-state-note { display: block; padding: 4px 8px; border-radius: 6px; background: #fcfaf3ed; color: var(--sky-ink-muted); font-size: 11px; }
+.atlas-map-status .atlas-state { padding: 10px; border-radius: 10px; background: var(--sky-surface); }
+
+/* ===================== 记忆地图 M1：覆盖层与地区记忆卡 =====================
+ * 视觉原则：地图安静、记忆突出、选中明确。覆盖层是轻磨砂阅读面；
+ * 记忆卡是照片白边 + 轻微叠放的手帐感，不引入持续动画。
+ */
+
+/* 覆盖层容器：压在地图上，整层不拦截地图事件。 */
+.atlas-overlay-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  pointer-events: none;
+}
+
+.atlas-overlay { pointer-events: auto; }
+
+/* 下钻后的路径阅读面，长路径自然换行。 */
+.atlas-breadcrumb { display: grid; gap: 4px; min-width: 0; }
+.atlas-breadcrumb-path { display: flex; flex-wrap: wrap; align-items: center; gap: 0 4px; margin: 0; padding: 0; list-style: none; font-size: 0.875rem; line-height: 1.5; color: var(--sky-ink); }
+.atlas-breadcrumb-path li { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; overflow-wrap: anywhere; }
+.atlas-breadcrumb-path li + li::before { content: "/"; margin-right: 4px; color: var(--sky-ink-muted); }
+.atlas-breadcrumb-path li:last-child { font-weight: 600; }
+.atlas-breadcrumb-link { min-width: 44px; min-height: 44px; padding: 0 4px; background: none; border: 0; border-radius: 8px; font: inherit; color: var(--sky-ink-muted); cursor: pointer; }
+.atlas-breadcrumb-link:hover { color: var(--sky-primary); background: var(--sky-lavender-soft); }
+.atlas-breadcrumb-link:focus-visible { outline: 2px solid var(--sky-primary); outline-offset: 2px; }
+
+/* 从地区卡原位展开；实际位置与边界避让由预览组件按 DOM 锚点计算。 */
+.atlas-memory-preview {
+  --sky-surface: #fffcf5;
+  --sky-ink: #414b3d;
+  --sky-ink-muted: #747969;
+  --sky-line: #e2ddcf;
+  --sky-lavender-soft: #e9eddf;
+  --sky-primary: #657a55;
+  position: absolute;
+  z-index: 800; /* 列表操作高于港澳放大镜（700），不拦截列表外的地图。 */
+  left: 0;
+  top: 0;
+  transform-origin: top left;
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  max-height: 320px;
+  box-sizing: border-box;
+  padding: 8px;
+  overflow: hidden;
+  background: var(--sky-surface, #fff);
+  color: var(--sky-ink, #3a2f54);
+  border: 1px solid var(--sky-line, #d8d2e4);
+  border-radius: 15px;
+  box-shadow: 0 5px 20px #64583d20, 0 1px 3px #64583d0a;
+}
+
+.atlas-memory-preview-head { display: flex; flex-shrink: 0; align-items: center; gap: 4px; margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid var(--sky-line); }
+.atlas-memory-preview-mark { display: grid; place-items: center; flex: 0 0 24px; height: 24px; border-radius: 7px; color: var(--sky-primary); background: var(--sky-lavender-soft); }
+.atlas-memory-preview-head h3 { min-width: 0; flex: 1; margin: 0; font-size: 13px; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
+.atlas-memory-preview-count { flex-shrink: 0; padding: 3px 6px; border-radius: 6px; background: var(--sky-lavender-soft); font-size: 10px; font-weight: 500; color: var(--sky-primary); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.atlas-memory-preview-action {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--sky-ink-muted);
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+.atlas-memory-preview-action:hover { background: var(--sky-lavender-soft); }
+.atlas-memory-preview-action:active { background: var(--sky-line, #d8d2e4); }
+.atlas-memory-preview-action:focus-visible,
+.atlas-memory-preview-entry:focus-visible { outline: 2px solid var(--sky-primary); outline-offset: -2px; }
+
+.atlas-memory-preview-list {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sky-line) transparent;
+}
+
+.atlas-memory-preview-list li + li { margin-top: 4px; }
+.atlas-memory-preview-entry {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 52px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--sky-line) 25%, var(--sky-surface));
+  color: var(--sky-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+.atlas-memory-preview-entry:hover { border-color: var(--sky-line); background: var(--sky-lavender-soft); }
+.atlas-memory-preview-entry:active { background: var(--sky-line); }
+.atlas-memory-preview-note-icon { display: grid; place-items: center; flex: 0 0 26px; height: 28px; border: 1px solid var(--sky-line); border-radius: 6px; background: var(--sky-surface); color: var(--sky-primary); }
+.atlas-memory-preview-copy { min-width: 0; flex: 1; }
+.atlas-memory-preview-list strong,
+.atlas-memory-preview-list small { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.atlas-memory-preview-list strong { font-size: 13px; font-weight: 600; line-height: 1.5; }
+.atlas-memory-preview-list small { margin-top: 1px; color: var(--sky-ink-muted); font-size: 10px; line-height: 1.5; }
+.atlas-memory-preview-arrow { flex-shrink: 0; color: var(--sky-primary); }
+
+.atlas-memory-preview.is-night {
+  --sky-surface: #232030;
+  --sky-ink: #eee9f7;
+  --sky-ink-muted: #d0c7df;
+  --sky-line: #49435c;
+  --sky-lavender-soft: #343048;
+  --sky-primary: #b9aad8;
+}
+
+/* ---- 地区记忆卡（Leaflet divIcon 内的普通按钮）---- */
+
+/* 图钉连线式记忆墙：画布固定，卡位由工作区实测尺寸计算。 */
+.capture-map .atlas-map-wrap.is-memory-wall {
+  overflow: hidden;
+  isolation: isolate;
+  background-color: #f3f0e8;
+  background-image: radial-gradient(#a89b7e19 .65px, transparent .65px), radial-gradient(ellipse at 48% 44%, #faf8f2 0%, transparent 75%);
+  background-size: 5px 5px, 100% 100%;
+}
+.capture-map .is-memory-wall .atlas-map { background: transparent; overflow: hidden; outline-offset: -3px; }
+.atlas-slot--map:has(.is-memory-wall) {
+  --sky-surface: #faf8f2;
+  --sky-ink: #454b40;
+  --sky-ink-muted: #6f7165;
+  --sky-line: #d9d4c7;
+  --sky-line-strong: #b4b8a3;
+  --sky-lavender-soft: #e9e9dc;
+  --sky-primary: #59735d;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-context { position: absolute; left: 4px; top: 4px; grid-column: 1 / -1; grid-row: 1; max-width: calc(100% - 8px); max-height: 52px; overflow: auto; border: 0; background: transparent; box-shadow: none; padding: 0; margin: 0; }
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-path { width: max-content; flex-wrap: nowrap; font-size: 11px; gap: 2px; }
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-path li,
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-link { min-height: 24px; }
+.is-memory-wall .leaflet-tooltip.atlas-region-label { background: #f6f3e8d9; color: #4f5f4d; padding: 1px 4px; font-weight: 500; }
+.atlas-memory-wall { position: absolute; inset: 0; z-index: 700; overflow: hidden; pointer-events: none; color: #424b3f; }
+.memory-wall-threads { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.memory-wall-threads path { fill: none; stroke: #9b9a84; stroke-width: 1; opacity: .52; transition: opacity 120ms, stroke 120ms; }
+.memory-wall-threads path.is-emphasized { stroke: #8d694f; stroke-width: 1.6; opacity: .95; }
+.memory-wall-threads path.is-muted { opacity: .13; }
+.memory-wall-card.atlas-memory-card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: var(--wall-card-width);
+  height: var(--wall-card-height);
+  margin: 0;
+  padding: 7px 7px 6px;
+  border: 1px solid #d4cdbb;
+  border-radius: 2px;
+  background: #fffcf5;
+  color: #41483b;
+  box-shadow: 1px 3px 7px #665b4120, 0 1px 1px #fff9 inset;
+  transform: rotate(var(--wall-tilt));
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity 140ms, box-shadow 140ms;
+  animation: none;
+}
+.memory-wall-card:hover, .memory-wall-card:focus-visible { z-index: 5; box-shadow: 0 3px 12px #65543b38; }
+.memory-wall-card.is-selected { border-color: #789074; outline: 1px solid #9eac8d; outline-offset: 2px; }
+.memory-wall-card.is-preview-open { visibility: hidden; }
+.memory-wall-card:focus-visible, .memory-region-pin:focus-visible, .memory-wall-footer button:focus-visible,
+.memory-region-actions button:focus-visible { outline: 2px solid #78845a; outline-offset: 3px; }
+.memory-card-visual { position: relative; display: block; flex: 1; min-height: 0; width: 100%; background: #e1dfd0; border: 1px solid #d6d2c6; }
+.memory-card-visual > img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; }
+.memory-card-visual.is-paper { background: repeating-linear-gradient(transparent 0 19px, #c2b99d38 20px 21px), #f3eddb; }
+.memory-text-excerpt { display: -webkit-box; padding: 9px 6px; font-size: 11px; line-height: 20px; color: #716c59; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.memory-card-title { display: block; flex-shrink: 0; width: 100%; margin-top: 7px; font-size: 12px; font-weight: 600; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.memory-card-caption { display: block; flex-shrink: 0; width: 100%; font-size: 10px; line-height: 15px; color: #666c5d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.memory-stack-count, .memory-photo-count { position: absolute; z-index: 2; right: 3px; bottom: 3px; display: inline-flex; gap: 3px; align-items: center; padding: 2px 4px; border-radius: 3px; color: #fffaf0; background: #494d40d9; font-size: 10px; line-height: 14px; }
+.memory-stack-sheets { position: absolute; inset: -5px 0 0; }
+.memory-stack-sheets > span { position: absolute; inset: 0; border: 3px solid #fffaf0; box-shadow: 0 0 1px 1px #bbb39b; background: #e3dbc9; transform: rotate(-5deg); }
+.memory-stack-sheets > span + span { transform: rotate(4deg); }
+.memory-stack-sheets img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.memory-card-pin, .memory-pin-head { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 32% 26%, #f4c6a2 0%, #bb7253 38%, #81513f 78%); box-shadow: 1px 2px 2px #3b2d304a; }
+.memory-card-pin { left: calc(var(--pin-x) - 1px); top: calc(var(--pin-y) - 1px); transform: translate(-50%, -50%); z-index: 4; }
+.memory-region-pin { position: absolute; display: block; width: 28px; height: 28px; margin: 0; padding: 0; border: 0; background: transparent; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer; border-radius: 50%; }
+.memory-pin-head { left: 50%; top: 50%; width: 11px; height: 11px; transform: translate(-50%, -50%); }
+.memory-region-pin.is-selected .memory-pin-head { outline: 3px solid #bd987857; outline-offset: 3px; }
+.memory-region-pin.is-muted .memory-pin-head { opacity: .55; }
+.memory-pin-label { position: absolute; left: 23px; top: 4px; display: flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 10px; line-height: 18px; color: #45533e; text-shadow: 0 1px #f8f6ee, 1px 0 #f8f6ee, -1px 0 #f8f6ee, 0 -1px #f8f6ee; }
+.memory-pin-label b { padding: 0 4px; font-size: 9px; font-weight: 600; border-radius: 5px; color: #fffdf3; background: #65765a; text-shadow: none; }
+.memory-region-pin.is-muted .memory-pin-label { opacity: .5; }
+.memory-region-pin:hover, .memory-region-pin:focus-visible, .memory-region-pin.is-selected { z-index: 8; }
+.memory-region-pin:hover .memory-pin-label, .memory-region-pin:focus-visible .memory-pin-label, .memory-region-pin.is-selected .memory-pin-label { background: #f9f6eadf; padding-right: 4px; opacity: 1; }
+.memory-region-actions { grid-column: 2; grid-row: 1; display: flex; flex: 0 1 auto; min-width: 0; width: max-content; align-items: center; gap: 4px; padding: 3px; border: 1px solid #d9d3c3; border-radius: 13px; background: #fcfaf3; box-shadow: 0 3px 10px #584d3512; font-size: 12px; pointer-events: auto; white-space: nowrap; }
+.memory-region-name { display: flex; align-items: center; gap: 5px; min-width: 0; max-width: 128px; padding: 0 7px; color: #454f40; }
+.memory-region-name svg { flex-shrink: 0; color: #917855; }
+.memory-region-name strong { overflow: hidden; text-overflow: ellipsis; font-size: inherit; font-weight: 600; }
+.memory-region-actions button { display: inline-flex; flex-shrink: 0; justify-content: center; align-items: center; gap: 5px; min-height: 36px; padding: 0 9px; border: 0; border-radius: 9px; font: inherit; font-weight: 500; color: #586b4e; background: #eff1e7; cursor: pointer; }
+.memory-region-actions button:hover { background: #e2e8d9; }
+.memory-region-actions button svg { flex-shrink: 0; }
+.memory-region-actions button:focus-visible { outline: 2px solid #9b8057; outline-offset: 2px; }
+.memory-region-count { display: inline-grid; place-items: center; min-width: 19px; height: 19px; padding: 0 4px; border-radius: 6px; background: #dfe6d4; font-size: 10px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.memory-region-actions .memory-region-enter { gap: 6px; padding: 0 10px; color: #fffdf5; background: #5d755e; }
+.memory-region-actions .memory-region-enter:hover { background: #4c644d; }
+.memory-region-actions button:disabled { color: #858878; background: transparent; cursor: default; }
+.memory-region-actions button:disabled .memory-region-count { background: #eeeee5; color: #858878; }
+.memory-wall-dock { position: absolute; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-auto-rows: max-content; align-content: start; align-items: start; gap: 4px 12px; overflow-y: auto; overscroll-behavior: contain; pointer-events: auto; }
+.memory-wall-footer { grid-column: 1; grid-row: 1; min-width: 0; max-width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; font-size: 11px; color: #676f5e; }
+.memory-wall-footer button { min-height: 36px; padding: 0 5px; border: 0; border-radius: 4px; color: #5b6d50; background: transparent; font: inherit; cursor: pointer; }
+.memory-wall-footer button:hover { background: #e2e4d4; }
+.memory-wall-footer button:disabled { color: #adb0a1; cursor: default; }
+.memory-wall-pagination { display: inline-flex; align-items: center; gap: 3px; margin-left: auto; }
+.memory-wall-pagination button { display: grid; place-items: center; min-width: 36px; }
+.memory-wall-harbor { position: absolute; z-index: 705; font-size: 10px; color: #66745b; }
+.memory-wall-harbor .atlas-harbor-magnifier { position: relative; inset: auto; width: 100%; height: 100%; overflow: visible; }
+.memory-wall-harbor .atlas-harbor-lens { width: 100%; height: 100%; min-height: 0; aspect-ratio: auto; }
+.memory-wall-harbor.is-compact .atlas-harbor-magnifier { display: flex; align-items: center; gap: 4px; }
+.memory-wall-harbor.is-compact .atlas-harbor-lens { width: 84px; height: 84px; flex-shrink: 0; }
+.memory-wall-harbor.is-compact .atlas-harbor-caption { top: 4px; padding: 1px 4px; border-radius: 5px; font-size: 9px; }
+.memory-wall-harbor.is-compact .atlas-harbor-choices { flex-direction: column; align-items: center; flex-wrap: nowrap; gap: 4px; }
+.memory-wall-harbor.is-compact .atlas-harbor-choices button { padding: 0; min-height: 44px; font-size: 11px; }
+@media (max-width: 620px) {
+  .memory-wall-dock { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .memory-region-actions { order: 0; }
+  .memory-wall-footer { order: 1; }
+  .memory-wall-footer { gap: 0 8px; font-size: 10px; }
+  .memory-pin-label { font-size: 9px; }
+  .memory-region-actions { font-size: 11px; }
+  .memory-region-name { max-width: 108px; padding: 0 5px; }
+  .memory-region-actions button { padding: 0 7px; }
+}
+@media (prefers-reduced-motion: reduce) { .memory-wall-threads path, .memory-wall-card, .memory-card-stamp, .atlas-memory-preview-action, .atlas-memory-preview-entry { transition: none; } }
+.is-memory-wall.is-calm .memory-wall-threads path, .is-memory-wall.is-calm .memory-wall-card { transition: none; }
+.capture-map .atlas-map-wrap.is-memory-wall.is-night { background-color: #272c28; background-image: radial-gradient(#9c9b7e12 .65px, transparent .65px); }
+.is-memory-wall.is-night .memory-wall-card { background: #eee8d9; }
+.is-memory-wall.is-night .memory-pin-label { color: #e5e7cf; text-shadow: 0 1px #343b30, 1px 0 #343b30; }
+.is-memory-wall.is-night .memory-region-pin:hover .memory-pin-label, .is-memory-wall.is-night .memory-region-pin.is-selected .memory-pin-label { background: #343b30; }
+.is-memory-wall.is-night .memory-wall-threads path { stroke: #e1d1ac; }
+
+
+/* 地图夜光主题。 */
+/* 夜光：仅样式变体（用户主动进入）；信息与入口不减，减少动态不闪烁。 */
+.atlas-map-wrap.is-night .atlas-map { background: #171522; }
+.atlas-slot--map:has(> .atlas-map-wrap.is-night) > .atlas-map-header {
+  --sky-surface: #232030;
+  --sky-ink: #eee9f7;
+  --sky-ink-muted: #d0c7df;
+  --sky-line: #49435c;
+  --sky-line-strong: #776b90;
+  --sky-lavender-soft: #343048;
+  --sky-primary: #b9aad8;
+  --sky-primary-hover: #cfc0ec;
+  --sky-on-primary: #232030;
+}
+.memory-pin-label.is-compact > span { display: none; }
+.memory-region-pin:is(:hover, :focus-visible, .is-selected) .memory-pin-label.is-compact > span { display: inline; }
+.memory-region-pin::before { content: ""; position: absolute; inset: -8px; border-radius: 50%; }
+.is-memory-wall.is-night .memory-region-actions { border-color: #59634e; background: #343c31; box-shadow: 0 3px 10px #0002; }
+.is-memory-wall.is-night .memory-region-name { color: #e3e6d4; }
+.is-memory-wall.is-night .memory-region-name svg { color: #cfb990; }
+.is-memory-wall.is-night .memory-region-notes { color: #d8e2ca; background: #454f3b; }
+.is-memory-wall.is-night .memory-region-notes:hover { background: #536048; }
+.is-memory-wall.is-night .memory-region-count { background: #5a694b; }
+.is-memory-wall.is-night .memory-region-actions button:disabled { color: #a5ad99; background: transparent; }
+.is-memory-wall.is-night .memory-region-actions button:disabled .memory-region-count { background: #454b3d; color: #a5ad99; }
+.is-memory-wall.is-night .memory-wall-footer { color: #d4d5c1; }
+.is-memory-wall.is-night .memory-wall-footer button { color: #d8dcc4; }
+.is-memory-wall.is-night .memory-wall-footer button:disabled { color: #8a947f; }
+.is-memory-wall.is-night .memory-wall-footer button:hover { background: #3d483b; }
+@media (pointer: coarse), (max-width: 620px) {
+  .memory-region-actions { padding: 1px; }
+  .memory-region-actions button:focus-visible { outline-offset: -2px; }
+  .memory-wall-footer button, .memory-region-actions button { min-height: 44px; }
+  .atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-path li,
+  .atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-link { min-height: 44px; }
+  .atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-link::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+  .memory-wall-pagination button { min-width: 44px; }
+}
+.capture-map .is-memory-wall.is-night .atlas-map { background: transparent; }
+
+.is-memory-wall.is-night .atlas-harbor-magnifier {
+  --sky-surface: #343b30;
+  --sky-ink: #d8dcc4;
+  --sky-line: #697560;
+  --sky-line-strong: #78816a;
+  --sky-primary: #c0d7b5;
+  --sky-lavender-soft: #343b30;
+  --sky-teal-soft: #3d5145;
+  --sky-pink-soft: #4b403a;
+}
+
+/* ===================== 胡桃木记忆墙（仅地图页） =====================
+ * 连续木料背景 + 暖白相纸 + 哑光黄铜。背景使用本地实拍胡桃木纹理（CC0，见 assets 说明），
+ * 以 cover 单次铺满，不重复、不引入脚本滤镜或新依赖；地图仍由现有 Leaflet/GeoJSON 渲染。
+ */
+.capture-map {
+  --atlas-wood: #2d211a;
+  --atlas-wood-deep: #211711;
+  --atlas-wood-raised: #443126;
+  --atlas-paper: #f3ece1;
+  --atlas-paper-bright: #fbf5ea;
+  --atlas-ink: #3a2a1f;
+  --atlas-ink-muted: #79664f;
+  --atlas-cream: #eaddcb;
+  --atlas-cream-muted: #c6b398;
+  --atlas-brass: #b4935f;
+  --atlas-brass-bright: #d8be8c;
+  --atlas-thread: #d6c4a2;
+  background-color: var(--atlas-wood);
+}
+.capture-map .atlas-map-wrap.is-memory-wall {
+  background-color: var(--atlas-wood);
+  background-image:
+    radial-gradient(ellipse at 30% -6%, #d8b57f1c 0%, transparent 46%),
+    radial-gradient(ellipse at 78% 108%, #0b07043d 0%, transparent 60%),
+    linear-gradient(112deg, #fff0d006 0%, transparent 32%, transparent 68%, #0b070454 100%),
+    url("/textures/walnut-wall.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow:
+    inset 0 0 150px #0a060452,
+    inset 0 1px 0 #e4c89a18;
+}
+/* 地图 SVG 只在整块轮廓外投影，不改变行政区内部描边与命中区域。 */
+.capture-map .is-memory-wall .atlas-map .leaflet-overlay-pane {
+  filter:
+    drop-shadow(0 1px 0 #f8ead1a8)
+    drop-shadow(0 7px 13px #2a16085c);
+}
+/* 每块行政区只加 1px 级高光/暗影，形成拼木薄片的边缘，不平移命中区域。 */
+.capture-map .is-memory-wall .atlas-map .leaflet-overlay-pane path.leaflet-interactive {
+  filter: drop-shadow(0 1px 0 #fff4dfa8) drop-shadow(0 1px 1px #1b100a2b);
+}
+.atlas-slot--map:has(.is-memory-wall) {
+  --sky-surface: var(--atlas-paper);
+  --sky-ink: var(--atlas-ink);
+  --sky-ink-muted: var(--atlas-ink-muted);
+  --sky-line: #d7c6aa;
+  --sky-line-strong: var(--atlas-brass);
+  --sky-lavender-soft: #ece0cc;
+  --sky-primary: #725539;
+  --sky-primary-hover: #543d2b;
+  --sky-on-primary: var(--atlas-paper-bright);
+  --sky-focus: var(--atlas-brass);
+  --sky-teal-soft: #e9dcc7;
+  --sky-accent-lavender: var(--atlas-brass);
+  --sky-accent-teal: #a68a62;
+  --sky-accent-yellow: #cdb07b;
+  --sky-accent-pink: #6b4c30;
+}
+
+/* 返回路径与状态：深木小牌 + 黄铜分隔；文字和焦点都换成暖色。 */
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-context {
+  left: 10px;
+  top: 10px;
+  max-width: calc(100% - 20px);
+  max-height: 52px;
+  padding: 3px 9px;
+  border: 1px solid #b4935f59;
+  border-radius: 999px;
+  background: #211711d9;
+  box-shadow: 0 3px 10px #0d08054d, inset 0 1px 0 #f4ddb90d;
+  -webkit-backdrop-filter: blur(6px) saturate(1.05);
+  backdrop-filter: blur(6px) saturate(1.05);
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-path {
+  color: var(--atlas-cream);
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-path li + li::before {
+  color: var(--atlas-brass);
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-path li:last-child {
+  color: var(--atlas-paper-bright);
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-link {
+  position: relative;
+  min-width: 0;
+  padding: 0 4px;
+  color: var(--atlas-cream-muted);
+  border-radius: 999px;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-link:hover {
+  color: var(--atlas-paper-bright);
+  background: #4c3727;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-link:focus-visible {
+  outline-color: var(--atlas-brass-bright);
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-status {
+  top: 54px;
+  left: 10px;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-status .atlas-state-note {
+  padding: 6px 10px;
+  border: 1px solid #b4935f47;
+  border-radius: 7px;
+  background: #211711d9;
+  color: var(--atlas-cream);
+  box-shadow: 0 3px 10px #0d08053d;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-status .atlas-state {
+  border: 1px solid var(--atlas-brass);
+  background: var(--atlas-paper);
+  color: var(--atlas-ink);
+  box-shadow: 0 8px 24px #0d08054d;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-status .secondary-button {
+  border-color: var(--atlas-brass);
+  background: var(--atlas-paper-bright);
+  color: var(--atlas-ink);
+}
+
+/* 地名签和麻绳线不接收指针事件，线端仍落在图钉坐标上。 */
+.capture-map .is-memory-wall .leaflet-tooltip.atlas-region-label {
+  padding: 0 5px;
+  border: 1px solid #a17c4b99;
+  border-radius: 3px;
+  background: #f7f0e4f2;
+  color: #3e2d20;
+  box-shadow: 0 1px 3px #1d110a4d;
+}
+.capture-map .is-memory-wall .leaflet-tooltip.atlas-region-label::before {
+  display: none;
+}
+.memory-wall-threads path {
+  stroke: var(--atlas-thread, #d6c4a2);
+  stroke-width: 1.05;
+  stroke-linecap: round;
+  opacity: .58;
+}
+.memory-wall-threads path.is-emphasized {
+  stroke: #ecdbbd;
+  stroke-width: 1.5;
+  opacity: .96;
+}
+.memory-wall-threads path.is-muted {
+  opacity: .12;
+}
+
+/* 相纸卡：窄暖白边、轻投影，照片不透明且悬停不位移。 */
+.memory-wall-card.atlas-memory-card {
+  padding: 4px 4px 3px;
+  border: 1px solid #d2bda0;
+  border-radius: 2px;
+  background: var(--atlas-paper);
+  color: var(--atlas-ink);
+  box-shadow:
+    0 1px 2px #0d0805a6,
+    0 5px 14px #0d08054d,
+    inset 0 0 0 1px #fffaf0a6;
+  transition: border-color 140ms ease, box-shadow 140ms ease, outline-color 140ms ease;
+}
+.memory-wall-card:hover,
+.memory-wall-card:focus-visible {
+  border-color: #c4a26d;
+  box-shadow:
+    0 2px 3px #0d0805a6,
+    0 9px 22px #0d080566,
+    inset 0 0 0 1px #fffaf0c7;
+}
+.memory-wall-card.is-selected {
+  border-color: var(--atlas-brass);
+  outline: 1px solid var(--atlas-brass);
+  outline-offset: 2px;
+  box-shadow:
+    0 2px 3px #0d0805a6,
+    0 9px 22px #0d080566,
+    0 0 0 4px #b4935f24,
+    inset 0 0 0 1px #fffaf0c7;
+}
+.memory-wall-card:focus-visible {
+  outline: 2px solid var(--atlas-brass-bright);
+  outline-offset: 3px;
+}
+.memory-card-visual {
+  border-color: #44312624;
+  border-radius: 1px;
+  background: #e3d7c5;
+}
+.memory-card-visual.is-paper {
+  background:
+    repeating-linear-gradient(transparent 0 17px, #bda98b3d 18px 19px),
+    #f4ead9;
+}
+.memory-text-excerpt {
+  color: #66513c;
+  font-size: 10.5px;
+  line-height: 18px;
+}
+.memory-card-title {
+  margin-top: 5px;
+  color: #3a2a1f;
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 16px;
+}
+.memory-card-caption {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 1px;
+  overflow: hidden;
+  color: var(--atlas-ink-muted);
+  font-size: 9px;
+  line-height: 13px;
+}
+.memory-card-date {
+  flex: 0 0 auto;
+  color: #7c5e3e;
+  font-variant-numeric: tabular-nums;
+}
+.memory-card-place {
+  min-width: 0;
+  overflow: hidden;
+  color: #6d5945;
+  text-overflow: ellipsis;
+}
+.memory-wall-card.is-stack .memory-card-place {
+  color: #7a5732;
+  font-weight: 650;
+}
+.memory-stack-count,
+.memory-photo-count {
+  right: 4px;
+  bottom: 4px;
+  padding: 1px 5px;
+  border: 1px solid #b4935f66;
+  border-radius: 3px;
+  background: #302219eb;
+  color: #f4ecdf;
+  font-size: 9px;
+  line-height: 13px;
+  box-shadow: 0 1px 2px #0d08054d;
+}
+.memory-stack-sheets {
+  inset: -4px 0 0;
+}
+.memory-stack-sheets > span {
+  border: 3px solid #f4ecdf;
+  border-radius: 1px;
+  background: #e2d4c0;
+  box-shadow: 0 0 0 1px #9e8769;
+  transform: rotate(-3.5deg);
+}
+.memory-stack-sheets > span + span {
+  transform: rotate(3deg);
+}
+.memory-stack-sheets img {
+  opacity: .94;
+}
+
+/* 图钉：哑光黄铜，上缘高光、下缘阴影；点击区仍沿用原 28/44px。 */
+.memory-card-pin,
+.memory-pin-head {
+  width: 9px;
+  height: 9px;
+  border: .5px solid #3b2a18;
+  background:
+    radial-gradient(circle at 34% 26%, #f5e4bb 0%, #dcc28f 17%, #b4935f 42%, #7b5d35 73%, #4a351e 100%);
+  box-shadow:
+    0 1px 2px #0d0805a6,
+    inset 0 .5px .5px #fff4d180,
+    inset 0 -1px 1px #2d1e0f66;
+}
+.memory-pin-head {
+  width: 10px;
+  height: 10px;
+}
+.memory-wall-card:hover .memory-card-pin,
+.memory-wall-card:focus-visible .memory-card-pin,
+.memory-wall-card.is-selected .memory-card-pin {
+  box-shadow:
+    0 1px 3px #0d0805b3,
+    0 0 0 2px #b4935f38,
+    inset 0 .5px .5px #fff4d1a6,
+    inset 0 -1px 1px #2d1e0f66;
+}
+.memory-region-pin.is-selected .memory-pin-head {
+  outline: 2px solid #b4935fbd;
+  outline-offset: 3px;
+}
+.memory-region-pin.is-hovered .memory-pin-head {
+  box-shadow:
+    0 1px 3px #0d0805b3,
+    0 0 0 3px #d8be8c66,
+    inset 0 .5px .5px #fff4d1a6;
+}
+/* 地图面悬浮时已经显示地名签；隐藏常驻图钉签，避免两块文字叠在同一个锚点。 */
+.memory-region-pin.is-hovered .memory-pin-label {
+  opacity: 0;
+}
+.memory-pin-label {
+  padding: 0 4px;
+  border: 1px solid #a17c4b99;
+  border-radius: 3px;
+  background: #f7f0e4f2;
+  color: #443126;
+  line-height: 17px;
+  text-shadow: none;
+  box-shadow: 0 1px 3px #1d110a4d;
+}
+.memory-pin-label b {
+  padding: 0 3px;
+  border-radius: 2px;
+  background: var(--atlas-brass);
+  color: #2d211a;
+  font-weight: 700;
+  text-shadow: none;
+}
+.memory-region-pin:hover .memory-pin-label,
+.memory-region-pin:focus-visible .memory-pin-label,
+.memory-region-pin.is-selected .memory-pin-label {
+  border-color: var(--atlas-brass);
+  background: #fbf5eaf5;
+}
+.memory-region-pin:focus-visible {
+  outline-color: var(--atlas-brass-bright);
+}
+
+/* 选区操作条、底部按钮与分页：暖纸浮条 + 深木胶囊。 */
+.memory-region-actions {
+  border-color: #c9a974;
+  border-radius: 8px;
+  background: var(--atlas-paper);
+  color: var(--atlas-ink);
+  box-shadow:
+    0 3px 10px #0d080566,
+    inset 0 1px 0 #fffaf0d9;
+}
+.memory-region-name {
+  color: #443126;
+}
+.memory-region-name svg {
+  color: #8b6b43;
+}
+.memory-region-actions button {
+  border: 1px solid #c7ad84;
+  border-radius: 5px;
+  background: #ede2d1;
+  color: #4f3b28;
+  font-weight: 600;
+}
+.memory-region-actions button:hover {
+  border-color: var(--atlas-brass);
+  background: #e6d6c0;
+}
+.memory-region-count {
+  background: var(--atlas-brass);
+  color: #2d211a;
+  font-weight: 700;
+}
+.memory-region-actions .memory-region-enter {
+  border-color: var(--atlas-wood-raised);
+  background: var(--atlas-wood-raised);
+  color: var(--atlas-paper-bright);
+}
+.memory-region-actions .memory-region-enter:hover {
+  border-color: #573f2c;
+  background: #573f2c;
+}
+.memory-region-actions button:disabled {
+  border-color: transparent;
+  color: #9d8a73;
+}
+.memory-region-actions button:disabled .memory-region-count {
+  background: #e3d5c2;
+  color: #8f7b64;
+}
+.memory-wall-footer {
+  color: #d8c7b0;
+  gap: 3px 8px;
+  text-shadow: 0 1px 2px #1a110c99;
+}
+.memory-wall-footer button {
+  padding: 0 11px;
+  border: 1px solid #d6c4a238;
+  border-radius: 999px;
+  background: #241a1499;
+  color: #f0e5d6;
+  text-shadow: none;
+  box-shadow: 0 1px 3px #0d080540;
+}
+.memory-wall-footer button:hover {
+  border-color: #d6c4a273;
+  background: #443126d9;
+}
+.memory-wall-footer button:disabled {
+  border-color: #d6c4a21f;
+  background: #241a1459;
+  color: #8f806d;
+}
+.memory-wall-footer [role="alert"] {
+  color: #f2d3b3;
+}
+.memory-wall-pagination {
+  gap: 1px;
+  padding: 1px 3px;
+  border: 1px solid #d6c4a238;
+  border-radius: 999px;
+  background: #241a1499;
+  box-shadow: 0 1px 3px #0d080540;
+  text-shadow: none;
+}
+.memory-wall-pagination button {
+  min-width: 34px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+}
+.memory-wall-pagination button:hover:not(:disabled) {
+  background: #4a3626;
+}
+.memory-wall-pagination button:disabled {
+  background: transparent;
+  color: #8f806d;
+}
+
+/* 港澳小镜片：沿用现有几何与按钮，只换纸张、铜圈、连线颜色。 */
+.capture-map .is-memory-wall .atlas-harbor-connector line {
+  stroke: var(--atlas-thread);
+  stroke-width: 1.1;
+  stroke-dasharray: 2 5;
+  opacity: .58;
+}
+.capture-map .is-memory-wall .atlas-harbor-magnifier {
+  color: var(--atlas-cream);
+  filter: drop-shadow(0 5px 10px #0d08053d);
+}
+.capture-map .is-memory-wall .atlas-harbor-lens-ring {
+  stroke-width: 1.8;
+}
+.capture-map .is-memory-wall .atlas-harbor-caption {
+  border-color: #bd9a64;
+  background: #f5eddef2;
+  color: #443126;
+  box-shadow: 0 1px 3px #1d110a4d;
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button {
+  border-color: #d6c4a240;
+  background: #241a14b8;
+  color: #eadfce;
+  box-shadow: 0 1px 3px #0d080540;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button:hover {
+  border-color: #d8be8c99;
+  background: #443126e6;
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button[aria-pressed="true"] {
+  border-color: var(--atlas-brass);
+  background: var(--atlas-brass);
+  color: #2d211a;
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button:focus-visible {
+  outline-color: var(--atlas-brass-bright);
+}
+.capture-map .is-memory-wall .atlas-selection-pulse {
+  border-color: var(--atlas-brass);
+  box-shadow:
+    0 0 0 3px #b4935f2b,
+    0 0 18px #b4935f42;
+}
+
+/* 完整地区列表：复用原浮层结构，只替换纸张与黄铜语义。 */
+.atlas-memory-preview {
+  --sky-surface: #f3ece1;
+  --sky-ink: #3a2a1f;
+  --sky-ink-muted: #79664f;
+  --sky-line: #d6c3a6;
+  --sky-lavender-soft: #e9dcc7;
+  --sky-primary: #795a35;
+  border-color: #c9a974;
+  box-shadow:
+    0 10px 30px #0d080573,
+    0 2px 5px #0d08054d;
+}
+
+/* 地图页导航随木墙换色；其他页面仍使用全站深紫导航。 */
+.app-shell--immersive .nav-drawer,
+.app-shell--immersive .nav-drawer.is-open {
+  border-color: #4a3828;
+  background: #211711;
+  color: #f3ece1;
+  box-shadow: inset -1px 0 0 #ffffff0a;
+}
+.app-shell--immersive .nav-drawer .nav-button {
+  color: #c4b29b;
+}
+.app-shell--immersive .nav-drawer .nav-button:hover {
+  background: #35261d;
+  color: #fbf5ea;
+}
+.app-shell--immersive .nav-drawer .nav-button.is-active {
+  background: #443126;
+  color: #fbf5ea;
+}
+.app-shell--immersive .nav-drawer .nav-button.is-active::before {
+  background: var(--atlas-brass, #b4935f);
+  clip-path: none;
+}
+.app-shell--immersive .nav-drawer-brand .brand-mark {
+  border-color: #7a5c39;
+  background: #443126;
+  color: #f3ece1;
+  box-shadow: 2px 2px 0 #8e6c3e;
+}
+.app-shell--immersive .nav-drawer .nav-count {
+  background: var(--atlas-brass, #b4935f);
+  color: #2d211a;
+}
+.app-shell--immersive .nav-drawer .status-dot {
+  background: var(--atlas-brass, #b4935f);
+  box-shadow: 0 0 0 5px #b4935f1c;
+}
+@media (max-width: 900px) {
+  .app-shell--immersive {
+    background: linear-gradient(180deg, #1d130e 0 52px, #2d211a 52px);
+  }
+  .app-shell--immersive .app-mobile-menu {
+    border-color: #b4935f66;
+    background: #2b1f17;
+    color: #f3ece1;
+    box-shadow: 0 2px 8px #0d080566;
+  }
+  .app-shell--immersive .app-mobile-menu:hover {
+    border-color: #b4935f99;
+    background: #443126;
+  }
+}
+
+/* 手机上墙面铺到视口顶部，菜单按钮浮在木料上；不再留一条纯色页眉。 */
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  .app-shell--immersive .app-main--immersive {
+    top: 0;
+  }
+  .app-shell--immersive .atlas-slot--map:has(.is-memory-wall) .atlas-map-context {
+    top: calc(56px + env(safe-area-inset-top, 0px));
+  }
+  .app-shell--immersive .atlas-slot--map:has(.is-memory-wall) .atlas-map-status {
+    top: calc(100px + env(safe-area-inset-top, 0px));
+  }
+}
+
+.capture-map .is-memory-wall .atlas-harbor-grid {
+  stroke: #6d543821;
+}
+@media (pointer: coarse), (max-width: 620px) {
+  .memory-wall-pagination button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+.capture-map .is-memory-wall .atlas-harbor-shape.is-hongkong {
+  fill: #7d6548;
+}
+.capture-map .is-memory-wall .atlas-harbor-shape.is-macau {
+  fill: #c3a46e;
+}
+.capture-map .atlas-map--placeholder {
+  background: transparent;
+}
+
+.app-shell--immersive .nav-drawer-head strong {
+  color: #f3ece1;
+}
+.app-shell--immersive .nav-drawer .nav-drawer-close,
+.app-shell--immersive .nav-drawer .nav-foot-link {
+  border-color: #5b452f;
+  background: #2d211a;
+  color: #f3ece1;
+}
+.app-shell--immersive .nav-drawer .nav-drawer-close:hover,
+.app-shell--immersive .nav-drawer .nav-foot-link:hover {
+  background: #443126;
+}
+
+/* 焦点与地图页导航共用黄铜色；保留原焦点环尺寸，只替换颜色。 */
+.app-shell--immersive {
+  --sky-focus: #d8be8c;
+}
+.capture-map .is-memory-wall .atlas-map:focus-visible {
+  outline-color: var(--atlas-brass-bright);
+  outline-offset: -3px;
+}
+.memory-wall-footer button:focus-visible,
+.memory-region-actions button:focus-visible {
+  outline: 2px solid var(--atlas-brass-bright);
+  outline-offset: 3px;
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button:focus-visible {
+  outline-color: var(--atlas-brass-bright);
+}
+
+
+/* ===================== 软木塞旅行邮票墙 =====================
+ * 背景换成 CC0 实拍软木（public/textures/cork-board.jpg），
+ * 卡片改为带齿孔和邮戳的旅行邮票，图钉改为有体积的黄铜圆钉。
+ * 只改视觉层；卡片/图钉命中区、地图、数据与任务交互均不改变。
+ */
+.capture-map {
+  --atlas-cork: #a77a53;
+  --atlas-thread: #f1e0c4;
+  --atlas-stamp-paper: #fbf4e6;
+  --atlas-stamp-ink: #473426;
+  --atlas-stamp-muted: #7d654b;
+  --atlas-stamp-rule: #bda37e;
+  --stamp-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTQ0Ij48cGF0aCBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wIDBIMTIwVjE0NEgwWk0wLjgwIDBhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTAuODAgMGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0yMC44MCAwYTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTMwLjgwIDBhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNNDAuODAgMGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk01MC44MCAwYTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTYwLjgwIDBhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNNzAuODAgMGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk04MC44MCAwYTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTkwLjgwIDBhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTAwLjgwIDBhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTEwLjgwIDBhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMC44MCAxNDRhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTAuODAgMTQ0YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTIwLjgwIDE0NGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0zMC44MCAxNDRhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNNDAuODAgMTQ0YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTUwLjgwIDE0NGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk02MC44MCAxNDRhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNNzAuODAgMTQ0YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTgwLjgwIDE0NGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk05MC44MCAxNDRhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTAwLjgwIDE0NGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0xMTAuODAgMTQ0YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTS00LjIwIDVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgMTVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgMjVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgMzVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgNDVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgNTVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgNjVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgNzVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgODVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgOTVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgMTA1YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTS00LjIwIDExNWE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0tNC4yMCAxMjVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgMTM1YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTExNS44MCA1YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTExNS44MCAxNWE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0xMTUuODAgMjVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTE1LjgwIDM1YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTExNS44MCA0NWE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0xMTUuODAgNTVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTE1LjgwIDY1YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTExNS44MCA3NWE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0xMTUuODAgODVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTE1LjgwIDk1YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTExNS44MCAxMDVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTE1LjgwIDExNWE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0xMTUuODAgMTI1YTQuMiA0LjIgMCAxIDAgOC40IDBhNC4yIDQuMiAwIDEgMCAtOC40IDBaTTExNS44MCAxMzVhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNLTQuMjAgMGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0xMTUuODAgMGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWk0tNC4yMCAxNDRhNC4yIDQuMiAwIDEgMCA4LjQgMGE0LjIgNC4yIDAgMSAwIC04LjQgMFpNMTE1LjgwIDE0NGE0LjIgNC4yIDAgMSAwIDguNCAwYTQuMiA0LjIgMCAxIDAgLTguNCAwWiIvPjwvc3ZnPg==");
+}
+.capture-map .atlas-map-wrap.is-memory-wall {
+  background-color: var(--atlas-cork);
+  background-image:
+    radial-gradient(ellipse at 24% -10%, #f5d7a42b 0%, transparent 48%),
+    radial-gradient(ellipse at 82% 112%, #1e0e062b 0%, transparent 64%),
+    linear-gradient(108deg, #2814080f 0%, transparent 34%, transparent 68%, #28140816 100%),
+    url("/textures/cork-board.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto 180%;
+  box-shadow:
+    inset 0 0 0 6px #2d1a0f,
+    inset 0 0 0 7px #c8a2685c,
+    inset 0 0 150px #2b16093d;
+}
+
+/* 黄铜圆钉：底面投影 + 球面高光 + 边缘反光，视觉变大、命中区不变。 */
+.memory-card-pin,
+.memory-pin-head {
+  width: 15px;
+  height: 15px;
+  border: 1px solid #38210f;
+  background:
+    radial-gradient(circle at 66% 76%, #d9b16a42 0%, transparent 34%),
+    radial-gradient(circle at 30% 21%, #fffcef 0%, #fae9bb 7%, #e4c07a 20%, #c29450 44%, #93652f 68%, #5e3b1b 88%, #2e1b0b 100%);
+  box-shadow:
+    0 4px 5px #2a1608b3,
+    0 1px 1px #00000059,
+    inset 0 1px 1px #fff9dfe6,
+    inset 0 -2px 3px #3b210bcc;
+}
+.memory-pin-head {
+  width: 14px;
+  height: 14px;
+}
+.memory-card-pin {
+  left: var(--pin-x);
+  top: var(--pin-y);
+}
+.memory-card-pin::after,
+.memory-pin-head::after {
+  content: "";
+  position: absolute;
+  left: 27%;
+  top: 17%;
+  width: 28%;
+  height: 24%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 45% 40%, #fffef5 0%, #fff1c3 42%, #e6c47c00 78%);
+  opacity: .92;
+  pointer-events: none;
+}
+.memory-wall-card:hover .memory-card-pin,
+.memory-wall-card:focus-visible .memory-card-pin,
+.memory-wall-card.is-selected .memory-card-pin {
+  box-shadow:
+    0 4px 7px #2a1608b8,
+    0 0 0 3px #d8be8c38,
+    inset 0 1px 1px #fff8dce6,
+    inset 0 -2px 3px #3b210bcc;
+}
+.memory-region-pin.is-selected .memory-pin-head {
+  outline: 2px solid #f1dfb7;
+  outline-offset: 3px;
+  box-shadow:
+    0 4px 7px #2a1608b8,
+    0 0 0 4px #8b5d2c55,
+    inset 0 1px 1px #fff8dce6,
+    inset 0 -2px 3px #3b210bcc;
+}
+.memory-region-pin.is-hovered .memory-pin-head {
+  box-shadow:
+    0 4px 7px #2a1608b8,
+    0 0 0 4px #e6cf9c66,
+    inset 0 1px 1px #fff8dce6,
+    inset 0 -2px 3px #3b210bcc;
+}
+.memory-region-pin:focus-visible {
+  outline-color: #f1dfb7;
+}
+.memory-pin-label {
+  border-color: #8e6a42b8;
+  background: #fff8eaf2;
+  color: #3d2a1b;
+  box-shadow: 0 2px 4px #2a16084a;
+}
+
+/* 线是浅麻绳：在浅软木上靠一层深色落影保持可读。 */
+.memory-wall-threads path {
+  stroke: var(--atlas-thread);
+  stroke-width: 1.1;
+  opacity: .84;
+  filter: drop-shadow(0 1px 1px #3b2411bf);
+}
+.memory-wall-threads path.is-emphasized {
+  stroke: #f8ebd3;
+  stroke-width: 1.5;
+  opacity: 1;
+}
+.memory-wall-threads path.is-muted {
+  opacity: .18;
+}
+.capture-map .is-memory-wall .atlas-harbor-connector line {
+  stroke: var(--atlas-thread);
+  opacity: .78;
+  filter: drop-shadow(0 1px 1px #3b2411b8);
+}
+
+/* 按钮本身只负责尺寸/命中/旋转；白色邮票壳负责齿孔、纸边和阴影。 */
+.memory-wall-card.atlas-memory-card {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.memory-wall-card:hover,
+.memory-wall-card:focus-visible {
+  border-color: transparent;
+  box-shadow: none;
+}
+.memory-wall-card.is-selected {
+  border-color: transparent;
+  outline: none;
+  box-shadow: none;
+}
+.memory-card-stamp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 5px 5px 4px;
+  background:
+    radial-gradient(ellipse at 20% 0%, #fffdf6 0%, transparent 58%),
+    linear-gradient(160deg, #fffaf0 0%, var(--atlas-stamp-paper) 100%);
+  color: var(--atlas-stamp-ink);
+  filter: drop-shadow(0 1px 1px #2a16088c) drop-shadow(0 5px 8px #2a160842);
+  -webkit-mask-image: var(--stamp-mask);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-image: var(--stamp-mask);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  transition: filter 140ms ease;
+}
+.memory-wall-card:hover .memory-card-stamp,
+.memory-wall-card:focus-visible .memory-card-stamp {
+  filter: drop-shadow(0 2px 2px #2a1608a8) drop-shadow(0 9px 14px #2a16084d);
+}
+.memory-wall-card.is-selected .memory-card-stamp {
+  background:
+    radial-gradient(ellipse at 20% 0%, #fffdf6 0%, transparent 58%),
+    linear-gradient(160deg, #fff8e8 0%, #f6ead6 100%);
+  filter:
+    drop-shadow(0 2px 2px #2a1608a8)
+    drop-shadow(0 9px 14px #2a16084d)
+    drop-shadow(0 0 7px #e7cc95a8);
+}
+/* 内框要避开 5px 纸边和齿孔遮罩，放在内容边缘才可见。 */
+.memory-wall-card.is-selected .memory-card-stamp::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  inset: 6px;
+  border: 1.5px solid #8f6636;
+  border-radius: 2px;
+  pointer-events: none;
+}
+.memory-wall-card:focus-visible {
+  outline: 2px solid var(--atlas-brass-bright);
+  outline-offset: 3px;
+}
+/* 邮戳只做极淡的装饰，盖在照片右上角；不遮挡标题/日期。 */
+.memory-card-stamp::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  top: 9px;
+  right: 9px;
+  width: 25px;
+  height: 25px;
+  border: 1px solid #6f4c2f4f;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 7px, #6f4c2f38 7.5px 8.5px, transparent 9px);
+  box-shadow: 0 0 0 1px #fffaf0a8;
+  opacity: .82;
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+.memory-card-visual {
+  margin-top: 1px;
+  border: 1px solid #5b3c253d;
+  box-shadow: 0 0 0 1px #fffdf8;
+  background: #e3d7c5;
+}
+.memory-card-visual > img {
+  filter: saturate(.94) contrast(1.02);
+}
+.memory-card-title {
+  margin-top: 5px;
+  color: var(--atlas-stamp-ink);
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 16px;
+  letter-spacing: .01em;
+}
+.memory-card-caption {
+  gap: 3px;
+  margin-top: 1px;
+  color: var(--atlas-stamp-muted);
+  font-size: 9px;
+  line-height: 12px;
+}
+.memory-card-date {
+  color: #765535;
+}
+.memory-card-place {
+  color: var(--atlas-stamp-muted);
+}
+.memory-wall-card.is-stack .memory-card-place {
+  color: #7c542d;
+}
+.memory-stack-count,
+.memory-photo-count {
+  border-color: #8e6a4259;
+  background: #3b2818eb;
+  color: #fff6e5;
+  box-shadow: 0 1px 2px #2a160866;
+}
+.memory-stack-sheets > span {
+  border-color: #fbf4e6;
+  box-shadow: 0 0 0 1px #bda37e;
+}
+.memory-stack-sheets img {
+  filter: saturate(.92);
+}
+
+/* ===================== 白瓷地图与地区徽章 =====================
+ * 行政区底色改为高明度纸白/浅彩，保证整张地图在软木墙上仍是亮面；
+ * 身份由每块中央的本地符号徽章和极淡纸纹承担，棕色调不再覆盖地图。
+ */
+.capture-map .is-memory-wall .atlas-map .leaflet-overlay-pane {
+  filter: drop-shadow(0 1px 0 #fffaf0c4) drop-shadow(0 8px 18px #2a190d47);
+}
+
+.capture-map .is-memory-wall .leaflet-tooltip.atlas-region-label {
+  border-color: #b8a68dcc;
+  background: #fffdf8f2;
+  color: #3f413b;
+  box-shadow: 0 2px 7px #3a261638;
+}
+
+/* Leaflet 默认 divIcon 会带白方块与边框；徽章自己负责纸色和边缘。 */
+.atlas-region-emblem {
+  border: 0 !important;
+  background: transparent !important;
+  pointer-events: none;
+}
+
+.atlas-region-emblem__badge {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border: 1px solid color-mix(in srgb, var(--atlas-emblem-accent, #a99a86) 60%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--atlas-emblem-paper, #fcfbf7) 90%, transparent);
+  box-shadow:
+    0 1px 3px #3e2b1c61,
+    inset 0 1px 0 #ffffffd6;
+  color: var(--atlas-emblem-glyph, #46564c);
+  opacity: 1;
+}
+
+.atlas-region-emblem__badge.is-journal {
+  border-color: color-mix(in srgb, #b17e45 72%, transparent);
+  box-shadow:
+    0 1px 2px #3e2b1c3d,
+    0 0 0 2px #b17e451c,
+    inset 0 1px 0 #ffffffc7;
+}
+
+.atlas-region-emblem__glyph {
+  display: block;
+  width: 68%;
+  height: 68%;
+  overflow: visible;
+}
+
+/* 徽章缩小时，按 viewBox 缩放的 1.7 线会细到看不清；
+   统一锁定 2px 屏幕线宽，缩放只改变符号大小。 */
+.atlas-region-emblem__glyph * {
+  vector-effect: non-scaling-stroke;
+  stroke-width: 2;
+}
+
+/* ===================== 白瓷地图与地区徽章 =====================
+ * 行政区底色改为高明度纸白/浅彩，保证整张地图在软木墙上仍是亮面；
+ * 身份由每块中央的本地符号徽章和极淡纸纹承担，棕色调不再覆盖地图。
+ */
+.capture-map .is-memory-wall .atlas-map .leaflet-overlay-pane {
+  filter: drop-shadow(0 1px 0 #fffaf0c4) drop-shadow(0 8px 18px #2a190d47);
+}
+
+.capture-map .is-memory-wall .leaflet-tooltip.atlas-region-label {
+  overflow: visible;
+  padding: 2px 7px;
+  border-color: #b8a68dcc;
+  border-radius: 4px;
+  background: #fffdf8f2;
+  color: #3f413b;
+  box-shadow: 0 3px 9px #3a26163d;
+}
+
+/* 小尖角把地名签指回地区锚点；与上移的标签组成一枚完整的地名纸签。 */
+.capture-map .is-memory-wall .leaflet-tooltip.atlas-region-label::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-right: 1px solid #b8a68dcc;
+  border-bottom: 1px solid #b8a68dcc;
+  background: #fffdf8f2;
+  transform: translate(-50%, -4px) rotate(45deg);
+}
+
+/* Leaflet 默认 divIcon 会带白方块与边框；徽章自己负责纸色和边缘。 */
+.memory-pin-label {
+  transition:
+    opacity 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease;
+}
+
+.atlas-region-emblem {
+  border: 0 !important;
+  background: transparent !important;
+  pointer-events: none;
+}
+
+.atlas-region-emblem__badge {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border: 1px solid color-mix(in srgb, var(--atlas-emblem-accent, #a99a86) 60%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--atlas-emblem-paper, #fcfbf7) 90%, transparent);
+  box-shadow:
+    0 1px 3px #3e2b1c61,
+    inset 0 1px 0 #ffffffd6;
+  color: var(--atlas-emblem-glyph, #46564c);
+  opacity: 1;
+}
+
+.atlas-region-emblem__badge.is-journal {
+  border-color: color-mix(in srgb, #b17e45 72%, transparent);
+  box-shadow:
+    0 1px 2px #3e2b1c3d,
+    0 0 0 2px #b17e451c,
+    inset 0 1px 0 #ffffffc7;
+}
+
+.atlas-region-emblem__glyph {
+  display: block;
+  width: 68%;
+  height: 68%;
+  overflow: visible;
+}
+
+/* 徽章缩小时，按 viewBox 缩放的 1.7 线会细到看不清；
+   统一锁定 2px 屏幕线宽，缩放只改变符号大小。 */
+.atlas-region-emblem__glyph * {
+  vector-effect: non-scaling-stroke;
+  stroke-width: 2;
+}
+
+/* ===================== v2 App 变体（移动端地图适配，本轮白名单增量） =====================
+ * 竖屏：舞台（真实投影等比居中）→ 钻层/分页独立触控行 → 照片带（窄短屏）/详情区。
+ * 横屏（矮且 landscape）：地图在左，照片带与详情在右。桌面工作区不受影响。
+ * 颜色沿用 sky-* 主题变量（暖纸/夜光/胡桃木各自覆盖），不新增主题系统。
+ */
+.atlas-slot--map:has(.atlas-map-wrap.is-app-variant) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.atlas-slot--map:has(.atlas-map-wrap.is-app-variant) .atlas-map-header {
+  position: static;
+  flex: none;
+}
+.atlas-map-wrap.is-app-variant {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0;
+  min-height: 0;
+  overflow: visible;
+}
+.atlas-map-wrap.is-app-variant.is-app-landscape {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.9fr);
+  gap: 10px;
+  align-items: stretch;
+}
+.atlas-map-wrap.is-app-variant .atlas-map {
+  min-height: 0;
+  border: 0;
+}
+.atlas-app-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+.is-app-landscape .atlas-app-stage {
+  min-height: 0;
+  border-right: 1px solid var(--sky-line, #d7c6aa);
+}
+
+/* 钻层/分页独立触控行：占据舞台底部 52px（帧计算已预留），不压照片卡与地图。 */
+.atlas-app-level-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  pointer-events: none;
+}
+.atlas-app-level-row > * {
+  pointer-events: auto;
+}
+.atlas-app-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--sky-line, #d7c6aa);
+  border-radius: 999px;
+  background: var(--sky-surface, #fbf5ea);
+  color: var(--sky-primary, #59735d);
+  font-size: 12px;
+  box-shadow: 0 2px 8px #213b2914;
+}
+.atlas-app-pill span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.atlas-app-pill:active { opacity: .7; }
+.atlas-app-pill-caption {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--sky-ink-muted, #6f7165);
+}
+
+/* 详情面板按内容收紧；只在列表内滚动，不改变上方地图舞台尺寸。 */
+.atlas-app-panel {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  padding: 0 10px calc(8px + env(safe-area-inset-bottom, 0px));
+}
+.is-app-landscape .atlas-app-panel {
+  padding: 0 2px 6px;
+  border-top: 0;
+}
+.atlas-app-details {
+  --atlas-list-row-height: 48px;
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--sky-surface, #fbf5ea);
+  border: 1px solid var(--sky-line, #d7c6aa);
+  border-radius: 14px;
+  padding: 0 12px;
+  overflow: hidden;
+}
+.atlas-app-details.has-selection {
+  --atlas-list-row-height: 64px;
+}
+.atlas-app-details-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 46px;
+  flex: none;
+}
+.atlas-app-place {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+}
+.atlas-app-place strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sky-ink, #3a2a1f);
+}
+.atlas-app-place small {
+  flex: none;
+  font-size: 12px;
+  color: var(--sky-ink-muted, #79664f);
+  font-variant-numeric: tabular-nums;
+}
+.atlas-app-collapse {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -8px;
+  border-radius: 50%;
+  color: var(--sky-ink-muted, #79664f);
+}
+.atlas-app-collapse:active { background: var(--sky-lavender-soft, #e9e9dc); }
+.atlas-app-notice {
+  flex: none;
+  margin: 0;
+  padding: 4px 2px 8px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--sky-ink-muted, #79664f);
+}
+.atlas-app-list {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: min(calc(var(--atlas-list-row-height) * 3), 32dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: 4px;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sky-line-strong, #b9a98f) transparent;
+}
+.atlas-app-list:focus-visible {
+  outline: 1px solid var(--sky-focus, #8d6b3d);
+  outline-offset: -1px;
+}
+.atlas-app-list::-webkit-scrollbar {
+  width: 4px;
+}
+.atlas-app-list::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--sky-line-strong, #b9a98f);
+}
+.atlas-app-note-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--atlas-list-row-height);
+  padding: 8px 0;
+  text-align: left;
+  color: var(--sky-ink, #3a2a1f);
+}
+.atlas-app-note-row + .atlas-app-note-row {
+  border-top: 1px solid color-mix(in srgb, var(--sky-line, #d7c6aa) 65%, transparent);
+}
+.atlas-app-note-row:focus-visible {
+  outline: 2px solid var(--sky-focus, #8d6b3d);
+  outline-offset: -2px;
+}
+@media (hover: hover) {
+  .atlas-app-note-row:hover {
+    background: color-mix(in srgb, var(--sky-lavender-soft, #e9e9dc) 50%, transparent);
+  }
+}
+.atlas-app-note-row:active { opacity: .7; }
+.atlas-app-note-thumb {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 7px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--sky-lavender-soft, #e9e9dc);
+  color: var(--sky-primary, #59735d);
+}
+.atlas-app-note-thumb.is-glyph {
+  width: 24px;
+  height: 24px;
+  border-radius: 0;
+  background: none;
+}
+.atlas-app-note-thumb.is-glyph svg {
+  width: 18px;
+  height: 18px;
+}
+.atlas-app-note-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.atlas-app-band-fallback { display: block; width: 100%; height: 100%; background: var(--sky-lavender-soft, #e9e9dc); }
+.atlas-app-note-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.atlas-app-note-copy strong {
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1.55;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.atlas-app-note-copy small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--sky-ink-muted, #79664f);
+}
+.atlas-app-details:not(.has-selection) .atlas-app-note-copy {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.atlas-app-details:not(.has-selection) .atlas-app-note-copy strong {
+  flex: 1;
+  min-width: 0;
+}
+.atlas-app-details:not(.has-selection) .atlas-app-note-copy small {
+  flex: none;
+  max-width: 50%;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.atlas-app-note-place {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.atlas-app-note-copy time {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.atlas-app-note-row > svg {
+  flex: none;
+  color: var(--sky-ink-muted, #79664f);
+}
+.atlas-app-pagination {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 40px;
+  font-size: 11px;
+  color: var(--sky-ink-muted, #79664f);
+}
+.atlas-app-pagination button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--sky-ink, #3a2a1f);
+}
+.atlas-app-pagination button:disabled { opacity: .35; }
+
+/* 紧凑地点卡带：省名与篇数/日期两行，横滑查看；整卡保留触控面积。 */
+.atlas-app-band { display: none; }
+.atlas-app-panel[data-app-band="true"] .atlas-app-band {
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  height: 72px;
+  padding: 4px 2px 6px;
+  scroll-padding-inline: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: #b7c2b280 transparent;
+}
+.atlas-app-band-card {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 176px;
+  padding: 6px;
+  border: 1px solid var(--sky-line, #d7c6aa);
+  border-radius: 11px;
+  background: var(--sky-surface, #fbf5ea);
+  text-align: left;
+  color: var(--sky-ink, #3a2a1f);
+  scroll-snap-align: start;
+}
+.atlas-app-band-card.is-selected {
+  border-color: var(--sky-line-strong, #b4b8a3);
+  outline: 1px solid var(--sky-primary, #59735d);
+  outline-offset: -1px;
+}
+.atlas-app-band-photo {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--sky-lavender-soft, #e9e9dc);
+}
+.atlas-app-band-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.atlas-app-band-copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: baseline;
+  gap: 2px 8px;
+}
+.atlas-app-band-copy strong {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.atlas-app-band-copy small,
+.atlas-app-band-copy time {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--sky-ink-muted, #79664f);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* App 变体下桌面记忆墙元素的位置修正：卡位/图钉/连线以舞台为坐标系（帧已预留钻层行）。 */
+.atlas-map-wrap.is-app-variant .atlas-memory-wall { overflow: hidden; }
+.atlas-map-wrap.is-app-variant .atlas-app-stage .memory-region-pin { z-index: 720; }
+
+/* R2 稳定 DOM：桌面与 App 共用同一舞台盒子——桌面为透明定位盒（唯一 grid
+ * 子项自动拉伸到工作区），App 模式由上方 flex 规则接管；地图/墙的绝对定位
+ * 锚定舞台，坐标空间与原工作区一致，跨断点不更换节点。 */
+.atlas-map-wrap > .atlas-app-stage {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+/* 已审定 Hallmark 共享相纸：尺寸由 region-card-layout 计算，保留手机触控与响应式布局。 */
+html[data-atlas-theme] .app-shell .memory-wall-harbor .atlas-harbor-magnifier {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 44px;
+  justify-items: center;
+  gap: 4px;
+}
+html[data-atlas-theme] .app-shell .memory-wall-harbor .atlas-harbor-lens {
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+}
+html[data-atlas-theme] .app-shell .memory-wall-harbor .atlas-harbor-choices {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+html[data-atlas-theme] .app-shell .memory-wall-harbor .atlas-harbor-choices button {
+  min-width: 44px;
+  min-height: 44px;
+  padding-inline: 4px;
+}
+@media (hover: hover) and (pointer: fine) {
+  html[data-atlas-theme] .app-shell .memory-wall-harbor .atlas-harbor-choices button {
+    min-width: 0;
+    min-height: 32px;
+    border-radius: 6px;
+  }
+}
+html[data-atlas-theme] .app-shell .capture-map .atlas-map-wrap.is-memory-wall {
+  --atlas-ui-surface: var(--theme-surface);
+  --atlas-ui-line: var(--sky-line);
+  --memory-card-title: var(--sky-ink);
+  --memory-card-meta: var(--sky-ink-muted);
+  --memory-card-backing: var(--web-photo-backing);
+  --memory-card-place-bg: var(--sky-primary);
+  --memory-card-place-ink: var(--sky-on-primary);
+  --memory-card-count-bg: var(--sky-primary);
+  --memory-card-count-ink: var(--sky-on-primary);
+  --memory-card-focus: var(--sky-primary);
+  --memory-card-line: var(--sky-line);
+  --memory-card-line-strong: var(--sky-primary);
+  --memory-card-thread: var(--sky-accent-teal);
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-frame {
+  filter: drop-shadow(0 1px 2px var(--web-photo-contact)) drop-shadow(0 5px 12px var(--web-photo-ambient));
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-frame::before {
+  inset: 2px -1px -2px 1px;
+  background: var(--web-photo-backing);
+  box-shadow: none;
+  border-radius: 2px;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-stamp {
+  padding: 8px;
+  background: var(--web-photo-paper);
+  border-radius: 2px;
+  box-shadow: none;
+  color: var(--sky-ink);
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-wall-card:hover .memory-card-frame,
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-wall-card:focus-visible .memory-card-frame {
+  filter: drop-shadow(0 1px 2px var(--web-photo-contact)) drop-shadow(0 5px 12px var(--web-photo-ambient));
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-wall-card.is-selected .memory-card-stamp {
+  background: var(--web-photo-paper);
+  box-shadow: inset 0 0 0 1px var(--sky-line-strong);
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-wall-card:focus-visible {
+  outline: 2px solid var(--sky-focus);
+  outline-offset: 4px;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-visual {
+  border-radius: 0;
+  background: var(--theme-surface);
+  outline: 1px solid var(--web-photo-edge);
+  outline-offset: -1px;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-visual > img {
+  border-radius: 0;
+  filter: none;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-title {
+  min-height: 2.9em;
+  margin-top: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: var(--sky-ink);
+  font-size: var(--fs-base);
+  line-height: 1.45;
+  font-weight: 550;
+  letter-spacing: 0;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-caption {
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: var(--fs-sm);
+  line-height: 16px;
+  color: var(--sky-ink-muted);
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-date,
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-place {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--sky-ink-muted);
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-place {
+  max-width: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-text-excerpt {
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-card-pin {
+  width: 9px;
+  height: 9px;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-wall-threads path {
+  stroke: var(--memory-card-thread);
+  opacity: .5;
+  filter: none;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-wall-threads path.is-emphasized {
+  stroke: var(--memory-card-line-strong);
+  stroke-width: 1.35;
+  opacity: .92;
+}
+html[data-atlas-theme] .app-shell .capture-map .is-memory-wall .memory-wall-threads path.is-muted {
+  opacity: .16;
+}
+/* 手机复用既有照片带/分页/需求上报，不添加第二套照片或滚动状态。 */
+html[data-atlas-theme] .app-shell .atlas-app-band-card {
+  border-radius: 2px;
+  background: var(--web-photo-paper);
+  border: 0;
+  box-shadow: 1px 2px 0 var(--web-photo-backing), 0 1px 2px var(--web-photo-contact);
+}
+html[data-atlas-theme] .app-shell .atlas-app-band-card.is-selected {
+  outline-color: var(--sky-focus);
+}
+html[data-atlas-theme] .app-shell .atlas-app-band-card:focus-visible {
+  outline: 2px solid var(--sky-focus);
+  outline-offset: -2px;
+}
+html[data-atlas-theme] .app-shell .atlas-app-band-photo {
+  border-radius: 0;
+  outline: 1px solid var(--web-photo-edge);
+  outline-offset: -1px;
+}
+html[data-atlas-theme] .app-shell .atlas-map-wrap:not(.is-app-landscape) .atlas-app-details {
+  border-width: 1px 0 0;
+  border-radius: 0;
+  background: transparent;
+  border-color: var(--sky-line);
+  box-shadow: none;
+}
+
+/* Portrait map and photo strip form one composition; the existing observer refits the map. */
+html[data-atlas-theme] .app-shell .atlas-map-wrap.is-app-variant:not(.is-app-landscape) .atlas-app-stage {
+  flex: none;
+  height: min(50dvh, calc(100vw + 20px));
+}
+html[data-atlas-theme] .app-shell .atlas-map-wrap.is-app-variant:not(.is-app-landscape) .atlas-app-panel { flex: 0 1 auto; }
+
+/* Shared board keeps the approved quiet linen/paper material behind real map data. */
+html[data-atlas-theme] .app-shell .capture-map .atlas-map-wrap.is-memory-wall {
+  background-color: var(--theme-page);
+  background-image: linear-gradient(var(--theme-texture-veil), var(--theme-texture-veil)), var(--theme-texture);
+  background-position: center;
+  background-size: cover;
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .capture-map .atlas-map-wrap.is-terrain-map::before,
+html[data-atlas-theme] .app-shell .capture-map .atlas-map-wrap.is-terrain-map::after {
+  content: none;
+}
+html[data-atlas-theme] .app-shell .capture-map .atlas-map-wrap.is-paper-map::before,
+html[data-atlas-theme] .app-shell .capture-map .atlas-map-wrap.is-paper-map::after {
+  opacity: .35;
+}

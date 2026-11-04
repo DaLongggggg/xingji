@@ -1,0 +1,1490 @@
+/* 2.0 阶段 B：设置页与旧版数据工具入口 */
+
+.settings-page {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+
+.settings-block {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.settings-block h2 {
+  display: flex;  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--fs-title);
+}
+
+.settings-block h3 {
+  margin: 6px 0 0;
+  font-size: var(--fs-base);
+}
+
+.settings-block p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.settings-model {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.settings-model div {
+  display: grid;
+  grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+
+/* 窄屏下标签列会挤压取值列，改为上下堆叠保证可读。 */
+@media (max-width: 620px) {
+  .settings-model div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+}
+
+.settings-model dt {
+  color: var(--muted);
+  font-size: var(--fs-base);
+}
+
+.settings-model dd {
+  margin: 0;
+  font-size: var(--fs-body);
+}
+
+.nav-secondary {
+  display: grid;
+  gap: 4px;
+}
+
+.nav-group-label {
+  padding: 12px 12px 4px;
+  color: rgba(248, 252, 255, 0.62);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+/* ===== 前端接线：AI 能力状态与数据概况 ===== */
+
+.settings-block-note {
+  margin: 0;
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+  line-height: 1.7;
+}
+
+.settings-block-note code {
+  border-radius: var(--radius-xs);
+  padding: 1px 6px;
+  background: rgba(45, 80, 110, 0.06);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-sm);
+}
+
+/* 能力清单：每行「名称 — 状态 — 说明」，状态不只靠颜色区分。 */
+.settings-capabilities {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.settings-capability {
+  display: grid;
+  grid-template-columns: minmax(96px, max-content) max-content minmax(0, 1fr);
+  align-items: baseline;
+  gap: 4px 12px;
+  border-bottom: 1px solid var(--sky-line);
+  padding-bottom: 8px;
+}
+
+.settings-capability-label {
+  font-size: var(--fs-base);
+  font-weight: 600;
+}
+
+.settings-capability-state {
+  border-radius: 999px;
+  padding: 1px 10px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.settings-capability[data-ready="true"] .settings-capability-state {
+  background: rgba(23, 104, 155, 0.12);
+  color: var(--sky-primary);
+}
+
+.settings-capability[data-ready="false"] .settings-capability-state {
+  background: rgba(45, 80, 110, 0.07);
+  color: var(--sky-ink-muted);
+}
+
+.settings-capability-note {
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+}
+
+/* 窄屏：状态与说明另起一行，不挤压名称列。 */
+@media (max-width: 620px) {
+  .settings-capability {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .settings-capability-note {
+    grid-column: 1 / -1;
+  }
+}
+
+/* 网格子项默认拉伸：按钮与列表按内容宽度排布，不要撑满整块。 */
+.settings-block > .secondary-button {
+  justify-self: start;
+}
+
+/* ===== 设置页：文本模型配置编辑（方案 A：只写非敏感字段） ===== */
+
+.settings-editor {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  background: rgba(45, 80, 110, 0.03);
+}
+
+.settings-editor-heading {
+  margin: 0;
+  font-size: var(--fs-base);
+  font-weight: 600;
+}
+
+.settings-config-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.settings-config-row {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: var(--card);
+}
+
+/* 删除是显式表达：成对标记，不靠颜色单独承担含义。 */
+.settings-config-row[data-removed="true"] {
+  border-style: dashed;
+  opacity: 0.7;
+}
+
+.settings-config-row[data-empty="true"] {
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+}
+
+.settings-config-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-config-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--fs-base);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.settings-config-flag {
+  border-radius: 999px;
+  padding: 1px 10px;
+  background: rgba(45, 80, 110, 0.08);
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.settings-config-fields {
+  display: grid;
+  gap: 10px;
+}
+
+.settings-field {
+  display: grid;
+  gap: 4px;
+  font-size: var(--fs-base);
+}
+
+.settings-field > span:first-child {
+  font-weight: 600;
+}
+
+.settings-field small {
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+.settings-field input[type="text"],
+.settings-field input:not([type]) {
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  background: var(--card);
+  color: inherit;
+  font: inherit;
+  min-width: 0;
+}
+
+.settings-field input:focus-visible {
+  outline: 2px solid var(--sky-primary);
+  outline-offset: 1px;
+}
+
+.settings-field input:disabled {
+  background: rgba(45, 80, 110, 0.05);
+  color: var(--sky-ink-muted);
+}
+
+.settings-field-inline {
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-field-group {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.settings-field-group legend {
+  padding: 0 6px;
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-sm);
+}
+
+.settings-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* 窄屏：按钮与字段堆叠，不横向溢出。 */
+@media (max-width: 620px) {
+  .settings-editor {
+    padding: 12px;
+  }
+
+  .settings-editor-actions > button,
+  .settings-editor-sync > button,
+  .settings-editor-primary > button {
+    flex: 1 1 140px;
+  }
+}
+
+/* ===== 设置内自助模型配置：两个子页（2026-09-22） ===== */
+
+.settings-model-entries {
+  display: grid;
+  gap: 10px;
+}
+
+/* 入口卡片：整块可点，命中区≥44px（DESIGN 约定）。 */
+.settings-model-entry {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 4px 12px;
+  min-height: 44px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  background: var(--card);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-model-entry:hover {
+  background: rgba(45, 80, 110, 0.04);
+}
+
+.settings-model-entry:focus-visible {
+  outline: 2px solid var(--sky-primary);
+  outline-offset: 1px;
+}
+
+.settings-model-entry-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.settings-model-entry-body strong {
+  font-size: var(--fs-body);
+}
+
+.settings-model-entry-body span {
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+}
+
+.settings-model-entry-body .settings-model-entry-provider {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-top: 4px;
+  min-width: 0;
+}
+
+.settings-model-entry-models {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.settings-model-entry-connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.settings-model-entry-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+  white-space: nowrap;
+}
+
+/* 子页页头：返回按钮与标题同一条基线，下面一条细分隔线把页头和内容分开。 */
+.settings-subpage-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--sky-line);
+  padding-bottom: 12px;
+}
+
+.settings-subpage-head h3 {
+  margin: 0;
+  font-size: var(--fs-h2);
+  letter-spacing: -0.01em;
+}
+
+.settings-provider-list {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-provider-card {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  background: var(--card);
+  box-shadow: var(--sky-shadow-soft);
+}
+
+.settings-provider-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.settings-provider-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.settings-provider-title strong {
+  font-size: var(--fs-body);
+  letter-spacing: -0.005em;
+  overflow-wrap: anywhere;
+}
+
+/* 折叠态：模型清单另起一段，用细分隔线与卡片头分开。 */
+.settings-provider-card > .settings-block-note {
+  border-top: 1px solid var(--sky-line);
+  padding-top: 10px;
+}
+
+/* 状态不只靠颜色：文字本身就说明“未配置/未验证连接”。 */
+.settings-provider-state {
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.settings-provider-state[data-tone="muted"] {
+  background: rgba(45, 80, 110, 0.08);
+  color: var(--sky-ink-muted);
+}
+
+/* 连接信号灯：绿=连通、红=失败、灰=待检测；文字说明只在读屏与悬停时出现。 */
+.settings-provider-signal {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--sky-line-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sky-line-strong) 16%, transparent);
+}
+
+.settings-provider-signal[data-state="testing"] {
+  animation: settings-signal-pulse 1.1s ease-in-out infinite;
+}
+
+.settings-provider-signal[data-state="ok"] {
+  background: #2f7d4f;
+  box-shadow: 0 0 0 3px rgba(47, 125, 79, 0.16);
+}
+
+.settings-provider-signal[data-state="error"] {
+  background: #b4452f;
+  box-shadow: 0 0 0 3px rgba(180, 69, 47, 0.16);
+}
+
+@keyframes settings-signal-pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-provider-signal[data-state="testing"] {
+    animation: none;
+  }
+}
+
+.settings-provider-count {
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-sm);
+}
+
+.settings-provider-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 表单：桌面限宽（DESIGN「桌面适度限宽」），字段之间留出分组间距。 */
+.settings-provider-form {
+  display: grid;
+  gap: 14px;
+  max-width: 720px;
+}
+
+/*
+ * 控件按 DESIGN 的表单规范统一：白底、可辨边框、内边距、圆角，
+ * 最小高度 44px、文字 16px；悬停增强边界，聚焦保留蓝色轮廓。
+ * 只作用于本页表单，不改动其它页面的输入样式。
+ */
+.settings-provider-form .settings-field {
+  gap: 6px;
+  font-size: var(--fs-base);
+}
+
+.settings-provider-form .settings-field > span:first-child {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.settings-provider-form .settings-field input[type="text"],
+.settings-provider-form .settings-field input[type="password"],
+.settings-provider-form .settings-field input:not([type]),
+.settings-provider-form .settings-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  background: var(--card);
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.35;
+  transition: border-color 160ms ease;
+}
+
+.settings-provider-form .settings-field :is(input:not([type="checkbox"]), select):hover:not(:disabled) {
+  border-color: var(--sky-line-strong);
+}
+
+.settings-provider-form .settings-field :is(input:not([type="checkbox"]), select):focus-visible {
+  border-color: var(--sky-primary);
+  outline: 2px solid var(--sky-primary);
+  outline-offset: 1px;
+}
+
+.settings-provider-form .settings-field :is(input:not([type="checkbox"]), select):disabled {
+  background: rgba(45, 80, 110, 0.05);
+  color: var(--sky-ink-muted);
+  cursor: not-allowed;
+}
+
+.settings-provider-form .settings-field ::placeholder {
+  color: var(--sky-ink-muted);
+  opacity: 1;
+}
+
+/* 勾选项：方框与文字拉开距离，方框用主题色，整行可点。 */
+.settings-provider-form .settings-field input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--sky-primary);
+}
+
+.settings-provider-form .settings-field-inline {
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.settings-provider-form .settings-field-inline > label {
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+/* 折叠按钮与「添加模型」按内容宽度排布，与页面级胶囊按钮同一语言（不再拉通整行居中）。 */
+.settings-provider-form .settings-advanced {
+  justify-items: start;
+}
+
+.settings-provider-form .settings-advanced-body {
+  display: grid;
+  width: 100%;
+  gap: 12px;
+  border-left: 2px solid var(--sky-line);
+  padding-left: 14px;
+}
+
+.settings-provider-form .settings-field-group {
+  gap: 10px;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px 12px;
+  background: rgba(45, 80, 110, 0.02);
+}
+
+.settings-provider-form .settings-field-group legend {
+  padding: 0 6px;
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.settings-provider-form .settings-field-group > .secondary-button {
+  justify-self: start;
+}
+
+/* 表单里最下方的次要按钮（移除此未保存的提供方）同样按内容宽度排布。 */
+.settings-provider-form > .secondary-button {
+  justify-self: start;
+}
+
+.settings-model-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 窄屏单列堆叠；桌面两列（模型 ID / 显示名）+ 移除按钮。 */
+.settings-model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) max-content;
+  gap: 10px;
+  align-items: end;
+}
+
+.settings-model-row > .secondary-button {
+  white-space: nowrap;
+}
+
+/* ===== 厂家模板：选厂家 → 只填密钥（2026-09-25） ===== */
+
+.settings-presets {
+  display: grid;
+  gap: 8px;
+  border: 1px dashed var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.settings-presets h4 {
+  margin: 0;
+  font-size: var(--fs-body);
+}
+
+.settings-presets > .settings-block-note {
+  margin: 0;
+}
+
+/* 操作区：主/次操作在左，服务端同步操作归到右侧一组，用细分隔线与表单分开。 */
+.settings-provider-list .settings-editor-actions {
+  align-items: center;
+  border-top: 1px solid var(--sky-line);
+  padding-top: 14px;
+}
+
+/* 同步类操作在左，主/次操作（保存、取消）统一靠右。 */
+.settings-editor-sync {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-editor-primary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: auto;
+}
+
+/* 同步类操作是工具按钮：比主/次操作轻一档，避免与「保存」抢注意力。 */
+.settings-editor-sync > .secondary-button {
+  font-weight: 500;
+}
+
+/*
+ * 短标签 + 3 秒气泡（组件 HintedButton）：气泡绝对定位，不改变按钮自身尺寸，
+ * 说明文字同时是按钮的 aria-label，读屏不依赖气泡。
+ */
+.settings-hinted {
+  position: relative;
+}
+
+.settings-hint {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  /* 绝对定位默认按按钮宽度收缩，说明会被挤成窄条；按内容宽度取到 260px。 */
+  width: max-content;
+  max-width: 260px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-xs);
+  padding: 8px 10px;
+  background: var(--card);
+  box-shadow: var(--sky-shadow-soft);
+  color: var(--sky-ink);
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: left;
+  white-space: normal;
+}
+
+/* 右侧一组的按钮：气泡向左展开，不出卡片也不出视口。 */
+.settings-provider-actions .settings-hint,
+.settings-editor-sync .settings-hint {
+  right: 0;
+  left: auto;
+}
+
+/* 破坏性操作（删除提供方、丢弃本页输入）用暖色区分，且不只靠颜色：文案本身已说明后果。 */
+.settings-page .secondary-button[data-tone="danger"] {
+  background: rgba(176, 92, 22, 0.1);
+  color: #8a4a10;
+}
+
+.settings-page .secondary-button[data-tone="danger"]:hover:not(:disabled) {
+  background: rgba(176, 92, 22, 0.16);
+}
+
+.settings-page .secondary-button[data-tone="danger"]:disabled {
+  background: rgba(45, 80, 110, 0.035);
+  color: var(--sky-ink-muted);
+}
+
+.settings-provider-delete {
+  min-width: 6.5em;
+  justify-content: center;
+}
+
+.settings-page .settings-provider-actions .settings-provider-delete[data-confirming="true"],
+html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-delete[data-confirming="true"] {
+  background: #b3261e;
+  border-color: #b3261e;
+  color: #fff;
+}
+
+.settings-page .settings-provider-actions .settings-provider-delete[data-confirming="true"]:hover:not(:disabled),
+html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-delete[data-confirming="true"]:hover:not(:disabled) {
+  background: #941f19;
+  border-color: #941f19;
+  color: #fff;
+}
+
+/* 可聚焦错误摘要：提交失败后聚焦到这里，逐项链接到字段（技能建议）。 */
+.settings-error-summary {
+  border: 1px solid rgba(176, 60, 40, 0.4);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: rgba(176, 60, 40, 0.06);
+}
+
+.settings-error-summary:focus-visible {
+  outline: 2px solid var(--sky-primary);
+  outline-offset: 2px;
+}
+
+.settings-error-summary h4 {
+  margin: 0 0 6px;
+  font-size: var(--fs-base);
+}
+
+.settings-error-summary ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+}
+
+.settings-error-summary a {
+  color: inherit;
+}
+
+.settings-confirm {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  background: var(--card);
+}
+
+.settings-confirm h4 {
+  margin: 0;
+  font-size: var(--fs-base);
+}
+
+.settings-field select {
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  background: var(--card);
+  color: inherit;
+  font: inherit;
+  min-height: 44px;
+}
+
+.settings-field input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.settings-advanced .is-open {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-model-entry,
+  .settings-advanced .is-open {
+    transition: none;
+  }
+}
+
+/* 375/390px：卡片与表单单列，避免横向溢出。 */
+@media (max-width: 620px) {
+  .settings-subpage-head {
+    flex-direction: column;
+  }
+
+  .settings-model-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* 窄屏：主/次操作占满一行，不挤在同步按钮旁边。 */
+  .settings-editor-primary {
+    margin-left: 0;
+    flex: 1 1 100%;
+  }
+
+  .settings-provider-actions > button {
+    flex: 1 1 auto;
+  }
+
+  .settings-model-row > .secondary-button {
+    justify-self: start;
+  }
+
+  /* 窄屏：同步操作单独占一行，不挤在保存/取消旁边；勾选行保持 44px 命中区。 */
+  .settings-editor-sync {
+    flex: 1 1 100%;
+    margin-left: 0;
+  }
+
+  .settings-editor-sync > .secondary-button {
+    flex: 1 1 140px;
+  }
+
+  /* 窄屏：气泡撑满整行，长说明不截断。 */
+  .settings-hint {
+    right: 0;
+    left: 0;
+    width: auto;
+    max-width: none;
+  }
+
+  .settings-provider-form .settings-field-inline {
+    min-height: 44px;
+  }
+}
+
+/* 手机模型配置：输入不触发小字号缩放，按钮与长名称可自然换行。 */
+@media (max-width: 620px) {
+  .settings-page { min-width: 0; }
+  .settings-provider-card, .settings-provider-form { min-width: 0; }
+  .settings-provider-form :is(input:not([type="checkbox"]), select, textarea) { width: 100%; min-width: 0; font-size: 16px; min-height: 44px; }
+  .settings-subpage-head { flex-direction: row; align-items: flex-start; gap: 12px; }
+  .settings-subpage-head > button { flex-shrink: 0; padding-inline: 12px; }
+  .settings-subpage-head > div { min-width: 0; }
+  .settings-provider-actions, .settings-editor-actions { flex-wrap: wrap; gap: 8px; }
+  .settings-provider-actions > button,
+  .settings-editor-actions > button,
+  .settings-editor-sync > button,
+  .settings-editor-primary > button { min-height: 44px; padding: 10px 12px; }
+  .settings-provider-head { flex-wrap: wrap; gap: 12px; }
+  .settings-provider-head :is(h3,h4,p) { overflow-wrap: anywhere; }
+  .settings-model-row { gap: 12px; padding: 12px; }
+  .settings-provider-form .settings-advanced-body { padding-inline: 12px; }
+}
+
+/* ===== 拉取可用模型（2026-09-25） ===== */
+
+.settings-discovery {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--sky-line);
+  padding-top: 10px;
+}
+
+.settings-discovery > .settings-block-note,
+.settings-discovery-panel > .settings-block-note {
+  margin: 0;
+}
+
+.settings-discovery-panel {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  background: var(--card);
+}
+
+/* 模型可能上千条：列表自己滚动，钩子行允许换行，不在窄屏横向溢出。 */
+.settings-discovery-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.settings-discovery-list > li > label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  min-height: 32px;
+  cursor: pointer;
+}
+
+.settings-discovery-label {
+  overflow-wrap: anywhere;
+}
+
+.settings-discovery-id {
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+  overflow-wrap: anywhere;
+}
+
+/* 设置中的授权项：整行可点，说明与开关相邻。 */
+.settings-permission { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--sky-line); cursor: pointer; }
+.settings-permission input { width: 20px; height: 20px; flex: 0 0 20px; margin-top: 2px; accent-color: var(--sky-primary); }
+.settings-permission span { display: grid; gap: 6px; min-width: 0; }
+.settings-permission small { color: var(--muted); line-height: 1.6; font-size: 13px; }
+.settings-privacy .wb-panel { height: auto; max-height: none; padding: 0; margin-top: 16px; }
+.settings-privacy .wb-cap-block { min-width: 0; }
+.settings-privacy .wb-cap-block summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+
+/* 设置入口固定在导航末端。 */
+.nav-settings-bottom { margin-top: auto; flex-shrink: 0; }
+.nav-settings-bottom .nav-button { width: 100%; }
+.nav-drawer.is-open .nav-settings-bottom { margin-top: 0; }
+
+.settings-dialog {
+  width: min(1040px, calc(100vw - 64px));
+  height: min(780px, calc(100dvh - 64px));
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--sky-line);
+  border-radius: 22px;
+  background: var(--sky-text-surface);
+  color: var(--ink);
+  box-shadow: 0 24px 90px rgb(20 35 50 / 22%);
+  overflow: hidden;
+}
+.settings-dialog::backdrop { background: rgb(25 35 45 / 28%); backdrop-filter: blur(3px); }
+.settings-dialog-surface { height: 100%; display: flex; flex-direction: column; }
+.settings-dialog-header { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; padding: 20px 24px 14px; }
+.settings-dialog-header h1 { margin: 0; font-size: 22px; line-height: 1.4; font-weight: 650; }
+.settings-dialog .settings-close { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); cursor: pointer; }
+.settings-dialog .settings-close:hover { background: var(--sky-bg); }
+.settings-dialog .settings-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 16px; flex: 1; min-height: 0; padding: 0 20px 20px; }
+.settings-categories { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; }
+.settings-categories button { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 10px 14px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.settings-categories button:hover { background: var(--sky-bg); }
+.settings-categories button.is-selected { background: #edf0f3; font-weight: 600; }
+.settings-categories svg { flex-shrink: 0; }
+.settings-content { min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 8px 16px 24px 12px; scrollbar-gutter: stable; scroll-padding-block: 16px; }
+.settings-content [hidden] { display: none !important; }
+.settings-dialog .settings-block { border: 0; border-radius: 0; background: transparent; box-shadow: none; padding: 0; gap: 18px; }
+.settings-dialog .settings-block h2 { font-size: 18px; line-height: 1.5; margin: 0; }
+.settings-dialog .settings-block h3 { font-size: 15px; }
+.settings-dialog .settings-block-note { font-size: 13px; line-height: 1.65; color: var(--muted); }
+.settings-dialog :is(.primary-button, .secondary-button) { min-height: 38px; border-radius: 10px; padding: 8px 13px; font-size: 13px; }
+.settings-dialog .secondary-button { background: #f2f4f6; border-color: transparent; color: var(--ink); }
+.settings-dialog .secondary-button:hover:not(:disabled) { background: #e8ecf0; }
+.settings-dialog :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) { max-width: 100%; min-width: 0; border: 1px solid var(--sky-line); border-radius: 10px; background: #f8f9fa; padding: 10px 12px; font-size: 14px; box-shadow: none; }
+.settings-dialog :is(button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--sky-primary); outline-offset: 3px; }
+.settings-dialog :is(.settings-provider-card, .settings-model-entry, .settings-confirm, .settings-discovery-panel) { border: 1px solid var(--sky-line); border-radius: 14px; box-shadow: none; background: var(--sky-text-surface); padding: 16px; }
+.settings-dialog .settings-model-entries { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.settings-dialog .settings-model-entry { min-height: 84px; }
+.settings-dialog .settings-provider-form { gap: 16px; padding: 0; }
+.settings-dialog .settings-field { gap: 7px; min-width: 0; }
+.settings-dialog .settings-provider-head { gap: 12px; flex-wrap: wrap; }
+.settings-dialog .settings-provider-title { min-width: 0; overflow-wrap: anywhere; }
+.settings-dialog .settings-advanced { border-radius: 10px; background: #f7f8fa; }
+.settings-dialog .settings-advanced > summary { padding: 12px; cursor: pointer; }
+.settings-dialog .settings-editor-actions { border-top: 1px solid var(--sky-line); padding-top: 14px; gap: 10px; flex-wrap: wrap; }
+.settings-dialog .settings-permission { padding-block: 16px; }
+.settings-dialog .settings-permission strong { font-weight: 600; font-size: 14px; }
+.settings-dialog .settings-model { gap: 0; }
+.settings-dialog .settings-model > div { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--sky-line); }
+.settings-dialog .settings-model dd { font-size: 16px; font-weight: 600; }
+.settings-dialog .wb-cap-block { padding: 14px; border-radius: 12px; box-shadow: none; }
+.settings-dialog .wb-panel-head { padding: 0 0 14px; }
+.settings-dialog .settings-privacy .wb-panel { overflow: visible; }
+@media (max-width: 700px) {
+  .settings-dialog { width: calc(100vw - 16px); height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px); border-radius: 18px; }
+  .settings-dialog-header { padding: 14px 16px 8px; }
+  .settings-dialog-header h1 { font-size: 20px; }
+  .settings-dialog .settings-close { width: 44px; height: 44px; }
+  .settings-dialog .settings-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); padding: 0 12px 12px; gap: 14px; }
+  .settings-categories { flex-direction: row; overflow-x: auto; gap: 4px; padding: 0 0 6px; }
+  .settings-categories button { min-height: 44px; flex-shrink: 0; padding: 8px 12px; gap: 6px; font-size: 13px; }
+  .settings-categories svg { width: 16px; height: 16px; }
+  .settings-content { padding: 4px 4px 20px; scrollbar-gutter: auto; }
+  .settings-dialog :is(.primary-button, .secondary-button) { min-height: 44px; }
+  .settings-dialog :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) { font-size: 16px; }
+  .settings-dialog :is(.settings-provider-card, .settings-model-entry) { padding: 12px; }
+  .settings-dialog .settings-model-row { flex-wrap: wrap; }
+}
+/* 未重启的开发预览可能仍在左下显示调试入口，给设置留出点击空间。 */
+body:has(nextjs-portal) .nav-settings-bottom { margin-bottom: 44px; }
+
+/* Skill center uses the same reading surfaces, colors and form rhythm as settings. */
+.skill-center-tabs, .skill-methods { display: flex; flex-wrap: wrap; gap: 6px; }
+.skill-center-tabs button, .skill-methods button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--sky-line); border-radius: 10px; background: var(--sky-text-surface); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+.skill-center-tabs button[aria-pressed="true"], .skill-methods button[aria-pressed="true"] { color: var(--sky-primary); border-color: var(--sky-primary); background: var(--sky-bg); font-weight: 600; }
+.skill-center-tabs button:disabled, .skill-methods button:disabled { opacity: .55; cursor: not-allowed; }
+.skill-center-tabs button:focus-visible, .skill-methods button:focus-visible, .skill-field input:focus-visible, .skill-field textarea:focus-visible, .skill-field select:focus-visible, .skill-content-preview summary:focus-visible { outline: 2px solid var(--sky-primary); outline-offset: 3px; }
+.skill-installer, .skill-import-form, .skill-market, .skill-preview, .skill-installed-panel { display: grid; gap: 14px; min-width: 0; }
+.skill-installer[hidden], .skill-installed-panel[hidden] { display: none; }
+.skill-remark-form { display: grid; gap: 12px; margin-bottom: 20px; }
+.skill-remark-form .skill-field { display: grid; gap: 8px; }
+.skill-remark-form input { width: 100%; min-width: 0; font-size: 16px; }
+.skill-remark-form small { color: var(--muted); line-height: 1.6; }
+.skill-remark-form button { justify-self: start; min-height: 44px; }
+.skill-field { display: grid; gap: 6px; color: var(--ink); font-size: 14px; min-width: 0; }
+.skill-field input, .skill-field textarea, .skill-field select { width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid var(--sky-line); border-radius: 10px; background: var(--sky-text-surface); color: var(--ink); font: inherit; }
+.skill-field textarea { resize: vertical; line-height: 1.6; }
+.skill-field small, .skill-market small, .skill-preview-source { color: var(--muted); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.skill-field > label { display: inline-flex; align-items: center; gap: 6px; }
+.skill-market-filters { display: grid; grid-template-columns: minmax(0, 1fr) 140px; gap: 12px; }
+.skill-market-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; }
+.skill-market-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.skill-market h3, .skill-preview h3 { margin: 0; color: var(--ink); font-size: 16px; line-height: 1.5; }
+.skill-market p { margin: 0; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
+.skill-category { padding: 3px 8px; border-radius: 8px; background: var(--sky-bg); color: var(--sky-primary); font-size: 12px; }
+.skill-preview-item { gap: 12px; }
+.skill-preview-source { margin: 0; }
+.skill-conflict, .skill-import-warnings { padding: 10px 14px; border: 1px solid var(--sky-line); border-radius: 10px; background: var(--sky-bg); font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+.skill-import-warnings { padding-left: 30px; margin: 0; }
+.skill-content-preview { min-width: 0; border: 1px solid var(--sky-line); border-radius: 10px; overflow: hidden; }
+.skill-content-preview summary { display: flex; align-items: center; min-height: 44px; padding: 8px 12px; font-size: 13px; background: var(--sky-bg); cursor: pointer; overflow-wrap: anywhere; }
+.skill-content-preview pre { max-height: 320px; overflow: auto; margin: 0; padding: 12px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--sky-text-surface); color: var(--ink); }
+.skill-install-error { border-left: 3px solid var(--sky-primary); padding: 10px 12px; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .skill-market-filters { grid-template-columns: minmax(0, 1fr); }
+  .skill-field input, .skill-field textarea, .skill-field select { font-size: 16px; }
+  .skill-center-tabs button { flex: 1; padding-inline: 8px; }
+}
+
+/* Skill 管理：真实信息 + 来源 + 启停/移除/恢复。桌面就地展开详情，手机单列。 */
+.settings-skills .settings-skill-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 12px; }
+.settings-skill-item { display: grid; gap: 8px; padding: 14px 16px; border: 1px solid var(--sky-line); border-radius: 14px; background: var(--sky-text-surface); min-width: 0; }
+.settings-skill-item[data-state="disabled"] { background: #f7f8fa; }
+.settings-skill-item[data-available="false"] .settings-skill-available { color: var(--muted); }
+.settings-skill-head { min-width: 0; }
+/* 名称与展开箭头同排；备注和不可用原因按实际内容追加，不预留空行。 */
+.settings-skill-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-auto-rows: min-content; align-items: center; gap: 4px 10px; width: 100%; min-height: 44px; padding: 4px 2px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.settings-skill-name { grid-column: 1; grid-row: 1; }
+.settings-skill-remark { grid-column: 1 / -1; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.settings-skill-available { grid-column: 1 / -1; text-align: left; }
+.settings-skill-summary > svg { grid-column: 2; grid-row: 1; }
+.settings-skill-summary:hover { background: var(--sky-bg); }
+.settings-skill-summary svg { transition: transform 160ms ease; }
+.settings-skill-summary svg.is-open { transform: rotate(180deg); }
+.settings-skill-name { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+.settings-skill-available { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.settings-skill-summary-text { margin: 0; font-size: 13px; line-height: 1.65; color: var(--muted); overflow-wrap: anywhere; }
+.settings-skill-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.settings-skill-actions .secondary-button { display: inline-flex; align-items: center; gap: 6px; }
+/* 图标按钮：图标是装饰（aria-hidden），可读名称在 aria-label/title 上；不改变布局尺寸。 */
+.settings-skill-icon { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 1px solid transparent; border-radius: 10px; background: #f2f4f6; color: var(--ink); cursor: pointer; }
+.settings-skill-icon:hover:not(:disabled) { background: #e8ecf0; }
+.settings-skill-icon:active:not(:disabled) { background: #dde3e9; }
+.settings-skill-icon:disabled { opacity: 0.5; cursor: not-allowed; }
+.settings-skill-icon[data-tone="danger"]:hover:not(:disabled) { background: #fdecea; color: #b3261e; }
+/* 滑动开关：原生 button + role=switch；轨道/滑块位移只做反馈，状态由 aria-checked 决定。 */
+.settings-skill-toggle { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
+.settings-switch-label { font-size: 12px; color: var(--muted); }
+.settings-switch { position: relative; flex-shrink: 0; width: 46px; height: 26px; padding: 0; border: 0; border-radius: 999px; background: #d7dce1; cursor: pointer; transition: background 140ms ease; }
+.settings-switch[aria-checked="true"] { background: var(--sky-primary); }
+.settings-switch:disabled { opacity: 0.5; cursor: not-allowed; }
+.settings-switch-knob { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgb(20 30 40 / 22%); transition: transform 140ms ease; }
+.settings-switch[aria-checked="true"] .settings-switch-knob { transform: translateX(20px); }
+@media (prefers-reduced-motion: reduce) {
+  .settings-switch, .settings-switch-knob { transition: none; }
+}
+.settings-skill-confirm { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--sky-line); border-radius: 12px; background: #fdf6f2; }
+.settings-skill-confirm p { margin: 0; font-size: 13px; line-height: 1.6; }
+.settings-skill-detail { border-top: 1px solid var(--sky-line); padding-top: 10px; }
+.settings-skill-detail dl { display: grid; gap: 8px; margin: 0; }
+.settings-skill-detail dl > div { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 10px; font-size: 13px; line-height: 1.6; }
+.settings-skill-detail dt { color: var(--muted); }
+.settings-skill-detail dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.settings-skill-path { display: grid; gap: 4px; }
+.settings-skill-path code { display: block; padding: 4px 6px; border-radius: 6px; background: #f2f4f6; font-size: 12px; overflow-wrap: anywhere; word-break: break-word; }
+.settings-skill-removed { position: relative; border: 1px solid var(--sky-line); border-radius: 10px; padding: 6px 10px; background: #f7f8fa; }
+.settings-skill-removed > summary { min-height: 36px; display: flex; align-items: center; cursor: pointer; font-size: 14px; }
+.settings-skill-removed[open] > summary { padding-right: 150px; }
+.settings-skills .settings-skill-removed .settings-skill-list { margin: 4px 0 0; gap: 0; border-top: 1px solid var(--sky-line); }
+.settings-skill-trash-toolbar { position: absolute; top: 6px; right: 10px; display: flex; align-items: center; gap: 8px; }
+.settings-skill-trash-check { display: flex; align-items: center; gap: 8px; min-height: 36px; min-width: 0; cursor: pointer; }
+.settings-skill-trash-check input { width: 18px; height: 18px; flex: 0 0 18px; margin: 0; accent-color: var(--sky-primary); }
+.settings-skill-trash-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 8px; min-width: 0; padding: 2px 0; }
+.settings-skill-trash-item + .settings-skill-trash-item { border-top: 1px solid var(--sky-line); }
+.settings-skill-trash-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 600; }
+.settings-skill-trash-actions { display: flex; align-items: center; gap: 4px; }
+.settings-skill-trash-actions .settings-skill-icon { width: 32px; height: 32px; border-radius: 8px; }
+.settings-skill-trash-error { grid-column: 1 / -1; margin: 2px 0 4px; }
+.settings-skill-purge { color: #a53b46; }
+.settings-skill-purge:hover:not(:disabled) { background: #fff0f2; border-color: #d8a1aa; }
+.settings-skill-delete-list { display: grid; gap: 12px; max-height: min(40vh, 360px); overflow: auto; padding: 4px 0 4px 20px; }
+.settings-skill-delete-list li { overflow-wrap: anywhere; }
+.settings-skill-delete-list code, .settings-skill-delete-list span { display: block; font-size: 13px; margin-top: 4px; }
+.settings-skill-opened { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; }
+.settings-skill-opened code { padding: 4px 6px; border-radius: 6px; background: #f2f4f6; overflow-wrap: anywhere; word-break: break-word; min-width: 0; }
+@media (max-width: 700px) {
+  .settings-skill-detail dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  /* 触屏：图标按钮与开关都到 44px 级点击区，开关换成一行（标签在左、开关在右）。 */
+  .settings-skill-icon { width: 44px; height: 44px; }
+  .settings-switch { width: 52px; height: 30px; }
+  .settings-switch-knob { top: 3px; left: 3px; width: 24px; height: 24px; }
+  .settings-switch[aria-checked="true"] .settings-switch-knob { transform: translateX(22px); }
+  .settings-skill-toggle { margin-left: 0; width: 100%; justify-content: space-between; }
+}
+@media (max-width: 700px), (pointer: coarse) {
+  .settings-skill-removed > summary, .settings-skill-trash-check { min-height: 44px; }
+  .settings-skill-trash-actions .settings-skill-icon { width: 44px; height: 44px; }
+  .settings-skill-trash-toolbar .settings-skill-purge { min-height: 44px; }
+}
+
+/* 地图显示风格：设置里的两个真实选项，不引入第二套地图状态。 */
+.settings-map-style-group {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  border: 0;
+}
+.settings-map-style {
+  display: grid;
+  grid-template-columns: 20px 58px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--sky-line);
+  border-radius: 12px;
+  background: #fffdf8;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+.settings-map-style:hover {
+  border-color: #b9a98d;
+  background: #fbf6ea;
+}
+.settings-map-style[data-selected="true"] {
+  border-color: #7c8f7c;
+  background: #f4f7f0;
+  box-shadow: 0 0 0 2px #7c8f7c1c;
+}
+.settings-map-style:focus-within {
+  outline: 2px solid #486653;
+  outline-offset: 2px;
+}
+.settings-map-style input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #486653;
+}
+.settings-map-style-group:disabled .settings-map-style {
+  cursor: default;
+  opacity: 0.72;
+}
+.settings-map-style-swatch {
+  width: 58px;
+  height: 42px;
+  border-radius: 7px;
+  border: 1px solid #8c9a8c66;
+  box-shadow: inset 0 0 0 1px #fff8;
+}
+.settings-map-style-swatch.is-terrain {
+  background:
+    radial-gradient(ellipse at 26% 72%, #b7c3a2 0 24%, transparent 25%),
+    radial-gradient(ellipse at 70% 34%, #e4d5b6 0 25%, transparent 26%),
+    radial-gradient(ellipse at 58% 74%, #8fb2a6 0 22%, transparent 23%),
+    linear-gradient(145deg, #d8e1ce 0%, #efe4cb 55%, #b8c9bd 100%);
+}
+.settings-map-style-swatch.is-paper {
+  background-image:
+    repeating-linear-gradient(112deg, #a58b6840 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(28deg, #b09a7a33 0 1px, transparent 1px 11px),
+    linear-gradient(135deg, #fbf5e7, #eee0c7);
+}
+.settings-map-style-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.settings-map-style-copy strong {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 650;
+}
+.settings-map-style-copy small {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+/* 记忆复用工作台面板：外层 settings-block 已提供卡片内边距与边框。 */
+.settings-block > .wb-capabilities {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  overflow: visible;
+}
+
+.settings-memory-points {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 20px;
+  list-style: disc;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.settings-memory-points li::marker {
+  color: var(--sky-primary);
+}
+
+.settings-memory .wb-empty-note {
+  border: 1px dashed var(--sky-line);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+}
+
+/* 原生菜单与键盘行为保留；箭头在同一网格单元内，避开右侧边缘。 */
+.settings-presets .settings-field > select:not([multiple]) {
+  grid-area: 2 / 1;
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 44px;
+  padding-inline-end: 44px;
+  cursor: pointer;
+}
+
+.settings-presets .settings-field::after {
+  content: "";
+  grid-area: 2 / 1;
+  place-self: center end;
+  width: 8px;
+  height: 8px;
+  margin-inline-end: 18px;
+  border-right: 1.5px solid var(--sky-ink-muted);
+  border-bottom: 1.5px solid var(--sky-ink-muted);
+  transform: translateY(-2px) rotate(45deg);
+  pointer-events: none;
+}
+
+.settings-presets .settings-field > select:not([multiple]):focus-visible {
+  border-color: var(--sky-focus);
+  outline: 2px solid var(--sky-focus);
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+.settings-presets .settings-field > select:not([multiple]):disabled {
+  cursor: not-allowed;
+}
+
+.settings-presets .settings-field:has(> select:disabled)::after {
+  opacity: 0.45;
+}
+
+/* Approved shared Hallmark UI: one continuous settings sheet. Native storage attributes retain their runtime role. */
+html[data-atlas-theme] .app-shell .settings-dialog {
+  width: min(1040px, calc(100% - 64px));
+  border: 0;
+  border-radius: 8px;
+  background: var(--theme-canvas);
+  box-shadow: var(--web-shadow-overlay, var(--sky-shadow));
+}
+html[data-atlas-theme] .app-shell .settings-dialog-header {
+  min-height: 64px;
+  margin-inline: 24px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--sky-line);
+}
+html[data-atlas-theme] .app-shell .settings-dialog-header h1 {
+  color: var(--sky-ink);
+  font-size: var(--fs-h2);
+  font-weight: 600;
+}
+html[data-atlas-theme] .app-shell .settings-dialog .settings-close {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--web-radius-control, 6px);
+}
+html[data-atlas-theme] .app-shell .settings-dialog .settings-layout {
+  grid-template-columns: 152px minmax(0, 1fr);
+  gap: 32px;
+  padding: 24px 32px 32px;
+}
+html[data-atlas-theme] .app-shell .settings-categories {
+  padding-top: 0;
+  gap: 8px;
+  background: none;
+}
+html[data-atlas-theme] .app-shell .settings-categories button {
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: var(--web-radius-control, 6px);
+  font-size: var(--fs-base);
+}
+html[data-atlas-theme] .app-shell .settings-categories button.is-selected {
+  color: var(--sky-primary);
+  background: color-mix(in srgb, var(--sky-primary) 9%, var(--theme-canvas));
+  font-weight: 550;
+}
+html[data-atlas-theme] .app-shell .settings-content {
+  padding: 8px 12px 24px 0;
+  background: var(--theme-canvas);
+}
+html[data-atlas-theme] .app-shell .settings-dialog .settings-block {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  gap: 12px;
+}
+html[data-atlas-theme] .app-shell .settings-dialog .settings-block h2 {
+  color: var(--sky-ink);
+  font-size: var(--fs-title);
+  font-weight: 600;
+}
+html[data-atlas-theme] .app-shell .settings-dialog .settings-block-note {
+  font-size: var(--fs-base);
+  line-height: 1.7;
+}
+html[data-atlas-theme] .app-shell .settings-dialog :is(.primary-button, .secondary-button) {
+  min-height: 40px;
+  border-radius: var(--web-radius-control, 6px);
+  font-size: var(--fs-base);
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .settings-dialog .secondary-button {
+  border-color: var(--sky-line);
+  background: none;
+}
+html[data-atlas-theme] .app-shell .settings-dialog :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  min-height: 40px;
+  border-radius: var(--web-radius-control, 6px);
+  border-color: var(--sky-line-strong);
+  background-color: var(--theme-surface-strong);
+  color: var(--sky-ink);
+  font-size: var(--fs-base);
+}
+html[data-atlas-theme] .app-shell .settings-dialog :is(.settings-editor, .settings-presets, .settings-provider-card) {
+  border: 0;
+  border-top: 1px solid var(--sky-line);
+  border-radius: 0;
+  padding: 20px 0;
+  background: none;
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .settings-dialog :is(.settings-model-entry, .settings-confirm, .settings-discovery-panel, .settings-advanced) {
+  border-radius: var(--web-radius-control, 6px);
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .settings-dialog .settings-model dd {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+html[data-atlas-theme] .app-shell .settings-map-style-group {
+  margin-top: 4px;
+  gap: 12px;
+}
+html[data-atlas-theme] .app-shell .settings-map-style {
+  grid-template-columns: 20px 52px minmax(0, 1fr);
+  min-height: 88px;
+  padding: 16px;
+  gap: 16px;
+  border-radius: var(--web-radius-control, 6px);
+  background: var(--theme-canvas);
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .settings-map-style[data-selected="true"] {
+  border-color: var(--sky-primary);
+  background: color-mix(in srgb, var(--sky-primary) 7%, var(--theme-canvas));
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .settings-map-style input {
+  min-height: 18px;
+  height: 18px;
+  padding: 0;
+  accent-color: var(--sky-primary);
+}
+html[data-atlas-theme] .app-shell .settings-map-style-swatch {
+  width: 52px;
+  height: 52px;
+  border-radius: 4px;
+  border-color: var(--sky-line);
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .settings-map-style-swatch.is-terrain {
+  background: var(--theme-side-panel) url("/textures/ne1-china-relief.webp") center / cover no-repeat;
+}
+html[data-atlas-theme] .app-shell .settings-map-style-swatch.is-paper {
+  background: var(--theme-surface) url("/textures/paper-cotton.webp") center / cover no-repeat;
+}
+html[data-atlas-theme] .app-shell .settings-map-style-copy strong {
+  font-size: var(--fs-base);
+  font-weight: 550;
+}
+html[data-atlas-theme] .app-shell .settings-map-style-copy small {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+@media (max-width: 700px) {
+  html[data-atlas-theme] .app-shell .settings-dialog {
+    width: calc(100% - 16px);
+    border-radius: 8px;
+  }
+  html[data-atlas-theme] .app-shell .settings-dialog-header {
+    min-height: 64px;
+    margin-inline: 16px;
+    padding: 8px 0;
+  }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px 12px 12px;
+  }
+  html[data-atlas-theme] .app-shell .settings-categories {
+    padding-bottom: 4px;
+    gap: 4px;
+  }
+  html[data-atlas-theme] .app-shell .settings-content {
+    padding: 4px 4px 20px;
+  }
+  html[data-atlas-theme] .app-shell .settings-map-style {
+    grid-template-columns: 20px 44px minmax(0, 1fr);
+    padding: 12px;
+    gap: 10px;
+  }
+  html[data-atlas-theme] .app-shell .settings-map-style-swatch {
+    width: 44px;
+    height: 44px;
+  }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.primary-button, .secondary-button) {
+    min-height: 44px;
+  }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+    font-size: 16px;
+    min-height: 44px;
+  }
+}

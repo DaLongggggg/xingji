@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f5f7" />
+  <meta name="color-scheme" content="light" />
+  <title>行迹</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="server-config.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="head"><img src="icon.svg" width="40" height="40" alt="" aria-hidden="true" /><span>行迹<small>XINGJI</small></span></header>
+    <section class="login-paper" aria-labelledby="login-title">
+      <header class="welcome"><h1 id="login-title">把旅途，留在身边。</h1><p>登录你的行迹账户</p></header>
+      <section id="connection" class="connection" aria-label="服务器连接">
+        <label for="server-input">服务器地址</label>
+        <div class="server-row"><input id="server-input" type="url" placeholder="http://192.168.x.x:3111" autocomplete="off" /><button id="btn-health" type="button" title="连接此行迹服务器" disabled>连接</button></div>
+        <p id="status-line" class="hint" role="status"></p>
+      </section>
+      <form id="login-form">
+        <label for="username">用户名</label><input id="username" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+        <label for="password">密码</label>
+        <div class="password-row"><input id="password" type="password" autocomplete="current-password" required /><button id="password-toggle" type="button" aria-label="显示密码" title="显示密码" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+        <div class="consent-row"><label><input id="privacy-agreed" type="checkbox" required aria-describedby="privacy-note" />我已阅读并同意</label><button id="privacy-open" type="button" class="text-link" aria-haspopup="dialog" title="阅读协议并选择AI与图片许可">《隐私协议》</button><p id="privacy-note" class="consent-note"></p></div>
+        <button id="btn-login" class="primary" type="submit" disabled>登录行迹</button>
+      </form>
+    </section>
+  </main>
+  <dialog id="privacy-dialog" aria-labelledby="privacy-title">
+    <header class="privacy-header"><h2 id="privacy-title">隐私协议</h2><button id="privacy-close" type="button" aria-label="关闭隐私协议" title="关闭隐私协议" autofocus>×</button></header>
+    <div class="privacy-content">
+      <div id="privacy-introduction"></div>
+      <fieldset><legend>选择允许使用的功能</legend>
+        <label class="permission"><input id="privacy-ai" type="checkbox" /><span><strong>允许使用 AI</strong><small>将本次任务中输入或选择的内容发送给所选模型。</small></span></label>
+        <label class="permission"><input id="privacy-images" type="checkbox" /><span><strong>允许生成和修改图片</strong><small>还需开启 AI，并配置图片模型。</small></span></label>
+      </fieldset>
+      <p id="privacy-optional"></p><p id="privacy-withdraw"></p>
+    </div>
+    <footer><button id="privacy-confirm" type="button" class="primary">同意协议并确认选择</button></footer>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>

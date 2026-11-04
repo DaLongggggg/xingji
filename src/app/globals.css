@@ -1,0 +1,20 @@
+@import "leaflet/dist/leaflet.css";
+@import "tailwindcss";
+@import "../styles/base.css";
+@import "../styles/journal.css";
+@import "../styles/notebook.css";
+@import "../styles/capture.css";
+@import "../styles/atlas.css";
+@import "../styles/atlas-natural.css";
+@import "../styles/settings.css";
+@import "../styles/workbench.css";
+@import "../styles/photos.css";
+@import "../styles/responsive.css";
+
+@import "../styles/visual-system.css";
+@import "../styles/desktop-density.css";
+@import "../styles/site-theme.css";
+@import "../styles/auth.css";
+
+@import "../styles/web-ui.css";
+@import "../styles/workbench-composer.css";

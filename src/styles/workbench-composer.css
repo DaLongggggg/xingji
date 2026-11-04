@@ -1,0 +1,308 @@
+/* Shared white writing surface; all queue, sizing and native touch behavior is retained. */
+html[data-atlas-theme] .app-shell .wb {
+  --composer-paper: var(--theme-surface-strong);
+  --composer-edge: var(--sky-line-strong);
+  --composer-hover: color-mix(in srgb, var(--sky-primary) 7%, var(--composer-paper));
+  --composer-radius: 18px;
+  --composer-control-radius: var(--web-radius-control, 6px);
+  --composer-tool-height: 44px;
+  --composer-space-1: 4px;
+  --composer-space-2: 8px;
+  --composer-space-3: 12px;
+  --composer-text-size: 16px;
+  --composer-text-inset: 2px;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer {
+  gap: var(--composer-space-2);
+  padding: var(--composer-space-3);
+  border: 1px solid var(--composer-edge);
+  border-radius: var(--composer-radius);
+  background: var(--composer-paper);
+  box-shadow: none;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: border-color 180ms ease, outline-color 180ms ease;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer:focus-within {
+  border-color: var(--sky-primary);
+  outline-color: transparent;
+  box-shadow: none;
+}
+
+/* Model controls own their focus cue; typing keeps the original composer cue. */
+html[data-atlas-theme] .app-shell .wb-composer:has(:is(.wb-settings, .wb-image-tools):focus-within) {
+  border-color: var(--composer-edge);
+  outline-color: transparent;
+  box-shadow: none;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer:has(textarea:focus-visible),
+html[data-atlas-theme] .app-shell .wb-composer.is-focus {
+  outline-color: var(--sky-primary);
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-input-row textarea {
+  min-height: calc(1.5em + var(--composer-space-1));
+  max-height: min(calc(12em + var(--composer-space-1) + 2px), 28dvh);
+  padding: var(--composer-text-inset) var(--composer-space-1);
+  color: var(--sky-ink);
+  font-size: var(--composer-text-size);
+  line-height: 1.5;
+  border-color: transparent;
+  outline-color: transparent;
+  caret-color: var(--sky-primary);
+  transition: none;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-input-row textarea:focus-visible {
+  outline-color: transparent;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-input-row textarea::placeholder {
+  color: var(--sky-ink-muted);
+  opacity: 1;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-input-actions {
+  padding-top: var(--composer-space-1);
+  gap: var(--composer-space-2);
+}
+
+html[data-atlas-theme] .app-shell .wb-composer :is(.wb-input-left, .wb-input-right) {
+  gap: var(--composer-space-1);
+}
+
+html[data-atlas-theme] .app-shell .wb-composer :is(.wb-actions-menu, .wb-settings, .wb-image-tools, .wb-image-chip) > summary {
+  min-height: var(--composer-tool-height);
+  border: 1px solid transparent;
+  border-radius: var(--composer-control-radius);
+  padding-inline: var(--composer-space-2);
+  background: transparent;
+  box-shadow: none;
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+  font-weight: 400;
+  letter-spacing: normal;
+  transition: none;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer :is(.wb-settings, .wb-image-tools, .wb-image-chip)[open] > summary {
+  background: var(--composer-hover);
+  border-color: transparent;
+  color: var(--sky-primary);
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-composer-information {
+  display: grid;
+  gap: var(--composer-space-2);
+  margin-top: var(--composer-space-3);
+  min-width: 0;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-composer-information:empty {
+  display: none;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-composer-information > p {
+  flex: none;
+  margin: 0;
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer :is(button, summary):focus-visible {
+  outline: 2px solid var(--sky-primary);
+  outline-offset: 2px;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer :is(button, input):disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-send {
+  /* Inset the painted circle without shrinking the existing hit target. */
+  padding: 0;
+  border: 4px solid transparent;
+  border-radius: 50%;
+  background: var(--sky-primary) content-box;
+  color: var(--sky-on-primary);
+  box-shadow: none;
+  transition: none;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-send--cancel > svg {
+  width: 14px;
+  height: 14px;
+}
+
+html[data-atlas-theme] .app-shell .wb-composer .wb-send:active:not(:disabled),
+html[data-atlas-theme] .app-shell .wb-composer.is-active .wb-send {
+  background: var(--sky-primary-hover) content-box;
+  border-color: transparent;
+}
+
+@media (hover: hover) {
+  html[data-atlas-theme] .app-shell .wb-composer :is(.wb-actions-menu, .wb-settings, .wb-image-tools, .wb-image-chip) > summary:hover,
+  html[data-atlas-theme] .app-shell .wb-composer.is-hover .wb-image-chip > summary {
+    background: var(--composer-hover);
+    border-color: transparent;
+  }
+
+  html[data-atlas-theme] .app-shell .wb-composer .wb-send:hover:not(:disabled) {
+    background: var(--sky-primary-hover) content-box;
+    border-color: transparent;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-atlas-theme] .app-shell .wb-composer {
+    padding: 8px 10px;
+  }
+
+  html[data-atlas-theme] .app-shell .wb-composer .wb-input-actions { gap: 4px; }
+  html[data-atlas-theme] .app-shell .wb-composer .wb-settings > summary { max-width: min(132px, 31vw); padding-inline: 4px; gap: 4px; }
+  html[data-atlas-theme] .app-shell .wb-composer .wb-send-now { min-width: 44px; padding-inline: 4px; font-size: 12px; }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-atlas-theme] .app-shell .wb-composer :is(button, summary, textarea) {
+    transition: none;
+  }
+}
+
+@media (pointer: coarse) and (max-height: 540px) {
+  html[data-atlas-theme] .app-shell .wb-composer .wb-input-row textarea { max-height: calc(3em + var(--composer-space-1) + 2px); }
+}
+
+/* One toolbar row; image parameters stay inside their single disclosure. */
+html[data-atlas-theme] .app-shell .wb-composer .wb-input-row { min-width: 0; width: 100%; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-input-actions {
+  flex-wrap: nowrap;
+  min-width: 0;
+  width: 100%;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-input-left {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-input-right {
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  width: auto;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-settings {
+  min-width: 44px;
+  flex: 0 1 auto;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-settings > summary {
+  min-width: 0;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-settings > summary > span {
+  min-width: 0;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools {
+  position: static;
+  flex: none;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools > summary {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-inline: 8px;
+  list-style: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools > summary::-webkit-details-marker { display: none; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools > summary > svg { flex: none; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools[data-active="true"] > summary {
+  color: var(--sky-accent-lavender);
+  background: color-mix(in srgb, var(--sky-accent-lavender) 9%, var(--composer-paper));
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools > summary[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
+html[data-atlas-theme] .app-shell .wb-composer:has(.wb-image-tools[open]) { z-index: 2; isolation: isolate; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools-panel {
+  position: absolute;
+  z-index: 60;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: min(360px, 100%);
+  max-height: min(460px, calc(100dvh - var(--app-topbar-h, 56px) - 120px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sky-line-strong) transparent;
+  padding: 8px 14px 12px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--composer-paper);
+  color: var(--sky-ink);
+  box-shadow: var(--web-shadow-overlay, 0 8px 28px rgb(20 40 60 / 14%));
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 4px;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools-head > strong { font-size: 16px; font-weight: 600; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools-head > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 6px;
+  background: transparent;
+  color: var(--sky-ink-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-chip { border-top: 1px solid var(--sky-line); }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-chip > summary {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  min-height: 48px;
+  padding-inline: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--sky-ink);
+  font-size: 14px;
+}
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-chip > summary .wb-image-field-label { flex: none; color: var(--sky-ink-muted); }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-chip > summary .wb-image-field-value { margin-left: auto; text-align: right; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-chip > summary > svg { width: 14px; height: 14px; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-chip[open] > summary { color: var(--sky-primary); background: transparent; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-chip-panel > button { min-height: 44px; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-chip-panel > button > strong { font-size: 14px; font-weight: 500; white-space: normal; overflow-wrap: anywhere; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-format-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+html[data-atlas-theme] .app-shell .wb-composer .wb-ratio-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+html[data-atlas-theme] .app-shell .wb-composer .wb-style-groups { max-height: none; overflow: visible; padding-right: 0; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-style-list > button { min-height: 44px; border-radius: 8px; }
+html[data-atlas-theme] .app-shell .wb-composer .wb-image-chip-note { max-width: none; padding: 8px 0; font-size: 13px; }
+html[data-atlas-theme] .app-shell[data-native-storage] .wb-composer .wb-image-tools > summary { min-height: 48px; }
+
+@media (max-width: 360px) {
+  html[data-atlas-theme] .app-shell .wb-composer .wb-image-tools > summary { gap: 4px; padding-inline: 6px; }
+  html[data-atlas-theme] .app-shell .wb-composer:has(.wb-send-now) .wb-image-tools > summary { width: 44px; justify-content: center; padding-inline: 0; }
+  html[data-atlas-theme] .app-shell .wb-composer:has(.wb-send-now) .wb-image-tools > summary > :is(span, svg:last-child) { display: none; }
+}

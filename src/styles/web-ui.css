@@ -1,0 +1,1020 @@
+/* Shared Web/App presentation. Map materials and memory-wall tokens stay in their existing scope. */
+:root {
+  --web-font-ui: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --web-font-note: "Songti SC", "STSong", "SimSun", serif;
+  --web-radius-control: 6px;
+  --web-photo-paper: #fffdf6;
+  --web-photo-edge: rgb(62 53 39 / 13%);
+  --web-photo-contact: rgb(62 53 39 / 15%);
+  --web-photo-ambient: rgb(62 53 39 / 10%);
+  --web-shadow-overlay: 0 12px 32px rgb(37 38 30 / 18%);
+  --web-nav-ink: #f4eddf;
+  --web-nav-muted: #c7cebf;
+  --web-nav-hover: #344c3f;
+  --web-content-width: 1520px;
+  --web-nav-hit: 44px;
+  --web-nav-icon: 20px;
+  --web-nav-line: rgb(244 237 223 / 14%);
+  --web-photo-backing: #b8c5b1;
+}
+
+/* Reuse the existing runtime marker. Web and App share the same visual language; native storage markers keep their original role. */
+@media screen {
+  html:has(.app-shell),
+  html:has(.app-shell) body {
+    overflow-x: clip;
+  }
+  html[data-atlas-theme] .app-shell {
+    --nav-rail-w: 64px;
+    --fs-base: 14px;
+    --fs-body: 15px;
+    --radius-xs: var(--web-radius-control);
+    --radius-sm: var(--web-radius-control);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --sky-shadow: var(--web-shadow-overlay);
+    --sky-shadow-soft: 0 1px 3px var(--web-photo-ambient);
+    font-family: var(--web-font-ui);
+    letter-spacing: 0;
+    background: var(--theme-canvas);
+    color: var(--sky-ink);
+    scrollbar-color: var(--sky-line-strong) transparent;
+    caret-color: var(--sky-primary);
+  }
+  html[data-atlas-theme] .app-shell ::selection {
+    background: var(--sky-teal-soft);
+    color: var(--sky-ink);
+  }
+  html[data-atlas-theme] .app-shell :where(:focus-visible) {
+    outline: 2px solid var(--sky-focus);
+    outline-offset: 2px;
+  }
+  html[data-atlas-theme] .app-shell .app-main {
+    max-width: var(--web-content-width);
+    background: var(--theme-canvas);
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer {
+    padding: 20px 12px 16px;
+    gap: 20px;
+    background: var(--sky-nav);
+    border-right: 0;
+    color: var(--web-nav-ink);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer-head {
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer-head strong {
+    font-size: var(--fs-h2);
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--web-nav-ink);
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer-brand {
+    width: var(--web-nav-hit);
+    height: var(--web-nav-hit);
+    min-width: var(--web-nav-hit);
+    min-height: var(--web-nav-hit);
+    border-radius: var(--web-radius-control);
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer-brand .brand-mark {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--web-radius-control);
+    background: url("/icon.svg") center / 32px 32px no-repeat;
+    box-shadow: none;
+    transition: none;
+    filter: none;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer-brand .brand-mark svg {
+    visibility: hidden;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer :is(.nav-button, .nav-drawer-close) {
+    min-height: 44px;
+    border-radius: var(--web-radius-control);
+    font-size: var(--fs-base);
+    font-weight: 400;
+    color: var(--web-nav-muted);
+    box-shadow: none;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button {
+    padding: 8px 12px;
+    gap: 12px;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button svg {
+    width: var(--web-nav-icon);
+    height: var(--web-nav-icon);
+    stroke-width: 1.6;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer :is(.nav-button:hover, .nav-button.is-active, .nav-drawer-close:hover, .nav-drawer-brand:hover) {
+    background-color: var(--web-nav-hover);
+    color: var(--web-nav-ink);
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button.is-active::before {
+    content: none;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-drawer-close {
+    width: 44px;
+    min-width: 44px;
+    border: 0;
+    background: transparent;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer :focus-visible {
+    outline-color: var(--web-nav-ink);
+  }
+  /* Only audited, redundant copy opts in. Errors, form labels and state stay visible. */
+  html[data-atlas-theme] .app-shell .ui-secondary-copy {
+    display: none;
+  }
+  html[data-atlas-theme] .app-shell .ui-secondary-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: clip;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+  html[data-atlas-theme] .app-shell .app-mobile-menu {
+    border-radius: var(--web-radius-control);
+    background: var(--theme-canvas);
+    box-shadow: none;
+  }
+}
+
+@media (min-width: 781px) and (min-height: 601px), (min-width: 781px) and (pointer: fine), (min-width: 1101px) {
+  html[data-atlas-theme] .app-shell,
+  html[data-atlas-theme] .app-shell :is(.nav-drawer, .capture-map, .app-topbar) {
+    transition: none;
+  }
+  html[data-atlas-theme] .app-shell .capture-map {
+    max-width: var(--web-content-width);
+    margin-inline: auto;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer:not(.is-open) .nav-button {
+    padding-inline: 0;
+  }
+}
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  html[data-atlas-theme] .app-shell .nav-drawer {
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    box-shadow: var(--web-shadow-overlay);
+  }
+}
+
+/* Native keeps its touch-sized controls and existing keyboard/safe-area layout. */
+@media screen {
+  html[data-atlas-theme] .app-shell[data-native-storage] { --web-nav-hit: 48px; }
+  html[data-atlas-theme] .app-shell[data-native-storage] .nav-drawer :is(.nav-button, .nav-drawer-close) { min-height: 48px; }
+  html[data-atlas-theme] .app-shell[data-native-storage] .app-mobile-menu { min-width: 48px; min-height: 48px; }
+  html[data-atlas-theme] .app-shell[data-native-storage] .wb-composer .wb-send { width: 48px; min-width: 48px; height: 48px; min-height: 48px; flex-basis: 48px; }
+  html[data-atlas-theme] .app-shell[data-native-storage] .wb-composer :is(.wb-actions-menu, .wb-settings) > summary { min-height: 48px; height: 48px; }
+}
+
+@media screen {
+  html[data-atlas-theme] .app-shell :is(.wb-empty, .nb-watermark-pane)::before,
+  html[data-atlas-theme] .app-shell :is(.wb-empty, .nb-watermark-pane)::after {
+    content: none;
+  }
+}
+
+/* Account actions belong to the drawer so layout, scrolling and focus agree. */
+@media screen {
+  html[data-atlas-theme] .app-shell .nav-footer {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    gap: 8px;
+    min-width: 0;
+    margin-top: auto;
+  }
+  html[data-atlas-theme] .app-shell .nav-settings-bottom .nav-button {
+    width: 100%;
+  }
+  html[data-atlas-theme] .app-shell .nav-footer .nav-settings-bottom {
+    margin: 0;
+  }
+  html[data-atlas-theme] .app-shell .nav-account {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin-top: 4px;
+    padding-top: 12px;
+    border-top: 1px solid var(--web-nav-line);
+  }
+  html[data-atlas-theme] .app-shell .nav-account-identity {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding-left: 12px;
+    color: var(--web-nav-muted);
+    font-size: var(--fs-base);
+  }
+  html[data-atlas-theme] .app-shell .nav-account-identity svg {
+    flex: 0 0 auto;
+    stroke-width: 1.6;
+  }
+  html[data-atlas-theme] .app-shell .nav-account-name {
+    min-width: 0;
+    overflow: clip;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  html[data-atlas-theme] .app-shell .auth-signout {
+    display: inline-flex;
+    flex: 0 0 var(--web-nav-hit);
+    align-items: center;
+    justify-content: center;
+    width: var(--web-nav-hit);
+    height: var(--web-nav-hit);
+    min-height: var(--web-nav-hit);
+    padding: 0;
+    border: 0;
+    border-radius: var(--web-radius-control);
+    background: transparent;
+    color: var(--web-nav-muted);
+    cursor: pointer;
+  }
+  html[data-atlas-theme] .app-shell .auth-signout svg {
+    width: var(--web-nav-icon);
+    height: var(--web-nav-icon);
+    stroke-width: 1.6;
+  }
+  html[data-atlas-theme] .app-shell .auth-signout:hover,
+  html[data-atlas-theme] .app-shell .auth-signout:active {
+    color: var(--web-nav-ink);
+    background: var(--web-nav-hover);
+  }
+}
+@media (min-width: 781px) and (min-height: 601px), (min-width: 781px) and (pointer: fine), (min-width: 1101px) {
+  html[data-atlas-theme] .app-shell .nav-drawer:not(.is-open) {
+    padding-inline: 10px;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer:not(.is-open) .nav-account-identity {
+    display: none;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer:not(.is-open) .nav-drawer-head {
+    gap: 0;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer:not(.is-open) .nav-account {
+    justify-content: center;
+    padding-top: 8px;
+  }
+}
+
+/* White application surfaces are deliberately local: the immersive map keeps
+   its original inherited palette, textures, photo backing and control geometry. */
+html[data-atlas-theme] :is(.nav-drawer, .app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog, .auth-boundary, .auth-privacy-dialog, .app-mobile-menu, .mdxeditor-popup-container, .nb-trip-date-layer) {
+  --ui-hover: #eaecef;
+  --sky-bg: #f5f5f7;
+  --sky-surface: #fff;
+  --sky-text-surface: #fff;
+  --sky-ink: #1d1d1f;
+  --sky-ink-muted: #686b73;
+  --sky-primary: #0668d8;
+  --sky-primary-hover: #005abd;
+  --sky-on-primary: #fff;
+  --sky-line: #e5e5ea;
+  --sky-line-strong: #b9bec9;
+  --sky-glass: rgb(255 255 255 / 88%);
+  --sky-glass-strong: rgb(255 255 255 / 96%);
+  --sky-focus: #0668d8;
+  --sky-nav: #f4f5f8;
+  --sky-nav-line: #e5e5ea;
+  --sky-accent-pink: #ad5a0c;
+  --sky-accent-yellow: #ad5a0c;
+  --sky-accent-teal: #187c49;
+  --sky-accent-lavender: #7754ce;
+  --sky-pink-soft: #fff2df;
+  --sky-yellow-soft: #fff2df;
+  --sky-teal-soft: #eaf2ff;
+  --sky-lavender-soft: #f1ebff;
+  --sky-shadow: 0 16px 52px rgb(27 37 58 / 18%);
+  --sky-shadow-soft: 0 4px 16px rgb(27 37 58 / 8%);
+  --theme-page: #fff;
+  --theme-canvas: #fff;
+  --theme-surface: #f5f5f7;
+  --theme-surface-strong: #fff;
+  --theme-side-panel: #f4f5f8;
+  --theme-panel: #f5f5f7;
+  --theme-display-ink: #1d1d1f;
+  /* Rebind aliases here so their computed values follow this local palette. */
+  --paper: var(--sky-bg);
+  --paper-deep: #eef0f5;
+  --card: var(--sky-surface);
+  --ink: var(--sky-ink);
+  --muted: var(--sky-ink-muted);
+  --line: var(--sky-line);
+  --green: #187c49;
+  --green-soft: #e9f6ed;
+  --orange: #ad5a0c;
+  --orange-soft: #fff2df;
+  --red: #c83332;
+  --shadow: var(--sky-shadow);
+  --web-nav-ink: #1d1d1f;
+  --web-nav-muted: #686b73;
+  --web-nav-hover: #eaf2ff;
+  --web-nav-line: #e5e5ea;
+  --web-shadow-overlay: var(--sky-shadow);
+  --web-radius-control: 10px;
+  --web-font-note: var(--web-font-ui);
+  --radius-xs: 10px;
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  font-family: var(--web-font-ui);
+  color: var(--sky-ink);
+  caret-color: var(--sky-primary);
+  scrollbar-color: #b9bec9 transparent;
+}
+
+@media screen {
+  html[data-atlas-theme] .app-shell:not(.app-shell--immersive),
+  html[data-atlas-theme] .app-shell .app-main:not(.app-main--immersive) {
+    background: var(--sky-surface);
+  }
+  html[data-atlas-theme] :is(.app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog, .auth-boundary, .auth-privacy-dialog) :is(h1, h2, h3) {
+    font-family: var(--web-font-ui);
+    color: var(--sky-ink);
+    letter-spacing: -.025em;
+    font-weight: 650;
+    text-wrap: balance;
+  }
+  html[data-atlas-theme] :is(.app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog, .auth-boundary, .auth-privacy-dialog) :is(input, textarea)::placeholder {
+    color: var(--sky-ink-muted);
+    opacity: 1;
+  }
+  html[data-atlas-theme] :is(.app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog, .auth-boundary) ::selection {
+    background: var(--sky-teal-soft);
+    color: var(--sky-ink);
+  }
+  html[data-atlas-theme] :is(.app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog, .auth-boundary, .auth-privacy-dialog) :is(.primary-button, .secondary-button, .auth-submit) {
+    min-height: 40px;
+    border-radius: 999px;
+    padding-inline: 17px;
+    font-weight: 550;
+    box-shadow: none;
+    transition: background-color 180ms ease, transform 180ms cubic-bezier(.2,.8,.2,1);
+  }
+  html[data-atlas-theme] :is(.app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog) .secondary-button {
+    border-color: transparent;
+    background: var(--sky-bg);
+    color: var(--sky-ink);
+  }
+  html[data-atlas-theme] :is(.app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog) .secondary-button:hover:not(:disabled) {
+    background: var(--ui-hover);
+    border-color: transparent;
+  }
+  html[data-atlas-theme] :is(.app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog, .auth-boundary, .auth-privacy-dialog) :is(.primary-button, .secondary-button, .auth-submit):active:not(:disabled) {
+    transform: scale(.975);
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer {
+    border-right: 1px solid var(--sky-line);
+    background: var(--sky-nav);
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button {
+    border-radius: 10px;
+    font-weight: 500;
+    transition: background-color 180ms ease, color 180ms ease;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button.is-active {
+    color: var(--sky-primary);
+    font-weight: 600;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button[data-nav-view] > svg {
+    width: 28px;
+    height: 28px;
+    padding: 5px;
+    border-radius: 8px;
+  }
+  html[data-atlas-theme] .app-shell .nav-button[data-nav-view="home"] > svg { color: var(--green); background: var(--green-soft); }
+  html[data-atlas-theme] .app-shell .nav-button[data-nav-view="notebook"] > svg { color: var(--orange); background: var(--orange-soft); }
+  html[data-atlas-theme] .app-shell .nav-button[data-nav-view="record"] > svg { color: var(--sky-accent-lavender); background: var(--sky-lavender-soft); }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button.is-active > svg { color: var(--sky-on-primary); background: var(--sky-primary); }
+  html[data-atlas-theme] .app-shell .nav-drawer :focus-visible { outline-color: var(--sky-primary); }
+  /* 手机左上角只留一个 48px 图标按钮，融入既有顶部预留条，不再占一行「导航」。 */
+  html[data-atlas-theme] .app-shell .app-mobile-menu {
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--sky-ink-muted);
+  }
+  html[data-atlas-theme] .app-shell .app-mobile-menu > svg { flex: none; }
+  html[data-atlas-theme] .app-shell .app-mobile-menu::before { position: absolute; inset: 0; z-index: -1; content: ""; border-radius: inherit; background: transparent; }
+  html[data-atlas-theme] .app-shell .app-mobile-menu:is(:hover, [aria-expanded="true"])::before { background: var(--ui-hover); }
+  /* 地图页沿用纸色浅底，保证地貌/纸纹底色上图标仍可读。 */
+  html[data-atlas-theme] .app-shell:has(.app-main--immersive) .app-mobile-menu { color: #486355; }
+  html[data-atlas-theme] .app-shell:has(.app-main--immersive) .app-mobile-menu::before { background: #e9e5d9; }
+  html[data-atlas-theme] .app-shell:has(.app-main--immersive) .app-mobile-menu:is(:hover, [aria-expanded="true"])::before { background: #dedfd1; }
+
+  /* Preserve the adjustable notebook tree, replacing only its material. */
+  html[data-atlas-theme] .app-shell .notebook-page :is(.nb-workspace, .nb-editor, .nb-readonly-pane, .nb-edit-window) {
+    background: var(--sky-surface);
+    background-image: none;
+    box-shadow: none;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page .nb-col--notebooks {
+    background: var(--theme-side-panel);
+    background-image: none;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page :is(.nb-col-head, .nb-editor-bar) {
+    background: var(--sky-surface);
+    border-color: var(--sky-line);
+  }
+  html[data-atlas-theme] .app-shell .notebook-page .nb-directory .nb-row:has(> .is-active) {
+    background: var(--sky-teal-soft);
+    box-shadow: none;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page .nb-directory .nb-search-input {
+    background: var(--sky-bg);
+    border: 1px solid var(--sky-line-strong);
+    border-radius: 8px;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page .nb-directory .nb-search-input:focus-within {
+    outline: none;
+    border-color: #7d94b0;
+    background: var(--sky-surface);
+    box-shadow: none;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page .nb-editor-bar .notebook-save-state:not([data-status="failed"]):not([data-status="conflict"]) { color: var(--green); }
+
+  html[data-atlas-theme] .app-shell .wb :is(.wb-chat, .wb-stream) { background: var(--sky-surface); }
+  html[data-atlas-theme] .app-shell .wb .wb-sessions {
+    background: var(--theme-side-panel);
+    background-image: none;
+    border-right: 1px solid var(--sky-line);
+  }
+  html[data-atlas-theme] .app-shell .wb .wb-session-list li[data-active="true"] {
+    background: var(--sky-teal-soft);
+    box-shadow: none;
+  }
+  html[data-atlas-theme] .app-shell .wb .wb-message[data-role="user"] {
+    background: #f2f3f6;
+    border: 0;
+    border-radius: 18px 18px 5px 18px;
+    padding: 12px 16px;
+  }
+  html[data-atlas-theme] .app-shell .wb .wb-chat-head .wb-pane-toggle {
+    width: auto;
+    min-width: 44px;
+    flex: none;
+    padding-inline: 10px;
+    white-space: nowrap;
+  }
+
+  /* A compact settings sheet; category and form behavior stay in their existing components. */
+  html[data-atlas-theme] .app-shell .settings-dialog {
+    width: min(960px, calc(100% - 48px));
+    height: min(720px, calc(100dvh - 48px));
+    max-height: calc(100dvh - 48px);
+    border: 0;
+    border-radius: 16px;
+    background: var(--sky-surface);
+    box-shadow: var(--sky-shadow);
+  }
+  html[data-atlas-theme] .app-shell .settings-dialog::backdrop { background: rgb(19 29 51 / 28%); }
+  html[data-atlas-theme] .app-shell .settings-dialog-surface { height: 100%; min-height: 0; max-height: inherit; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-dialog-header { min-height: 64px; margin-inline: 24px; padding-block: 10px; border-bottom: 1px solid var(--sky-line); background: var(--sky-surface); }
+  html[data-atlas-theme] .app-shell .settings-dialog-header h1 { font-size: 20px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-layout { padding: 0; gap: 0; overflow: hidden; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-categories { background: var(--sky-bg); padding: 12px 10px; gap: 4px; border: 0; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-categories button { min-height: 44px; padding: 8px 10px; gap: 8px; border-radius: 8px; color: var(--sky-ink-muted); font-size: 14px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-categories button.is-selected { background: var(--sky-teal-soft); color: var(--sky-primary); font-weight: 600; box-shadow: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-content { background: var(--sky-surface); padding: 20px 24px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-block { gap: 12px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-block h2 { font-size: 18px; line-height: 1.4; gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-block-note { font-size: 13px; line-height: 1.6; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-close { width: 44px; height: 44px; border-radius: 10px; background: transparent; color: var(--sky-ink-muted); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-close:hover { background: var(--sky-bg); }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.primary-button, .secondary-button) { min-height: 40px; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; }
+  html[data-atlas-theme] .app-shell .settings-dialog .secondary-button { background: var(--sky-bg); border-color: var(--sky-line); }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) { border: 1px solid var(--sky-line-strong); border-radius: 8px; background: var(--sky-surface); min-height: 40px; padding: 8px 10px; }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(input, select, textarea):focus-visible { outline: 1px solid #7d94b0; outline-offset: 0; border-color: #7d94b0; box-shadow: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(input, select, textarea):disabled { background: var(--sky-bg); color: var(--sky-ink-muted); }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.settings-provider-card, .settings-editor, .settings-presets) { border: 0; border-radius: 0; padding: 12px 0; background: none; box-shadow: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-card { border-bottom: 1px solid var(--sky-line); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-card:last-of-type { border-bottom: 0; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-advanced:not(:has(.settings-advanced-body)) { border: 0; padding: 0; background: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-head { gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-title { gap: 6px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-form { gap: 12px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-form > .settings-field { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 8px 12px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-form > .settings-field > small { grid-column: 2; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-field > span { color: var(--sky-ink-muted); font-size: 13px; font-weight: 500; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-field { gap: 6px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entries { gap: 0; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry { min-height: 78px; border: 0; border-bottom: 1px solid var(--sky-line); border-radius: 0; padding: 12px 4px; background: var(--sky-surface); gap: 12px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry:hover { background: var(--sky-teal-soft); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry > svg { flex: none; width: 36px; height: 36px; padding: 8px; border-radius: 10px; color: var(--sky-primary); background: var(--sky-teal-soft); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry:nth-child(2) > svg { color: var(--sky-accent-lavender); background: var(--sky-lavender-soft); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-models { font-size: 12px; line-height: 1.5; color: var(--sky-ink-muted); }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.settings-advanced, .settings-discovery-panel) { border: 1px solid var(--sky-line); border-radius: 8px; padding: 10px 12px; background: var(--sky-bg); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-editor-actions { position: sticky; bottom: 0; z-index: 2; margin-top: 8px; padding: 10px 0 4px; border-top: 1px solid var(--sky-line); background: var(--sky-surface); gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-subpage-head { gap: 10px; margin-bottom: 0; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-subpage-head h3 { margin: 0; font-size: 17px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model > div { padding-block: 10px; gap: 12px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model dd { font-size: 14px; font-weight: 600; text-align: right; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-help { color: var(--sky-ink-muted); font-size: 13px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-help > summary { width: fit-content; min-height: 32px; display: list-item; padding-block: 6px; cursor: pointer; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-help .settings-memory-points { margin: 4px 0 0; padding-left: 20px; line-height: 1.7; }
+  html[data-atlas-theme] .app-shell .settings-dialog .wb-capabilities { padding: 0; height: auto; max-height: none; background: none; border: 0; }
+  html[data-atlas-theme] .app-shell .settings-dialog .wb-cap-block { padding: 0; gap: 10px; border: 0; border-radius: 0; background: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog .wb-cap-actions { gap: 6px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .wb-cap-memory li { border: 0; border-bottom: 1px solid var(--sky-line); border-radius: 0; padding: 10px 0; background: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog .wb-cap-add { gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.skill-center-tabs, .skill-methods) { gap: 4px; padding: 3px; border-radius: 9px; background: var(--sky-bg); }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.skill-center-tabs, .skill-methods) button { min-height: 36px; padding: 6px 10px; border: 0; border-radius: 7px; background: none; color: var(--sky-ink-muted); }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.skill-center-tabs, .skill-methods) button:is(.is-selected, [aria-pressed="true"]) { background: var(--sky-surface); color: var(--sky-primary); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-item { padding: 12px 0; gap: 8px; border: 0; border-bottom: 1px solid var(--sky-line); border-radius: 0; background: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-head { display: flex; align-items: center; gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-summary { flex: 1; width: auto; min-width: 0; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-toggle { display: flex; align-items: center; width: auto; min-width: 0; flex: 0 0 auto; gap: 6px; margin-left: auto; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-summary-text { margin: 0; line-height: 1.6; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-actions { gap: 6px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-detail { padding: 10px 0; border: 0; background: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.settings-native-skill-list, .settings-skill-list) { padding: 0; margin: 0; list-style: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-skill-list > li { display: grid; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--sky-line); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-skill-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-skill-head > span { flex: none; font-size: 12px; color: var(--sky-ink-muted); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-skill-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-skills button:not(.primary-button) { min-height: 40px; width: fit-content; padding: 8px 10px; border: 1px solid var(--sky-line); border-radius: 8px; background: var(--sky-bg); color: var(--sky-ink-muted); font: inherit; font-size: 13px; cursor: pointer; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-import { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-import > :is(textarea, [role="group"]) { flex-basis: 100%; width: 100%; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-import [role="group"] { display: flex; flex-wrap: wrap; gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-import [role="group"] > input { flex: 1; min-width: 160px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-skill-actions [role="group"] { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; flex-basis: 100%; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-data-group { display: grid; gap: 10px; padding-top: 12px; border-top: 1px solid var(--sky-line); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-data-group h3 { margin: 0; font-size: 14px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-data-group > .secondary-button { justify-self: start; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-danger-button { color: #bd3037; border-color: #edc8cc; background: #fff9f9; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-data-danger [role="group"] { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-radius: 8px; background: #fff4f4; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-data-danger [role="group"] > p { flex-basis: 100%; color: #bd3037; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-map-style-group { gap: 10px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-map-style { min-height: 80px; padding: 12px; gap: 12px; }
+
+}
+
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  html[data-atlas-theme] .app-shell .nav-drawer {
+    background: var(--sky-nav);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    --web-nav-hit: 48px;
+    width: min(248px, calc(100vw - 72px));
+    gap: 4px;
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 10px
+      calc(12px + env(safe-area-inset-bottom, 0px))
+      calc(10px + env(safe-area-inset-left, 0px));
+  }
+  /* 顶部只留「行迹」与关闭；品牌图标改由左上角菜单按钮承担。 */
+  html[data-atlas-theme] .app-shell .nav-drawer-head {
+    min-height: 48px;
+    gap: 0;
+    margin-bottom: 6px;
+    padding-inline: 2px 0;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-drawer-brand {
+    display: none;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer-head strong {
+    flex: 1;
+    min-width: 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer :is(.nav-button, .nav-drawer-close) {
+    min-height: 48px;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-drawer-close {
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
+    border: 0;
+    background: transparent;
+    color: var(--sky-ink-muted);
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer > nav {
+    display: grid;
+    gap: 4px;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button {
+    gap: 12px;
+    padding: 4px 12px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+  /* 手机不做彩色图标底块：图标只保留线条，选中项用单层浅蓝底与文字色。 */
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button[data-nav-view] > svg {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button.is-active {
+    background: var(--web-nav-hover);
+    color: var(--sky-primary);
+    font-weight: 600;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button.is-active > svg {
+    background: none;
+    color: inherit;
+  }
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button:not(.is-active):hover {
+    background: var(--ui-hover);
+    color: var(--sky-ink);
+  }
+  html[data-atlas-theme] .app-shell .notebook-page :is(input, textarea),
+  html[data-atlas-theme] .app-shell .settings-dialog :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) { font-size: 16px; }
+  html[data-atlas-theme] :is(.app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog) :is(.primary-button, .secondary-button) { min-height: 44px; }
+}
+@media screen and (max-width: 700px) {
+  html[data-atlas-theme] .app-shell .settings-dialog { width: calc(100% - 16px); height: calc(100dvh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); inset-block-start: calc(8px + env(safe-area-inset-top, 0px)); inset-block-end: auto; margin-block: 0; max-height: calc(100dvh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); border-radius: 14px; }
+  html[data-atlas-theme] .app-shell .settings-dialog-surface { height: 100%; min-height: 0; max-height: inherit; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-dialog-header { min-height: 58px; margin-inline: 16px; padding-block: 6px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-layout { grid-template-rows: auto minmax(0, 1fr); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-categories { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 6px 8px; gap: 4px; overflow: visible; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-categories button { display: flex; flex-direction: column; justify-content: center; width: 100%; min-width: 0; min-height: 56px; padding: 6px 0; gap: 4px; font-size: 12px; white-space: nowrap; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-categories button svg { display: block; width: 18px; height: 18px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-category-suffix { display: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-head .settings-switch-label { display: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-content { padding: 16px; scrollbar-gutter: auto; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-form > .settings-field { grid-template-columns: minmax(0, 1fr); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-provider-form > .settings-field > small { grid-column: 1; }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.primary-button, .secondary-button, .settings-native-skills button, .skill-center-tabs button, .skill-methods button) { min-height: 44px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-row { padding: 10px; border-radius: 8px; background: var(--sky-bg); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-editor-actions { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center; padding-bottom: 4px; gap: 6px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-editor-actions :is(.settings-editor-primary, .settings-editor-secondary) { display: flex; flex: 0 0 auto; width: auto; gap: 6px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-editor-actions button { flex: none; min-width: 44px; padding-inline: 8px; font-size: 12px; }
+
+  html[data-atlas-theme] .app-shell .settings-dialog .wb-cap-add { grid-template-columns: minmax(0, 1fr) auto; }
+  html[data-atlas-theme] .app-shell .settings-dialog .wb-cap-add > .secondary-button { grid-column: 2; }
+}
+
+@media (pointer: coarse) {
+  html[data-atlas-theme] .app-shell .settings-dialog :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) { min-height: 44px; font-size: 16px; }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.primary-button, .secondary-button, .skill-center-tabs button, .skill-methods button) { min-height: 44px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-native-skills button:not(.primary-button) { min-height: 44px; }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(label:has(> input[type="checkbox"]), .settings-field-inline) { min-height: 44px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-summary { min-height: 44px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-skill-icon { width: 44px; height: 44px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-switch { width: 52px; height: 44px; background: transparent; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-switch::before { position: absolute; content: ""; inset: 7px 0; border: 1px solid #7d8ba0; border-radius: 999px; background: #d7dce1; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-switch[aria-checked="true"]::before { border-color: var(--sky-primary); background: var(--sky-primary); }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-switch-knob { top: 10px; left: 3px; width: 24px; height: 24px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-switch[aria-checked="true"] .settings-switch-knob { transform: translateX(22px); }
+  html[data-atlas-theme] .app-shell .settings-dialog :is(.settings-help > summary, .settings-skill-removed > summary, .wb-authorize) { min-height: 44px; }
+}
+@media (forced-colors: active) {
+  .wb-search:focus-within, .nb-search-input:focus-within { outline: 2px solid Highlight !important; outline-offset: 1px; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  html[data-atlas-theme] .app-shell .nav-drawer { background: var(--sky-nav); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  html[data-atlas-theme] .app-shell .settings-dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-atlas-theme] :is(.app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog, .auth-boundary, .auth-privacy-dialog, .nav-drawer) :is(button, summary) { transition: none; }
+}
+@media (forced-colors: active) {
+  html[data-atlas-theme] .app-shell .nav-drawer .nav-button[aria-current="page"],
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-categories button.is-selected { outline: 2px solid Highlight; outline-offset: -2px; }
+}
+
+/* General settings share the existing sheet, palette and save bar. */
+html[data-atlas-theme] .app-shell .settings-dialog .settings-general { display: grid; gap: 24px; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-theme-choice { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 0; margin: 0; padding: 0; border: 0; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-theme-choice legend { float: left; font-size: 14px; padding: 0; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-theme-choice > div { display: flex; gap: 8px; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-theme-choice label { display: flex; gap: 6px; align-items: center; border: 1px solid var(--sky-line); border-radius: 8px; padding: 8px 12px; min-height: 44px; cursor: pointer; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-theme-choice label[data-selected="true"] { border-color: var(--sky-primary); background: var(--sky-teal-soft); color: var(--sky-primary); }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-theme-choice input { accent-color: var(--sky-primary); width: 14px; height: 14px; min-height: 0; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-general-entry { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 72px; text-align: left; padding: 12px 0; border: 0; border-block: 1px solid var(--sky-line); background: transparent; color: var(--sky-ink); cursor: pointer; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-general-entry > span:first-child { display: grid; gap: 4px; min-width: 0; flex: 1; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-general-entry small { font-size: 13px; color: var(--sky-ink-muted); }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-general-entry-value { flex: none; font-size: 12px; color: var(--sky-ink-muted); white-space: nowrap; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-general-entry:hover { background: var(--sky-teal-soft); }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-instructions textarea { width: 100%; min-height: 180px; resize: vertical; line-height: 1.65; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-instructions-tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--sky-ink-muted); font-size: 12px; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-builtin { border-top: 1px solid var(--sky-line); color: var(--sky-ink-muted); font-size: 13px; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-builtin summary { padding-block: 12px; cursor: pointer; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-builtin pre { max-height: 240px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; margin: 12px 0 0; padding: 12px; border-radius: 8px; background: var(--sky-bg); color: var(--sky-ink); font: 13px/1.8 var(--web-font-ui); }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-body { flex: 1; min-width: 0; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-body .settings-model-entry-provider { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; flex-wrap: nowrap; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-models { display: block; width: min(32ch, 100%); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; white-space: nowrap; overflow-wrap: normal; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-models::-webkit-scrollbar { display: none; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-models > span { display: inline-block; min-width: 100%; white-space: nowrap; font-size: inherit; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-connection { justify-self: end; white-space: nowrap; flex-shrink: 0; font-size: 12px; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-connection > span { font-size: 12px; }
+html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-meta { flex: none; }
+@keyframes settings-model-scroll { 0%, 12% { transform: translateX(0); } 88%, 100% { transform: translateX(var(--model-scroll-distance, 0px)); } }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-models:hover > span,
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry:focus-visible .settings-model-entry-models > span { animation: settings-model-scroll var(--model-scroll-time, 8s) ease-in-out infinite alternate; }
+}
+
+/* Night mode changes application surfaces. Geographic materials and photographs keep their own palette. */
+html[data-ui-theme="dark"] { color-scheme: dark; }
+html[data-ui-theme="light"] { color-scheme: light; }
+html[data-atlas-theme][data-ui-theme="dark"] :is(.nav-drawer, .app-main:not(.app-main--immersive), .app-workbench-slot, .settings-dialog, .auth-boundary, .auth-privacy-dialog, .app-mobile-menu, .mdxeditor-popup-container, .nb-trip-date-layer) {
+  --ui-hover: #303640;
+  --sky-bg: #24282f; --sky-surface: #191c21; --sky-text-surface: #191c21;
+  --sky-ink: #eef1f5; --sky-ink-muted: #aab3c1;
+  --sky-primary: #77b3ff; --sky-primary-hover: #99c7ff; --sky-on-primary: #10233b;
+  --sky-line: #343a44; --sky-line-strong: #596578; --sky-focus: #84baff;
+  --sky-nav: #1f2228; --sky-nav-line: #343a44;
+  --sky-glass: rgb(25 28 33 / 90%); --sky-glass-strong: rgb(25 28 33 / 98%);
+  --sky-accent-pink: #efb466; --sky-accent-yellow: #efb466; --sky-accent-teal: #8fd5ad; --sky-accent-lavender: #b9a0fa;
+  --sky-pink-soft: #392e20; --sky-yellow-soft: #392e20; --sky-teal-soft: #233650; --sky-lavender-soft: #302841;
+  --sky-shadow: 0 16px 52px rgb(0 0 0 / 40%); --sky-shadow-soft: 0 4px 16px rgb(0 0 0 / 20%);
+  --theme-page: #191c21; --theme-canvas: #191c21; --theme-surface: #24282f; --theme-surface-strong: #191c21;
+  --theme-side-panel: #1f2228; --theme-panel: #24282f; --theme-display-ink: #eef1f5;
+  --paper-deep: #24282f; --green: #8fd5ad; --green-soft: #20382b; --orange: #efb466; --orange-soft: #392e20; --red: #ff898b;
+  --web-nav-ink: #eef1f5; --web-nav-muted: #aab3c1; --web-nav-hover: #233650; --web-nav-line: #343a44;
+}
+html[data-atlas-theme][data-ui-theme="dark"] .app-shell:not(.app-shell--immersive) { background: #191c21; }
+html[data-atlas-theme][data-ui-theme="dark"] .app-shell .wb-restore-notice { color: #ff898b; }
+html[data-atlas-theme][data-ui-theme="dark"] .app-shell .settings-dialog .settings-data-danger { border-color: #693a3f; background: #302024; }
+html[data-atlas-theme][data-ui-theme="dark"] .app-shell .settings-dialog .settings-switch:not([aria-checked="true"]) { background: #4a5362; }
+html[data-atlas-theme][data-ui-theme="dark"] .app-shell .settings-dialog .settings-switch:not([aria-checked="true"])::before { background: #4a5362; }
+html[data-atlas-theme][data-ui-theme="dark"] .app-shell .settings-dialog :is(.notebook-error, [data-tone="error"], .settings-danger-button) { color: #ff898b; }
+@media (max-width: 700px) {
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-theme-choice label { padding-inline: 9px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry { gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-body .settings-model-entry-provider { gap: 8px; }
+  html[data-atlas-theme] .app-shell .settings-dialog .settings-model-entry-connection { gap: 4px; }
+}
+
+/* The editor ships its own component palette, including menus portaled to body. */
+html[data-atlas-theme][data-ui-theme="dark"] :is(.mdxeditor, .mdxeditor-popup-container) {
+  --basePageBg: var(--sky-surface); --baseBase: var(--sky-surface); --baseBgSubtle: var(--sky-bg);
+  --baseBg: var(--sky-bg); --baseBgHover: var(--ui-hover); --baseBgActive: var(--sky-teal-soft);
+  --baseLine: var(--sky-line); --baseBorder: var(--sky-line-strong); --baseBorderHover: var(--sky-focus);
+  --baseSolid: var(--sky-ink-muted); --baseSolidHover: var(--sky-ink); --baseText: var(--sky-ink-muted); --baseTextContrast: var(--sky-ink);
+  --accentBase: var(--sky-surface); --accentBgSubtle: var(--sky-teal-soft); --accentBg: var(--sky-teal-soft);
+  --accentBgHover: var(--ui-hover); --accentBgActive: var(--sky-teal-soft); --accentLine: var(--sky-line); --accentBorder: var(--sky-line-strong);
+  --accentBorderHover: var(--sky-focus); --accentSolid: var(--sky-primary); --accentSolidHover: var(--sky-primary-hover);
+  --accentText: var(--sky-primary); --accentTextContrast: var(--sky-ink); color: var(--sky-ink);
+}
+html[data-atlas-theme][data-ui-theme="dark"] .auth-boundary { background: var(--theme-canvas); }
+
+/* Phone notebooks use a folder → notes → editor stack, with one scrolling list. */
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  html[data-atlas-theme] .app-shell .app-main:has(.notebook-page[data-mobile-layout="true"]) {
+    min-height: 0;
+    padding: var(--app-topbar-h) 0 0;
+    overflow: hidden;
+    background: var(--sky-bg);
+  }
+  html[data-atlas-theme] .app-shell:not([data-native-storage]) .app-main:has(.notebook-page[data-mobile-layout="true"]) { height: 100dvh; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] {
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    background: var(--sky-bg);
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-workspace {
+    height: auto;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+    background: var(--sky-bg);
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-workspace > :is(.nb-col--notebooks, .nb-col--pages) {
+    min-height: 0;
+    border: 0;
+    background: var(--sky-bg);
+    overflow: hidden;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-workspace.is-trash-open > .nb-col { display: none; }
+  html[data-atlas-theme] .app-shell:has(.notebook-page[data-mobile-layout="true"] .is-trash-open) > .app-mobile-menu { display: none; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-trash-mobile-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 56px;
+    padding: 4px 8px;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-trash-mobile-head > .nb-mobile-back { justify-self: start; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-trash-mobile-head > h2 { margin: 0; font-size: 17px; font-weight: 600; line-height: 24px; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] :is(.nb-mobile-folder-list, .nb-mobile-page-list) { min-height: 0; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-heading {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px 16px;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-heading > :is(h2, input).nb-mobile-title {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--sky-ink);
+    font: 700 30px/1.25 var(--web-font-ui);
+    letter-spacing: -.025em;
+    text-overflow: ellipsis;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-heading > input.nb-mobile-title:focus-visible { outline: none; box-shadow: 0 1px 0 var(--sky-focus); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-heading > .nb-icon-button {
+    position: fixed;
+    z-index: 509;
+    top: calc(var(--native-viewport-top, 0px) + env(safe-area-inset-top, 0px));
+    right: max(8px, env(safe-area-inset-right, 0px));
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-page-list .nb-mobile-heading { align-items: stretch; flex-direction: column; gap: 4px; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-count { margin: 0; font-size: 14px; color: var(--sky-ink-muted); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-list-scroll { flex: 1; min-height: 0; padding: 0 16px 16px; overflow-y: auto; overscroll-behavior: contain; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] :is(.nb-mobile-folders, .nb-mobile-notes) {
+    flex: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 16px;
+    background: var(--sky-surface);
+    overflow: visible;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] :is(.nb-mobile-folders, .nb-mobile-notes) .nb-row {
+    min-height: 56px;
+    padding-right: 4px;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] :is(.nb-mobile-folders, .nb-mobile-notes) > li + li > .nb-row::before { position: absolute; top: 0; left: 16px; right: 16px; height: 1px; content: ""; background: var(--sky-line); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-folders .nb-list-item {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) auto 12px;
+    gap: 10px;
+    min-height: 56px;
+    padding: 8px 0 8px 16px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-folders .nb-list-item > svg { position: static; order: 0; width: 20px; height: 20px; transform: none; color: var(--sky-ink-muted); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-folders .nb-list-item > .nb-mobile-folder-icon { width: 22px; height: 22px; color: var(--sky-primary); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-folders .nb-list-item > span { font-size: 17px; font-weight: 500; line-height: 24px; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-folders .nb-list-item > small { font-size: 14px; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-notes .nb-list-item { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px; min-height: 84px; padding: 12px 16px; border: 0; border-radius: 0; background: transparent; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-notes .nb-list-item > strong { font-size: 17px; line-height: 24px; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-notes .nb-list-item > p { display: block; overflow: hidden; margin: 0; font-size: 14px; line-height: 20px; white-space: nowrap; text-overflow: ellipsis; color: var(--sky-ink-muted); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-notes .nb-list-item > small { font-size: 12px; line-height: 18px; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] :is(.nb-mobile-folders, .nb-mobile-notes) .nb-row:is(:hover, :focus-within) { background: var(--sky-bg); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-trash-entry { display: flex; align-items: center; width: 100%; min-height: 56px; margin: 16px 0 0; padding: 12px 16px; gap: 12px; border: 0; border-radius: 16px; background: var(--sky-surface); font-size: 16px; color: var(--sky-ink); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-trash-entry > svg { color: var(--sky-primary); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-bottom-bar { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; padding: 8px 16px max(12px, env(safe-area-inset-bottom, 0px)); background: var(--sky-bg); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] :is(.nb-mobile-search-launcher, .nb-mobile-bottom-bar .nb-search-input) { display: flex; flex: 1; align-items: center; gap: 8px; min-width: 0; min-height: 48px; margin: 0; padding: 0 14px; border: 1px solid var(--sky-line); border-radius: 24px; background: var(--sky-surface); color: var(--sky-ink-muted); font-size: 16px; box-shadow: none; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-search-launcher { cursor: pointer; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-bottom-bar .nb-search-input input { min-width: 0; width: 100%; padding: 0; border: 0; background: transparent; outline: none; box-shadow: none; font-size: 16px; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-bottom-bar .nb-search-input:focus-within { border-color: var(--sky-focus); outline: none; box-shadow: none; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] :is(.nb-icon-button, .nb-row-menu-open) { width: 48px; min-width: 48px; height: 48px; min-height: 48px; color: var(--sky-primary); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-row-menu-open { color: var(--sky-ink-muted); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-compose { border: 1px solid var(--sky-line); border-radius: 50%; background: var(--sky-surface); }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-back { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 2px; min-width: 48px; min-height: 48px; border: 0; padding: 0 8px; background: transparent; color: var(--sky-primary); font-size: 16px; cursor: pointer; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-page-actions { position: fixed; z-index: 509; top: calc(var(--native-viewport-top, 0px) + env(safe-area-inset-top, 0px) + 4px); left: max(64px, calc(56px + env(safe-area-inset-left, 0px))); right: max(8px, env(safe-area-inset-right, 0px)); height: 48px; display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-editor-bar > .nb-mobile-back { position: fixed; z-index: 509; top: calc(var(--native-viewport-top, 0px) + env(safe-area-inset-top, 0px) + 4px); left: max(64px, calc(56px + env(safe-area-inset-left, 0px))); width: auto; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-empty { margin: 0; padding: 32px 16px; color: var(--sky-ink-muted); font-size: 16px; text-align: center; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-col--pages:has(.nb-capture) { overflow-y: auto; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-col--pages:has(.nb-capture) .nb-mobile-page-list { flex: 0 0 auto; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-col--pages:has(.nb-capture) .nb-mobile-list-scroll { flex: 0 0 auto; max-height: 24dvh; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-capture { padding: 0 16px 16px; }
+}
+
+/* Reference/target picker: fixed tools, one scrolling list, above app navigation. */
+html[data-atlas-theme] .app-shell .wb-reference-picker {
+  z-index: 600;
+  inset: var(--native-viewport-top, 0px) 0 auto;
+  height: var(--native-viewport-height, 100dvh);
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+}
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-modal-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(520px, 100%);
+  max-height: min(640px, 100%);
+  min-height: 0;
+  padding: 16px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--sky-surface);
+  overflow: hidden;
+}
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-modal-head { flex: 0 0 auto; min-height: 44px; gap: 8px; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-modal-head h3 { min-width: 0; font-size: 18px; line-height: 24px; font-weight: 600; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-modal-head > .wb-icon-button { flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px; border: 0; border-radius: 50%; background: transparent; color: var(--sky-ink-muted); }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-search { flex: 0 0 auto; min-height: 44px; height: 44px; margin: 0; padding: 0 12px; border: 1px solid var(--sky-line); border-radius: 12px; background: var(--sky-bg); }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-search:focus-within { border-color: var(--sky-line-strong); background: var(--sky-bg); outline: none; box-shadow: none; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-search input { min-width: 0; padding: 0; border: 0; border-radius: 0; background: transparent; font-size: 16px; outline: none; box-shadow: none; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-search input:focus-visible { outline: none; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-search > svg { flex: none; width: 18px; height: 18px; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-results { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 2px; margin: -2px; scrollbar-width: thin; }
+html[data-atlas-theme] .app-shell .wb-reference-picker :is(.wb-picker-free, .wb-picker-notebook) { min-height: 52px; margin: 0; padding: 10px 12px; gap: 12px; border: 0; border-radius: 10px; background: transparent; color: var(--sky-ink); font-size: 15px; font-weight: 500; }
+html[data-atlas-theme] .app-shell .wb-reference-picker :is(.wb-picker-free, .wb-picker-notebook) > svg:first-child { flex: none; width: 20px; height: 20px; color: var(--sky-primary); }
+html[data-atlas-theme] .app-shell .wb-reference-picker :is(.wb-picker-free, .wb-picker-notebook, .wb-picker-notes button) > span { display: block; flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-free strong { font-size: inherit; font-weight: 500; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-notebook small { flex: none; margin-left: auto; font-size: 12px; font-weight: 400; white-space: nowrap; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-list { display: block; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--sky-line); }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-results > .wb-picker-list:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-list > li { margin: 0; padding: 0; border: 0; border-radius: 0; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-list > li + li { margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--sky-line); }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-notes { margin: 0 0 4px 24px; padding: 0; gap: 0; border: 0; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-notes button { min-height: 48px; padding: 8px 12px; gap: 10px; border-radius: 8px; color: var(--sky-ink); font-size: 14px; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-notes button > svg:first-child { flex: none; color: var(--sky-ink-muted); }
+html[data-atlas-theme] .app-shell .wb-reference-picker :is(.wb-picker-free, .wb-picker-notebook, .wb-picker-notes button):hover:not(:disabled) { background: var(--sky-bg); }
+html[data-atlas-theme] .app-shell .wb-reference-picker :is(.wb-picker-free, .wb-picker-notebook, .wb-picker-notes button)[data-selected="true"] { background: var(--sky-teal-soft); color: var(--sky-primary); }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-check { flex: none; width: 18px; height: 18px; color: var(--sky-primary); }
+html[data-atlas-theme] .app-shell .wb-reference-picker :is(.wb-picker-free, .wb-picker-notebook, .wb-picker-notes button):focus-visible { outline-offset: -2px; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-empty-note { margin: 0; padding: 24px 12px; font-size: 14px; line-height: 1.6; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-modal-title-step { min-height: 0; overflow-y: auto; gap: 12px; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-field input { min-height: 44px; padding: 10px 12px; border: 1px solid var(--sky-line); border-radius: 10px; background: var(--sky-bg); color: var(--sky-ink); font-size: 16px; }
+html[data-atlas-theme] .app-shell .wb-reference-picker .wb-field input:is(:focus, :focus-visible) { border-color: var(--sky-focus); outline: none; box-shadow: none; }
+html[data-atlas-theme] .app-shell .wb-reference-picker[data-picker-mode="insert-note"] .wb-picker-notebook:disabled { opacity: 1; }
+html[data-atlas-theme] .app-shell[data-native-storage] .wb-reference-picker :is(.wb-search, .wb-modal-head > .wb-icon-button) { min-height: 48px; height: 48px; }
+@media (max-width: 380px) {
+  html[data-atlas-theme] .app-shell .wb-reference-picker .wb-modal-card { padding: 12px; gap: 10px; border-radius: 18px; }
+  html[data-atlas-theme] .app-shell .wb-reference-picker .wb-picker-notebook small { font-size: 11px; }
+}
+
+/* Chat models are chosen directly in the existing composer panel. */
+html[data-atlas-theme] .app-shell .wb-settings .wb-composer-tools { right: 8px; width: min(288px, calc(100% - 16px)); padding: 8px; border: 0; border-radius: 14px; background: var(--sky-surface); box-shadow: 0 6px 24px rgb(24 32 46 / 16%); }
+html[data-atlas-theme] .app-shell .wb-settings .wb-connection { gap: 2px; }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-heading { min-height: 44px; gap: 8px; padding-left: 8px; }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-heading h3 { font-size: 13px; font-weight: 500; color: var(--sky-ink-muted); }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-refresh { width: 44px; min-width: 44px; height: 44px; min-height: 44px; border: 0; background: transparent; color: var(--sky-ink-muted); }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-options { display: grid; gap: 0; min-width: 0; max-height: min(220px, 40dvh); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--sky-line-strong) transparent; margin: 0; padding: 0; border: 0; }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 44px; margin: 0; padding: 6px 8px; border: 0; border-radius: 8px; color: var(--sky-ink); font-size: 14px; line-height: 20px; cursor: pointer; }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option:hover { background: var(--sky-bg); }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option[data-selected="true"] { background: var(--sky-bg); }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 保留原生单选的键盘与读屏语义；视觉状态交给小勾和整行焦点。 */
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option input[type="radio"] { position: absolute; width: 1px; height: 1px; min-width: 0; min-height: 0; margin: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option-check { flex: none; width: 16px; height: 16px; visibility: hidden; color: var(--sky-primary); }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option[data-selected="true"] .wb-model-option-check { visibility: visible; }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option input[type="radio"]:focus-visible { outline: none; box-shadow: none; }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option:has(input:focus-visible) { outline: 1px solid var(--sky-focus); outline-offset: -1px; }
+html[data-atlas-theme] .app-shell .wb-settings .wb-model-option:has(input:disabled) { opacity: .55; cursor: default; }
+@media (forced-colors: active) {
+  html[data-atlas-theme] .app-shell .wb-settings .wb-model-option[data-selected="true"] { outline: 1px solid Highlight; outline-offset: -1px; }
+}
+
+
+/* One compact page header; native pages follow the actual visible keyboard viewport. */
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  :root { --app-topbar-h: 0px; }
+  html[data-atlas-theme] .app-shell .app-mobile-menu { top: calc(var(--native-viewport-top, 0px) + env(safe-area-inset-top, 0px) + 4px); }
+  html[data-atlas-theme] .app-shell .wb :is(.wb-chat-head, .wb-panel-head) { min-height: 56px; padding-inline-start: max(64px, calc(56px + env(safe-area-inset-left, 0px))); }
+  html[data-atlas-theme] .app-shell .wb .wb-chat-head { flex-wrap: nowrap; }
+  html[data-atlas-theme] .app-shell .wb .wb-scope-control { flex: 1 1 auto; min-width: 0; }
+  html[data-atlas-theme] .app-shell .wb .wb-scope { min-width: 0; max-width: 100%; }
+  html[data-atlas-theme] .app-shell .atlas-map-header:has(.atlas-map-context, .atlas-map-status:not(:empty)) { min-height: 56px; padding-inline-start: 64px; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-folder-list > .nb-mobile-heading { min-height: 64px; padding: 4px 16px 4px 64px; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] .nb-mobile-folder-list > .nb-mobile-heading > .nb-icon-button { position: static; margin-inline-start: auto; }
+  html[data-atlas-theme] .app-shell .notebook-page[data-mobile-layout="true"] :is(.nb-stage--pages .nb-col--pages, .nb-stage--editor .nb-col--editor) { padding-top: 48px; }
+  html[data-atlas-theme] .app-shell[data-native-storage] {
+    position: fixed;
+    inset: var(--native-viewport-top, 0px) 0 auto;
+    height: var(--native-viewport-height, 100dvh);
+    min-height: 0;
+    padding-inline: 0;
+    overflow: hidden;
+  }
+  html[data-atlas-theme] .app-shell[data-native-storage] > .app-main {
+    position: absolute;
+    inset: env(safe-area-inset-top, 0px) 0 0;
+    height: auto;
+    min-height: 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  html[data-atlas-theme] .app-shell[data-native-storage] .wb { height: 100%; }
+  html[data-atlas-theme] .app-shell[data-native-storage] .nav-drawer,
+  html[data-atlas-theme] .app-shell[data-native-storage] .drawer-scrim {
+    top: var(--native-viewport-top, 0px);
+    bottom: auto;
+    height: var(--native-viewport-height, 100dvh);
+  }
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- T4 xingji-host：无新增权限；WebView 边界与受控能力都在插件内实现，不开放导出组件。 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+</manifest>

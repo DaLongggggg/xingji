@@ -1,0 +1,8 @@
+allowBuilds:
+  # 使用包中随附的浏览器构建；不需要自定义构建的 postinstall。
+  exifreader: false
+  sharp: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - jsdom@30.0.1
+  - exifreader@4.47.0

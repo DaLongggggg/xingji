@@ -1,0 +1,4107 @@
+/* 2.0 手帐本（本地记录）样式。沿用 DESIGN.md 的纸张、深绿与橙色 token。 */
+
+/* 020-A：手帐本正文同样交给公共容器居中，不再靠左贴边。 */
+.notebook-page {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+
+.notebook-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+/* .page-heading 默认是一行 flex；本页的 eyebrow/h1/p 是三个并列子元素，
+   窄屏时会把 h1 挤成一字一行。这里改为整行堆叠。 */
+.notebook-page .page-heading {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.notebook-page .page-heading h1,
+.notebook-page .page-heading p {
+  flex: 1 1 100%;
+}
+
+.notebook-sidebar {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.notebook-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.notebook-sidebar-head h2 {
+  margin: 0;
+  font-size: var(--fs-title);
+}
+
+.notebook-sidebar ul,
+.notebook-pages ul,
+.notebook-draft-photos {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notebook-sidebar li button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.notebook-sidebar li button:hover,
+.notebook-sidebar li button[aria-current="true"] {
+  border-color: var(--green-soft);
+  background: var(--green-soft);
+}
+
+.notebook-sidebar li small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.notebook-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.notebook-legacy {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.notebook-legacy h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--fs-base);
+}
+
+.notebook-legacy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.notebook-legacy-note {
+  color: var(--ink);
+}
+
+.notebook-main {
+  display: grid;
+  gap: 20px;
+}
+
+.notebook-capture {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.notebook-capture label[for="notebook-capture-text"] {
+  font-weight: 700;
+}
+
+.notebook-capture textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  /* 020-A：手帐正文输入同样接近不透明。 */
+  background: var(--sky-text-surface);
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+}
+
+.notebook-capture-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.notebook-file {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.notebook-file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.notebook-file:focus-within {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.notebook-draft-photos li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.notebook-draft-remove {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.notebook-draft-remove:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.notebook-draft-photos img,
+.notebook-pages img,
+.notebook-legacy-photos img {
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.notebook-error {
+  margin: 0;
+  color: var(--red);
+  font-size: 13px;
+}
+
+.notebook-error-toast {
+  position: fixed;
+  z-index: 1300;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: max-content;
+  max-width: min(480px, calc(100vw - 32px));
+  max-height: 60vh;
+  align-items: center;
+  gap: 8px;
+  transform: translate(-50%, -50%);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--red);
+  border-radius: var(--radius-sm);
+  padding: 8px 8px 8px 12px;
+  background: var(--card);
+  box-shadow: var(--sky-shadow-soft);
+  color: var(--sky-ink);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.notebook-error-toast > span {
+  min-width: 0;
+}
+
+.notebook-error-toast button {
+  min-width: 44px;
+  min-height: 44px;
+  flex: none;
+  border: 0;
+  border-radius: var(--radius-xs);
+  padding: 0 10px;
+  background: transparent;
+  color: var(--sky-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notebook-error-toast button:hover,
+.notebook-error-toast button:focus-visible {
+  background: color-mix(in srgb, var(--sky-primary) 8%, var(--card));
+}
+
+.notebook-pages h2 {
+  margin: 0 0 12px;
+  font-size: var(--fs-title);
+}
+
+.notebook-pages article {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: var(--card);
+}
+
+.notebook-pages article header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.notebook-pages h3 {
+  margin: 0;
+  font-size: var(--fs-base);
+}
+
+.notebook-pages time {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.notebook-pages p {
+  margin: 0;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.notebook-readonly,
+.notebook-missing-photo {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.notebook-legacy-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.notebook-delete {
+  justify-self: start;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.notebook-delete:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.notebook-rename {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.notebook-rename input {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+}
+
+.notebook-edit-warnings {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--orange);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* 已保存页面的编辑草稿区：与新建表单区分，取消不改变原页面。 */
+.notebook-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.notebook-edit {
+  display: grid;
+  gap: 10px;
+  border: 1px dashed var(--green);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  background: var(--green-soft);
+}
+
+.notebook-edit h4 {
+  margin: 0;
+  font-size: var(--fs-base);
+}
+
+.notebook-edit label {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.notebook-edit input[type="text"],
+.notebook-edit textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+}
+
+.notebook-edit-photos {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notebook-edit-photos li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.notebook-edit-photos img {
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+  background: var(--paper);
+}
+
+.notebook-move {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.notebook-move select {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+}
+
+.notebook-manual-ref {
+  display: grid;
+  gap: 6px;
+}
+
+.notebook-manual-ref input[type="text"] {
+  flex: 1 1 180px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+}
+
+/* 014-C：地区关联编辑与只读手帐详情（沿用既有卡片/按钮风格）。 */
+.page-regions {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  background: var(--sky-surface);
+}
+
+.page-regions-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-regions-empty {
+  font-size: 13px;
+  color: var(--sky-ink-muted);
+}
+
+.page-regions-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page-regions-chips li {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(23, 104, 155, 0.1);
+  font-size: 12px;
+}
+
+.page-regions-chips li.is-unknown {
+  background: rgba(224, 138, 60, 0.18);
+}
+
+.page-regions-editor {
+  display: grid;
+  gap: 10px;
+}
+
+.page-regions-selected {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page-regions-selected li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+/* 024 追加、本轮调整：先选省再选市的两级选择器（单列步骤式）。 */
+.page-regions-select {
+  display: grid;
+  gap: 12px;
+}
+
+.page-regions-picker {
+  display: grid;
+  gap: 16px;
+}
+
+.page-regions-column {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  align-content: start;
+}
+
+.page-regions-column h4 {
+  margin: 0;
+  font-size: var(--fs-base);
+}
+
+/*
+ * 省/城市列表保留滚动，但隐藏视觉滚动轨道（对齐观感），
+ * 仍可用滚轮/触摸板/键盘滚动。
+ */
+.page-regions-step-list {
+  display: grid;
+  gap: 2px;
+  max-height: 240px;
+  margin: 0;
+  padding: 2px 4px 2px 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  list-style: none;
+}
+
+.page-regions-step-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.page-regions-province-row {
+  display: flex;
+  width: 100%;
+  min-height: 32px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 0;
+  border-radius: var(--radius-xs);
+  padding: 0 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.page-regions-province-row:hover {
+  background: rgba(45, 80, 110, 0.05);
+}
+
+.page-regions-province-row small {
+  color: var(--sky-ink-muted);
+  font-size: 11px;
+}
+
+.page-regions-step-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-regions-back {
+  border: 0;
+  border-radius: var(--radius-xs);
+  padding: 2px 6px;
+  background: transparent;
+  color: var(--sky-primary);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.page-regions-back:hover {
+  background: rgba(45, 80, 110, 0.05);
+}
+
+.page-regions-step-list label {
+  display: flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--radius-xs);
+  padding: 0 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.page-regions-step-list label:hover {
+  background: rgba(45, 80, 110, 0.05);
+}
+
+.page-regions-column input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--sky-primary);
+}
+
+.page-detail {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  background: var(--sky-surface);
+}
+
+.page-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.page-detail-head h3 {
+  margin: 2px 0 0;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.page-detail-notebook {
+  margin: 0;
+  font-size: 12px;
+  color: var(--sky-ink-muted);
+}
+
+.page-detail-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--sky-ink-muted);
+}
+
+/* 只读详情把照片排成缩略图网格；正文段落跨满整行，保持阅读顺序。 */
+.page-detail-body {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: start;
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  font-size: 13.5px;
+}
+
+.page-detail-body > p {
+  grid-column: 1 / -1;
+  margin: 0;
+  line-height: 1.65;
+}
+
+.page-detail-body figure {
+  min-width: 0;
+  margin: 0;
+}
+
+.page-detail-view-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-xs);
+  background: var(--sky-text-surface);
+  cursor: zoom-in;
+}
+
+.page-detail-view-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+.page-detail-body figcaption {
+  margin-top: 3px;
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--sky-ink-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notebook-missing-photo {
+  grid-column: 1 / -1;
+}
+
+.page-detail-head-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.page-detail-open-note {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--sky-ink-muted);
+  cursor: pointer;
+}
+
+.page-detail-open-note::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+
+.page-detail-open-note:hover {
+  background: color-mix(in srgb, var(--sky-primary) 9%, transparent);
+  color: var(--sky-ink);
+}
+
+.page-detail-open-note:focus-visible {
+  outline: 2px solid var(--sky-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 380px) {
+  .page-detail-body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 015：按省选择城市（不一次铺数百个选项）；两级选择器接管后保留列表高度约束。 */
+.page-regions-city-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+/* 020-B：手帐本大编辑工作区（顶部紧凑条 + 可收起列表 + 中央大编辑区）。 */
+/*
+ * 本轮调整：桌面端三栏常驻，逐级返回按钮（本→篇→正文）没有实际作用，
+ * 统一隐藏；手机层级（≤780px）仍需要它们逐级返回，保持原状。
+ */
+@media (min-width: 781px) and (min-height: 601px), (min-width: 781px) and (pointer: fine), (min-width: 1101px) {
+  /* .nb-icon-button 在文件更后处把 display 设为 inline-flex，需更高特异性压过。 */
+  .nb-icon-button.nb-stage-back {
+    display: none;
+  }
+}
+
+.notebook-workbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px 14px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  background: var(--sky-glass);
+  box-shadow: var(--sky-shadow-soft);
+  -webkit-backdrop-filter: blur(var(--sky-blur));
+  backdrop-filter: blur(var(--sky-blur));
+}
+
+.notebook-workbar-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+
+.notebook-workbar-field > span {
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+}
+
+.notebook-workbar-field select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  background: var(--sky-text-surface);
+  color: var(--sky-ink);
+  font: inherit;
+}
+
+.notebook-save-state {
+  margin-left: auto;
+  align-self: center;
+  min-width: 64px;
+  color: var(--sky-ink-muted);
+  font-size: 13px;
+  text-align: right;
+}
+
+.notebook-panel-toggle {
+  white-space: nowrap;
+}
+
+/* 列表收起时把宽度让给中央编辑区。 */
+.notebook-layout.is-panel-collapsed {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 未保存离开确认：与编辑区同宽，不遮整屏。 */
+.notebook-leave-confirm {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--sky-line-strong);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  background: var(--sky-glass-strong);
+  box-shadow: var(--sky-shadow-soft);
+}
+
+.notebook-leave-confirm p {
+  margin: 0;
+  color: var(--sky-ink-muted);
+  font-size: 13px;
+}
+
+/* 中央大编辑区 */
+.notebook-stage {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  /* 长文编辑区接近不透明，不让底纹穿透影响阅读。 */
+  background: var(--sky-text-surface);
+  box-shadow: var(--sky-shadow);
+}
+
+.notebook-stage-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--sky-line);
+  padding-bottom: 10px;
+}
+
+.notebook-stage-head strong {
+  font-size: 17px;
+}
+
+.notebook-stage .notebook-edit {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* 编辑方式两个按钮不要贴在一起。 */
+.notebook-edit-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 手机：先选篇，再进入编辑；编辑时列表收成一条。 */
+@media (max-width: 900px) {
+  .notebook-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .notebook-workbar {
+    align-items: stretch;
+  }
+
+  .notebook-save-state {
+    margin-left: 0;
+    text-align: left;
+  }
+}
+
+/* ===== 021：原生笔记式三栏工作区 ===== */
+.app-main:has(.notebook-page) {
+  width: 100%;
+  max-width: none;
+  padding-bottom: 16px;
+}
+
+.notebook-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 92px);
+  min-height: 240px;
+  max-width: none;
+}
+
+.nb-workspace {
+  display: grid;
+  grid-template-columns: 200px 260px minmax(0, 1fr);
+  gap: 0;
+  /*
+   * 明确高度：三栏各自内部滚动，页面本身不整页滚动。
+   * 这样 `.nb-editor-bar` 可以 sticky 在右栏顶部，正文滚动时工具栏不动。
+   */
+  height: calc(100dvh - 190px);
+  min-height: 420px;
+  flex: 1;
+  /* 工作区是整页画布，不做成圆角卡片：靠三栏自己的分隔线表达结构。 */
+  background: var(--sky-text-surface);
+  overflow: hidden;
+  /*
+   * 折叠/展开目录栏时过渡列宽：grid-template-columns 在现代浏览器可插值，
+   * 三栏会一起平滑变化（被折叠的列收窄、正文列相应变宽），不再是瞬间跳变。
+   * prefers-reduced-motion 下由 responsive.css 统一压成 0.01ms。
+   */
+  transition: grid-template-columns 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/*
+ * 桌面：工作区铺满整页——上贴固定顶栏、左贴导航栏、下到视口底部。
+ * 之前 .app-main 保留了 76px 上 / 40px 左右 / 16px 下的通用内边距，
+ * 于是它看起来像一张浮在灰底上的圆角卡片。
+ * 注意：这段必须放在 .notebook-page 基础规则**之后**——媒体查询不增加
+ * 特异性，同特异性下靠后者生效。
+ */
+@media (min-width: 781px) and (min-height: 601px), (min-width: 781px) and (pointer: fine), (min-width: 1101px) {
+  .app-main:has(.notebook-page) {
+    height: 100dvh;
+    min-height: 0;
+    padding: calc(var(--app-topbar-h) + env(safe-area-inset-top, 0px)) 0 0;
+    overflow: hidden;
+  }
+
+  .notebook-page {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .nb-workspace { min-height: 0; }
+}
+
+.nb-col {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--sky-line);
+  overflow: hidden;
+}
+
+.nb-col:last-child {
+  border-right: 0;
+}
+
+.nb-col--notebooks {
+  background: var(--sky-glass);
+}
+
+.nb-col-body {
+  display: flex;
+  /* min-height:0 让内部列表可以真正滚动；再给一个下限，避免列被压成 0 高。 */
+  min-height: 0;
+  max-height: none;
+  flex: 1;
+  flex-direction: column;
+}
+
+/*
+ * 目录栏头：标题/名称占满剩余宽度，右侧是「新建 + / 收起」两个图标按钮。
+ * 内边距左右对称（原来左 12 / 右 10），让最右图标与分隔线的距离
+ * 和标题距左边缘一致。
+ */
+.nb-col-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--sky-line);
+  padding: 10px 12px;
+}
+
+/*
+ * 两个图标按钮收成一组：头部的 8px 间距留给「标题 ↔ 图标簇」，
+ * 图标之间再收 6px（净 2px）。36px 的按钮之间仍保留 2px 间隙，
+ * 因此触控目标不重叠（实测字形间距 26px → 22px，视觉上连成一对）。
+ */
+.nb-col-head .nb-icon-button + .nb-icon-button {
+  margin-left: -6px;
+}
+
+/*
+ * 栏头高度契约：目录栏的高度由里面的 36px 图标按钮撑起
+ * （--control-sm 36 + 上下内边距 20 + 下边框 1 = 57px）。
+ * 正文栏在「未选择篇」时只有一行标题，只有 43px，两条下边框就会错位。
+ * 因此两类栏头共用同一个下限：空态下齐平，选中篇后按钮变多、
+ * 换行时仍可自然长高。触控档图标按钮变 44px，下限同步抬到 65px。
+ */
+.nb-col-head,
+.nb-editor-bar {
+  min-height: calc(var(--control-sm) + 21px);
+}
+
+@media (pointer: coarse) {
+  .nb-col-head,
+  .nb-editor-bar {
+    min-height: calc(var(--control-md) + 21px);
+  }
+}
+
+.nb-col-head strong {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.nb-col-title {
+  overflow: hidden;
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-icon-button {
+  display: inline-flex;
+  width: var(--control-sm);
+  height: var(--control-sm);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.nb-icon-button:hover {
+  border-color: var(--sky-line);
+  background: rgba(45, 80, 110, 0.06);
+}
+
+.nb-icon-button:disabled {
+  /* 与全站禁用态一致：用弱化颜色而不是整体 opacity，图标保持清晰可辨。 */
+  color: var(--sky-ink-muted);
+  cursor: not-allowed;
+}
+
+.nb-icon-back {
+  transform: rotate(180deg);
+}
+
+/* 列表：细分隔线 + 选中底色，不用卡片。 */
+.nb-list {
+  min-height: 0;
+  flex: 1;
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.nb-list li + li {
+  border-top: 1px solid var(--sky-line);
+}
+
+.nb-list-item {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-left: 3px solid transparent;
+  padding: 9px 10px 9px 9px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-list-item:hover {
+  background: rgba(45, 80, 110, 0.05);
+}
+
+.nb-list-item.is-active {
+  border-left-color: var(--sky-primary);
+  background: rgba(23, 104, 155, 0.09);
+}
+
+.nb-list-item > span,
+.nb-list-item > strong {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-list-item small {
+  color: var(--sky-ink-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* 篇条目：标题 + 摘要 + 时间，纵向排布。 */
+.nb-col--pages .nb-list-item {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+
+.nb-col--pages .nb-list-item p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/*
+ * 本内搜索框（PagesColumn）。类名曾是 .nb-search，与 P5「跨本检索」面板
+ * （notebook-search-panel 的 <section className="nb-search">）撞名，
+ * 导致面板继承这里的 display:flex + padding:8px 10px：
+ * 图标多缩进 10px、并且 header 收成内容宽，右侧箭头贴不到行尾。
+ * 改名为 .nb-search-input，两个组件各自独立。
+ */
+.nb-search-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--sky-line);
+  padding: 8px 10px;
+  color: var(--sky-ink-muted);
+}
+
+.nb-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+.nb-empty {
+  margin: 0;
+  padding: 12px;
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+  line-height: 1.7;
+}
+
+/* 本栏顶部的手帐本名称输入：改名入口在顶部。 */
+/* 本轮调整：名称与按钮同行，不再有单独的名称行（--name 规则移除）。 */
+
+.nb-notebook-name {
+  min-width: 0;
+  width: 100%;
+  flex: 1;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  padding: 5px 7px;
+  background: transparent;
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.nb-notebook-name:hover {
+  border-color: var(--sky-line);
+  background: var(--sky-text-surface);
+}
+
+.nb-notebook-name:focus {
+  border-color: var(--sky-primary);
+  background: var(--sky-text-surface);
+  outline: 2px solid var(--sky-focus);
+  outline-offset: 1px;
+}
+
+.nb-rename {
+  display: grid;
+  gap: 4px;
+  border-top: 1px solid var(--sky-line);
+  padding: 8px 10px;
+  color: var(--sky-ink-muted);
+  font-size: 11px;
+}
+
+.nb-rename input {
+  min-height: 32px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-xs);
+  padding: 0 8px;
+  background: var(--sky-text-surface);
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: 12px;
+}
+
+/* “更多”：本管理与备份/旧游记入口，默认收起但一定可达。 */
+.nb-more {
+  border-top: 1px solid var(--sky-line);
+}
+
+.nb-more > summary {
+  padding: 9px 12px;
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.nb-more-body {
+  max-height: 52vh;
+  padding: 0 10px 12px;
+  overflow-y: auto;
+}
+
+/* 快速新建（原表单，收进中栏底部折叠区）。 */
+.nb-capture-toggle {
+  min-height: var(--control-md);
+  border: 0;
+  border-top: 1px solid var(--sky-line);
+  padding: 9px 12px;
+  background: transparent;
+  color: var(--sky-ink-muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-capture {
+  border-top: 1px solid var(--sky-line);
+  padding: 10px;
+}
+
+/* 右栏：工具栏 + 正文。 */
+.nb-col--editor {
+  /* min-height:0 让内部正文成为唯一的滚动区（sticky 工具栏才能生效）。 */
+  position: relative;
+  min-height: 0;
+  background: var(--sky-text-surface);
+}
+
+/*
+ * 工具栏固定在右栏顶部：不随正文上下滚动，窄屏自动换行。
+ * 它是右栏 flex 列里的固定项（flex: 0 0 auto），正文区自己滚动。
+ */
+.nb-editor-bar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  border-bottom: 1px solid var(--sky-line);
+  padding: 10px 12px;
+  background: var(--sky-text-surface);
+}
+
+.nb-editor-title {
+  overflow: hidden;
+  flex: 1;
+  min-width: 120px;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * 本轮调整：标题输入上移到编辑栏——与原顶栏标题同位同观感，
+ * 直接可编辑；placeholder 与焦点用下划线提示，不占第二行。
+ */
+.nb-editor-bar .nb-editor-title-input {
+  height: auto;
+  border: 0;
+  border-radius: var(--radius-xs);
+  padding: 2px 4px;
+  background: transparent;
+  color: var(--sky-ink);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.nb-editor-bar .nb-editor-title-input::placeholder {
+  color: var(--sky-ink-muted);
+  font-weight: 600;
+}
+
+.nb-editor-bar .nb-editor-title-input:focus-visible {
+  outline: none;
+  box-shadow: inset 0 -2px 0 var(--sky-primary);
+}
+
+/*
+ * 024 追加：信息面板/移动面板/地区关联都改成**上层弹层**，
+ * 浮在正文之上，不再插入文档流把编辑区挤走。
+ * 锚点：右栏顶部工具栏下方，右侧留出边距。
+ */
+.nb-page-info,
+.nb-page-menu,
+.nb-popover {
+  position: absolute;
+  z-index: 30;
+  top: 58px;
+  right: 12px;
+  display: grid;
+  gap: 8px;
+  width: min(420px, calc(100% - 24px));
+  max-height: calc(100% - 80px);
+  border: 1px solid var(--sky-line-strong);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: var(--sky-text-surface);
+  box-shadow: var(--sky-shadow);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.nb-popover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--sky-line);
+  padding-bottom: 8px;
+}
+
+/*
+ * 本轮调整：关联地区弹层整体不滚动——标题与底部按钮固定，
+ * 只有中间的选择区（.page-regions-select）内部滚动。
+ */
+.nb-region-popover {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.nb-region-popover > .page-regions-select {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.nb-region-popover > .capture-actions {
+  flex: 0 0 auto;
+}
+
+.nb-popover-head strong {
+  font-size: 14px;
+}
+
+.nb-confirm-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.nb-readonly-pane {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+  gap: 12px;
+  align-content: start;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.nb-readonly-pane p {
+  margin: 0;
+  line-height: 1.8;
+}
+
+/*
+ * 未选中任何一篇：右栏不出现功能面板与编辑框，只留一块留白 + 居中水印。
+ * 用 display:none 而不是条件渲染卸载组件——面板的展开状态、以及挂载时的
+ * 恢复扫描（如 P8 light agent）都不该因为切页被反复重置。
+ */
+.nb-col--editor[data-has-page="false"] .nb-trips,
+.nb-col--editor[data-has-page="false"] .nb-analysis {
+  display: none;
+}
+
+.nb-watermark-pane {
+  /* 覆盖 readonly pane 的顶部对齐，改为整块居中。 */
+  align-content: center;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.nb-watermark {
+  margin: 0;
+  /* 像纸上的底纹：大字号、低对比、不可选中，不冒充可操作内容。 */
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(23, 104, 155, 0.16);
+  user-select: none;
+}
+
+.nb-readonly-pane img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+/* 021-B：连续编辑区——标题 + 正文共用一个滚动容器，占满右栏可用高度。 */
+.nb-col--editor .nb-edit-window {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.nb-col--editor .notebook-edit {
+  display: flex;
+  min-height: 0;
+  height: 0;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  /* 正文区是右栏唯一的滚动容器；工具栏在它外面，保持固定。 */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* 本轮调整：独立大号标题输入已移除（标题上移到编辑栏）。 */
+
+/* 正文：唯一的滚动容器，去掉外框，只留舒适边距。 */
+.nb-col--editor .journal-markdown-editor {
+  display: flex;
+  /*
+   * 编辑器保持自然高度（不被 flex 压缩），滚动交给外层 `.notebook-edit`：
+   * 这样工具栏始终固定，正文是右栏唯一的滚动容器。
+   * 之前这里是 flex:1 + overflow:auto，MDXEditor 内部被压成固定高并吃掉溢出，
+   * 表现为“内容长了但滚不动”。
+   */
+  min-height: 0;
+  flex: 0 0 auto;
+  flex-direction: column;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.nb-col--editor .journal-markdown-toolbar {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  border-bottom: 1px solid var(--sky-line);
+  padding: 4px 10px;
+  background: var(--sky-glass-strong);
+}
+
+.nb-col--editor .journal-batch-image-button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--sky-ink);
+  cursor: pointer;
+}
+
+.nb-col--editor .journal-batch-image-button:hover {
+  background: var(--sky-bg);
+}
+
+.nb-col--editor .journal-batch-image-button:focus-visible {
+  outline: 2px solid var(--sky-focus);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .nb-col--editor .journal-batch-image-button {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/*
+ * 021-B：正文只保留一个滚动容器（页面本身）。MDXEditor 的包装层保持默认
+ * block 流，正文自然增高；下方给一块最小可写高度，避免空篇只剩一条缝。
+ */
+.nb-col--editor .journal-markdown-content {
+  min-height: calc(100vh - 320px);
+  padding: 18px 20px 48px;
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.nb-col--editor .journal-markdown-content [data-editor-block-type="image"] {
+  max-width: 100%;
+}
+
+.nb-col--editor .journal-markdown-content img {
+  max-width: 100%;
+  max-height: none;
+  margin: 12px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.nb-col--editor .journal-markdown-content [class*="editImageToolbar"] {
+  top: 8px;
+  right: 8px;
+  padding: 0;
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.nb-col--editor .journal-markdown-content [data-editor-block-type="image"]:hover [class*="editImageToolbar"],
+.nb-col--editor .journal-markdown-content [data-editor-block-type="image"]:focus-within [class*="editImageToolbar"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nb-col--editor .journal-markdown-content [class*="editImageToolbar"] button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid var(--sky-line-strong);
+  border-radius: 8px;
+  background: var(--sky-text-surface);
+  color: var(--sky-ink);
+  cursor: pointer;
+}
+
+.nb-col--editor .journal-markdown-content [class*="editImageToolbar"] button svg {
+  display: none;
+}
+
+.nb-col--editor .journal-markdown-content [class*="editImageToolbar"] button::after {
+  content: "×";
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.nb-col--editor .journal-markdown-content [class*="editImageToolbar"] button:focus-visible {
+  outline: 2px solid var(--sky-focus);
+  outline-offset: 2px;
+}
+
+.nb-col--editor .journal-markdown-content [class*="imageResizer"] {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  touch-action: none;
+}
+
+@media (pointer: coarse) {
+  .nb-col--editor .journal-markdown-content [class*="imageResizer"]::before {
+    position: absolute;
+    inset: -19px;
+    content: "";
+  }
+}
+
+.nb-image-deck {
+  flex: 0 0 auto;
+  min-width: 0;
+  border-bottom: 1px solid var(--sky-line);
+  padding: 6px 16px 2px;
+  background: var(--sky-text-surface);
+}
+
+.nb-image-deck-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+}
+
+.nb-image-deck-heading strong {
+  color: var(--sky-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nb-image-deck-list {
+  display: flex;
+  max-width: 100%;
+  gap: 0;
+  overflow-x: auto;
+  align-items: center;
+  margin: 0;
+  padding: 14px 10px 12px 3px;
+  list-style: none;
+  scrollbar-width: thin;
+}
+
+.nb-image-deck-list li {
+  position: relative;
+  z-index: var(--deck-order);
+  flex: 0 0 auto;
+  margin-left: -30px;
+  transform: translateY(calc(var(--deck-depth) * 2px)) rotate(calc(var(--deck-depth) * -0.5deg));
+  transition: transform 180ms ease;
+}
+
+.nb-image-deck-list li:first-child {
+  margin-left: 0;
+}
+
+.nb-image-deck-list li.is-active {
+  transform: translateY(-7px) rotate(0) scale(1.04);
+}
+
+.nb-image-deck--editable .nb-image-deck-list li:is(:hover, :has(:focus-visible)) {
+  z-index: var(--deck-raised-order);
+  transform: translateY(-7px) rotate(0) scale(1.04);
+}
+
+.nb-image-deck-card {
+  position: relative;
+  display: block;
+  width: 106px;
+  height: 76px;
+  overflow: hidden;
+  border: 1px solid var(--sky-line-strong);
+  border-radius: 7px;
+  padding: 0;
+  background: var(--sky-bg);
+  box-shadow: 0 5px 14px rgba(25, 47, 43, 0.16);
+  cursor: pointer;
+}
+
+.nb-image-deck-list li.is-active .nb-image-deck-card {
+  border-color: var(--sky-focus);
+  box-shadow: 0 7px 18px rgba(25, 47, 43, 0.22);
+}
+
+.nb-image-deck--editable .nb-image-deck-list li:is(:hover, :has(:focus-visible)) .nb-image-deck-card {
+  border-color: var(--sky-focus);
+  box-shadow: 0 7px 18px rgba(25, 47, 43, 0.22);
+}
+
+.nb-image-deck-remove {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--sky-line-strong);
+  border-radius: 50%;
+  background: var(--sky-text-surface);
+  color: var(--sky-ink);
+  box-shadow: var(--sky-shadow-soft);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nb-image-deck--editable .nb-image-deck-list li:is(:hover, :has(:focus-visible), .is-active) .nb-image-deck-remove {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nb-image-deck-remove:hover { color: var(--sky-primary); }
+.nb-image-deck-remove:focus-visible {
+  outline: 2px solid var(--sky-focus);
+  outline-offset: 2px;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .nb-image-deck-remove { width: 44px; height: 44px; top: -6px; right: -6px; border: 0; background: transparent; box-shadow: none; opacity: 1; pointer-events: auto; }
+  .nb-image-deck-remove::before { content: ""; position: absolute; inset: 9px; border: 1px solid var(--sky-line-strong); border-radius: 50%; background: var(--sky-text-surface); }
+  .nb-image-deck-remove > svg { position: relative; }
+}
+
+.nb-image-deck-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nb-image-deck-card:focus-visible {
+  outline: 2px solid var(--sky-focus);
+  outline-offset: 2px;
+}
+
+.nb-image-deck-placeholder {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: var(--sky-ink-muted);
+  font-size: 11px;
+}
+
+.nb-image-deck-number {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  display: grid;
+  min-width: 19px;
+  height: 19px;
+  place-items: center;
+  border-radius: 4px;
+  padding-inline: 3px;
+  background: rgba(16, 35, 34, 0.76);
+  color: white;
+  font-size: 11px;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .nb-image-deck {
+    padding-inline: 14px;
+  }
+
+  .nb-image-deck-card {
+    width: 94px;
+    height: 70px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-image-deck-list li {
+    transition: none;
+  }
+}
+
+@media (hover: none) {
+  .nb-col--editor .journal-markdown-content [data-editor-block-type="image"]:has([class*="focusedImage"]) [class*="editImageToolbar"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nb-col--editor .journal-markdown-content [class*="editImageToolbar"] button {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-col--editor .journal-markdown-content [class*="editImageToolbar"] {
+    transition: none;
+  }
+}
+
+.nb-col--editor .journal-editor-loading {
+  min-height: 200px;
+  border: 0;
+  background: transparent;
+}
+
+/* 兼容模式（编号文字块）默认收起，放在“更多”里。 */
+.nb-compat {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--sky-line);
+  padding: 6px 12px 10px;
+}
+
+.nb-compat > summary {
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.nb-compat[open] {
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.nb-col--editor .notebook-edit textarea,
+.nb-col--editor .notebook-edit input[type="text"] {
+  background: var(--sky-text-surface);
+}
+
+/* 021：只让手帐本页用满可用宽度（约 1440px），不影响记录/地图/设置。 */
+.app-main:has(.notebook-page) {
+  max-width: none;
+}
+
+/* Medium widths retain independently collapsible directory columns. */
+@media (max-width: 1180px) {
+  .nb-workspace {
+    grid-template-columns: 170px 210px minmax(0, 1fr);
+  }
+}
+
+/* 手机：一次只显示一层：本 → 篇 → 正文，都提供返回。 */
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  .nb-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .nb-stage--notebooks .nb-col--pages,
+  .nb-stage--notebooks .nb-col--editor,
+  .nb-stage--pages .nb-col--notebooks,
+  .nb-stage--pages .nb-col--editor,
+  .nb-stage--editor .nb-col--notebooks,
+  .nb-stage--editor .nb-col--pages {
+    display: none;
+  }
+
+  /* 手机上本栏仍然可达（stage=notebooks），不隐藏。 */
+  .nb-stage--notebooks .nb-col--notebooks,
+  .nb-stage--pages .nb-col--pages,
+  .nb-stage--editor .nb-col--editor {
+    display: flex;
+  }
+
+  .nb-editor-bar .nb-editor-title {
+    flex-basis: 100%;
+  }
+
+  .nb-collapse-button {
+    display: none;
+  }
+}
+
+.nb-rail-toggle {
+  display: none;
+}
+@media (min-width: 781px) and (min-height: 601px), (min-width: 781px) and (pointer: fine), (min-width: 1101px) {
+  /*
+   * 折叠动画：列宽在上面的 .nb-workspace 过渡；被折叠列的内容立刻让位，
+   * 窄栏图标用一段入场动画淡入 —— display:none → inline-flex 之间无法
+   * 过渡，用 animation 才能让「出现」也有缓动，并且能延后到列宽收窄之后。
+   */
+  @keyframes nb-rail-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .nb-workspace[data-notebooks-collapsed="true"] {
+    grid-template-columns: 44px 260px minmax(0, 1fr);
+  }
+  .nb-workspace[data-pages-collapsed="true"] {
+    grid-template-columns: 200px 44px minmax(0, 1fr);
+  }
+  .nb-workspace[data-notebooks-collapsed="true"][data-pages-collapsed="true"] {
+    grid-template-columns: 44px 44px minmax(0, 1fr);
+  }
+  .nb-workspace[data-notebooks-collapsed="true"] > .nb-col--notebooks > :not(.nb-rail-toggle),
+  .nb-workspace[data-pages-collapsed="true"] > .nb-col--pages > :not(.nb-rail-toggle) {
+    display: none;
+  }
+  .nb-workspace[data-notebooks-collapsed="true"] > .nb-col--notebooks,
+  .nb-workspace[data-pages-collapsed="true"] > .nb-col--pages {
+    padding: 0;
+    overflow: hidden;
+  }
+  .nb-workspace[data-notebooks-collapsed="true"] > .nb-col--notebooks > .nb-rail-toggle,
+  .nb-workspace[data-pages-collapsed="true"] > .nb-col--pages > .nb-rail-toggle {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    margin-top: 8px;
+    animation: nb-rail-in 180ms cubic-bezier(0.4, 0, 0.2, 1) 60ms both;
+  }
+}
+
+/* ===== 024：垃圾桶与删除入口 ===== */
+.nb-trash-entry {
+  min-height: var(--control-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  border: 0;
+  border-top: 1px solid var(--sky-line);
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--sky-ink-muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-trash-entry:hover,
+.nb-trash-entry.is-active {
+  background: rgba(45, 80, 110, 0.06);
+  color: var(--sky-ink);
+}
+
+.nb-trash-entry em {
+  margin-left: auto;
+  border-radius: 999px;
+  padding: 1px 7px;
+  background: var(--sky-primary);
+  color: var(--sky-on-primary);
+  font-size: 11px;
+  font-style: normal;
+}
+
+/* 收起成窄栏时只留图标，仍然可点、有 aria-label。 */
+.nb-col--notebooks[data-collapsed="true"] .nb-trash-entry span,
+.nb-col--notebooks[data-collapsed="true"] .nb-trash-entry em {
+  display: none;
+}
+
+.nb-trash {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--sky-line);
+  background: var(--sky-glass);
+  overflow: hidden;
+}
+
+.nb-trash-note {
+  margin: 0;
+  padding: 8px 12px;
+  color: var(--sky-ink-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.nb-trash-list {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.nb-trash-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid var(--sky-line);
+  padding: 10px 12px;
+}
+
+.nb-trash-list li > div {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 2px;
+}
+
+.nb-trash-list strong {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-trash-list small {
+  color: var(--sky-ink-muted);
+  font-size: 11px;
+}
+
+.nb-trash-target {
+  min-height: 32px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-xs);
+  background: var(--sky-text-surface);
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: 12px;
+}
+
+.nb-trash-empty {
+  margin: 10px 12px;
+}
+
+/* 垃圾桶作为工作区里的一栏：宽屏并排，窄屏覆盖在篇列表之上。 */
+.nb-workspace.is-trash-open {
+  grid-template-columns: 200px 300px 260px minmax(0, 1fr);
+}
+
+@media (max-width: 1180px) {
+  .nb-workspace.is-trash-open {
+    grid-template-columns: 260px 300px minmax(0, 1fr);
+  }
+}
+
+/* 窄屏：正文区变窄，工具栏靠 flex-wrap 自动换行；工作区高度扣掉手机底栏。 */
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  .nb-workspace {
+    height: calc(100dvh - 250px);
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  .nb-workspace.is-trash-open {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nb-workspace.is-trash-open .nb-col--pages,
+  .nb-workspace.is-trash-open .nb-col--editor {
+    display: none;
+  }
+}
+
+/* 024：自动保存的状态色与图标按钮触屏尺寸。 */
+.notebook-save-state[data-status="failed"],
+.notebook-save-state[data-status="conflict"] {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.notebook-save-state[data-status="saved"] {
+  color: var(--sky-primary);
+}
+
+@media (pointer: coarse) {
+  .nb-icon-button,
+  .nb-trash-entry {
+    min-height: var(--control-md);
+  }
+
+  /* 桌面 36px 紧凑档 → 触屏放宽到正方形 44px。 */
+  .nb-icon-button {
+    width: var(--control-md);
+    height: var(--control-md);
+  }
+}
+
+/* ===== 024 更新：覆盖式居中确认弹窗 + 工具栏小图标 ===== */
+.nb-dialog-layer {
+  position: fixed;
+  z-index: 900;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.nb-dialog-scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(32, 74, 108, 0.32);
+  cursor: default;
+}
+
+.nb-dialog {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  gap: 12px;
+  border: 1px solid var(--sky-line-strong);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: var(--sky-text-surface);
+  box-shadow: var(--sky-shadow);
+  overflow-y: auto;
+}
+
+.nb-dialog--permanent {
+  border-color: rgba(182, 68, 50, 0.45);
+}
+
+.nb-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.nb-dialog-head strong {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.nb-dialog-body {
+  display: grid;
+  gap: 8px;
+}
+
+.nb-dialog-body p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.nb-dialog-note {
+  color: var(--sky-ink-muted);
+}
+
+.nb-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.nb-dialog-confirm {
+  min-height: 36px;
+}
+
+.nb-toolbar-note {
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+}
+
+.nb-icon-danger:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* 024：工具栏里的“选择图片”按钮——图标 + 文字，明确可点。 */
+.nb-pick-image {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--sky-primary);
+  border-radius: 999px;
+  padding: 0 12px;
+  background: rgba(45, 80, 110, 0.08);
+  color: var(--sky-primary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nb-pick-image:hover {
+  background: rgba(23, 104, 155, 0.14);
+}
+
+.nb-pick-image:focus-within {
+  outline: 3px solid var(--sky-focus);
+  outline-offset: 2px;
+}
+
+.nb-pick-image input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (pointer: coarse) {
+  .nb-pick-image {
+    min-height: 44px;
+  }
+}
+
+/* 图片表单复用 NotebookDialog 的遮罩、定位和焦点管理。 */
+.nb-image-dialog-fields { display: grid; gap: 12px; }
+.nb-image-dialog-field {
+  display: grid;
+  gap: 6px;
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+}
+
+.nb-image-dialog-field input[type="text"] {
+  min-height: 36px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  background: var(--sky-text-surface);
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.nb-image-dialog-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.nb-image-dialog-filename {
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+}
+
+.nb-image-dialog-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------
+   P2：单篇 AI 整理（编辑区上方的内联面板）。
+   覆盖式/内联，不改变三栏结构；窄屏适配见 responsive.css。
+   ------------------------------------------------------------------ */
+.nb-organize {
+  border-bottom: 1px solid var(--line);
+  background: rgba(23, 104, 155, 0.045);
+}
+
+.nb-organize-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 10px;
+}
+
+.nb-organize-toggle {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-organize-headline {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--muted);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-organize-toggle svg {
+  flex: 0 0 auto;
+  color: var(--sky-primary);
+}
+
+.nb-organize-chevron {
+  transition: transform 140ms ease;
+}
+
+.nb-organize-chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.nb-organize-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.nb-organize-message {
+  margin: 0;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: var(--sky-glass-strong);
+  color: var(--ink);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.nb-organize[data-status="conflict"] .nb-organize-message,
+.nb-organize[data-status="failed"] .nb-organize-message {
+  background: rgba(182, 68, 50, 0.1);
+  color: var(--red);
+}
+
+.nb-organize-recover {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border: 1px dashed var(--sky-line-strong);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.nb-organize-recover button {
+  border: 1px solid var(--sky-line-strong);
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: var(--card);
+  color: var(--sky-primary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.nb-organize-diff {
+  display: grid;
+  gap: 10px;
+  max-height: min(52vh, 520px);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  background: var(--card);
+  overscroll-behavior: contain;
+}
+
+.nb-organize-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.nb-organize-block {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.nb-organize-block[data-changed="true"] {
+  border-color: var(--sky-line-strong);
+  background: rgba(23, 104, 155, 0.03);
+}
+
+.nb-organize-block > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.nb-organize-block-flag {
+  border-radius: 999px;
+  padding: 1px 8px;
+  background: var(--green-soft);
+  color: var(--sky-primary);
+}
+
+.nb-organize-block[data-changed="false"] .nb-organize-block-flag {
+  background: rgba(45, 80, 110, 0.06);
+  color: var(--muted);
+}
+
+.nb-organize-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.nb-organize-pair h4 {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+/* 模型返回的正文一律按纯文本呈现（不注入 HTML），保留换行与空行。 */
+.nb-organize-text {
+  margin: 0;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.nb-organize-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.nb-organize-busy {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+/* 应用窗口：暂时冻结编辑输入，避免“最终保存→AI提交→刷新”之间丢字。 */
+.nb-edit-window.is-locked {
+  position: relative;
+}
+
+.nb-edit-window.is-locked .journal-markdown-content,
+.nb-edit-window.is-locked .journal-markdown-toolbar {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.capture-ai-panel { border: 1px solid var(--sky-line); border-radius: var(--radius-sm); padding: 12px; margin: 12px 0; overflow-wrap: anywhere; }
+.capture-ai-panel fieldset { border: 0; padding: 8px 0; display: grid; gap: 10px; min-width: 0; }
+.capture-ai-panel select, .capture-ai-panel textarea, .capture-ai-panel input:not([type="checkbox"]) { width: 100%; max-width: 100%; box-sizing: border-box; }
+.capture-ai-panel textarea { min-height: 100px; }
+.capture-ai-panel button { margin: 4px; }
+
+/* —— P4：本册只读分析面板（与单篇整理面板并列，不覆盖其状态） —— */
+.nb-analysis {
+  border-bottom: 1px solid var(--line);
+  background: rgba(23, 104, 155, 0.02);
+}
+
+.nb-analysis-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 10px;
+}
+
+.nb-analysis-toggle {
+  min-height: var(--control-md);
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-analysis-toggle svg {
+  flex: 0 0 auto;
+  color: var(--sky-primary);
+}
+
+.nb-analysis-headline {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--muted);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-analysis-chevron {
+  transition: transform 140ms ease;
+}
+
+.nb-analysis-chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.nb-analysis-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.nb-analysis-modal-layer {
+  position: fixed;
+  z-index: 800;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px
+    calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+.nb-analysis-modal-scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(20 38 42 / 42%);
+  cursor: default;
+}
+
+.nb-analysis-modal {
+  position: relative;
+  z-index: 1;
+  width: min(760px, 100%);
+  min-width: 0;
+  max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  border: 1px solid var(--sky-line-strong);
+  border-radius: var(--radius-md);
+  background: var(--sky-surface);
+  box-shadow: var(--sky-shadow);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.nb-analysis-modal .nb-analysis {
+  border: 0;
+  background: transparent;
+}
+
+.nb-analysis-modal .nb-analysis-head {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  border-bottom: 1px solid var(--sky-line);
+  padding: 8px 12px;
+  background: var(--sky-surface);
+}
+
+.nb-analysis-modal .nb-analysis-body {
+  max-height: none;
+  padding: 16px;
+  overflow: visible;
+}
+
+.nb-analysis-note,
+.nb-analysis-status,
+.nb-analysis-message,
+.nb-analysis-warn {
+  margin: 0;
+  font-size: var(--fs-base);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.nb-analysis-message,
+.nb-analysis-warn {
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: rgba(23, 104, 155, 0.08);
+  color: var(--ink);
+}
+
+.nb-analysis-status[data-state="stale"],
+.nb-analysis-status[data-state="unavailable"] {
+  color: #a4551c;
+}
+
+.nb-analysis-recover {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.nb-analysis-section {
+  display: grid;
+  gap: 6px;
+}
+
+.nb-analysis-section h4 {
+  margin: 0;
+  font-size: var(--fs-base);
+  color: var(--muted);
+  text-transform: none;
+}
+
+.nb-analysis-text {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.nb-analysis-list,
+.nb-analysis-timeline {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nb-analysis-list li,
+.nb-analysis-timeline li {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.nb-analysis-timeline li {
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+}
+
+.nb-analysis-date {
+  font-variant-numeric: tabular-nums;
+  color: var(--sky-primary);
+  font-size: 12.5px;
+}
+
+.nb-analysis-tag {
+  justify-self: start;
+  border-radius: 999px;
+  padding: 1px 8px;
+  background: rgba(23, 104, 155, 0.12);
+  color: var(--sky-primary);
+  font-size: 11.5px;
+}
+
+.nb-analysis-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nb-analysis-source {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 1px 8px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.nb-analysis-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.nb-analysis-busy {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+/* —— P5：跨本检索面板（本地检索优先；主题过滤需要有效 metadata） —— */
+.nb-search {
+  border-bottom: 1px solid var(--line);
+  background: rgba(23, 104, 155, 0.02);
+}
+
+.nb-search-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 10px;
+}
+
+.nb-search-toggle {
+  min-height: var(--control-md);
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-search-toggle svg {
+  flex: 0 0 auto;
+  color: var(--sky-primary);
+}
+
+.nb-search-headline {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--muted);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-search-chevron {
+  transition: transform 140ms ease;
+}
+
+.nb-search-chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.nb-search-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.nb-search-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.nb-search-field {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.nb-search-field input,
+.nb-search-field select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.nb-search-topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.nb-search-chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 10px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.nb-search-chip.is-active {
+  border-color: var(--sky-primary);
+  background: rgba(23, 104, 155, 0.12);
+  color: var(--sky-primary);
+}
+
+.nb-search-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.nb-search-note,
+.nb-search-coverage,
+.nb-search-message,
+.nb-search-warn {
+  margin: 0;
+  font-size: var(--fs-base);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.nb-search-message,
+.nb-search-warn {
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: rgba(23, 104, 155, 0.08);
+  color: var(--ink);
+}
+
+.nb-search-warn {
+  background: rgba(164, 85, 28, 0.1);
+}
+
+.nb-search-results {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nb-search-result {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.nb-search-open {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-search-snippet,
+.nb-search-matched {
+  font-size: 12.5px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+/* —— P6：旅行与地点面板（手动管理；不新增顶层入口） —— */
+.nb-trips {
+  border-bottom: 1px solid var(--line);
+  background: rgba(23, 104, 155, 0.02);
+}
+
+.nb-trips-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 10px;
+}
+
+.nb-trips-toggle {
+  min-height: var(--control-md);
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-trips-toggle svg {
+  flex: 0 0 auto;
+  color: var(--sky-primary);
+}
+
+.nb-trips-headline {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--muted);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-trips-chevron {
+  transition: transform 140ms ease;
+}
+
+.nb-trips-chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.nb-trips-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.nb-trips-section {
+  display: grid;
+  gap: 6px;
+}
+
+.nb-trips-section h4 {
+  margin: 0;
+  font-size: var(--fs-base);
+  color: var(--muted);
+}
+
+.nb-trips-list,
+.nb-trips-trash {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nb-trips-item,
+.nb-trips-trash li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+}
+
+.nb-trips-title {
+  font-weight: 600;
+}
+
+.nb-trips-meta {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.nb-trips-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.nb-trips-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 6px;
+  align-items: end;
+}
+
+.nb-trips-form label {
+  display: grid;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.nb-trips-form input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.nb-trips-note,
+.nb-trips-message,
+.nb-trips-warn {
+  margin: 0;
+  font-size: var(--fs-base);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.nb-trips-message,
+.nb-trips-warn {
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: rgba(23, 104, 155, 0.08);
+  color: var(--ink);
+}
+
+.nb-trips-warn {
+  background: rgba(164, 85, 28, 0.1);
+}
+
+
+/*
+ * 表单控件：常态即可辨认输入边界，不依赖占位文字或聚焦。
+ *
+ * 桌面（鼠标）用紧凑档：之前统一套 44px / 16px，结果是 16px 的输入文字比
+ * 面板里所有文字（12px 标签、13px 正文、13px 区块标题）都大，输入框和同行
+ * 按钮也比标签厚一截，比例失衡。
+ * 触控档在下面 @media (pointer: coarse) 里恢复 44px / 16px——16px 是 iOS
+ * 聚焦不自动缩放下限，那个平台上必须保留。
+ */
+:is(.nb-search-field, .nb-agent-field, .nb-trips-form, .capture-ai-panel)
+  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+  min-width: 0;
+  min-height: var(--control-sm);
+  padding: 7px 10px;
+  border: 1px solid var(--sky-ink-muted);
+  border-radius: var(--radius-xs);
+  background: var(--sky-surface);
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: var(--fs-base);
+  line-height: 1.4;
+}
+
+@media (pointer: coarse) {
+  :is(.nb-search-field, .nb-agent-field, .nb-trips-form, .capture-ai-panel)
+    :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+    min-height: var(--control-md);
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+}
+
+:is(.nb-search-field, .nb-agent-field, .nb-trips-form, .capture-ai-panel)
+  :is(input, textarea)::placeholder {
+  color: var(--sky-ink-muted);
+  opacity: 1;
+}
+
+:is(.nb-search-field, .nb-agent-field, .nb-trips-form, .capture-ai-panel)
+  :is(input, select, textarea):hover:not(:disabled) {
+  border-color: var(--sky-primary);
+}
+
+:is(.nb-search-field, .nb-agent-field, .nb-trips-form, .capture-ai-panel)
+  :is(input, select, textarea):focus-visible {
+  border-color: var(--sky-primary);
+  outline: 3px solid var(--sky-focus);
+  outline-offset: 2px;
+}
+
+:is(.nb-search-field, .nb-agent-field, .nb-trips-form, .capture-ai-panel)
+  :is(input, select, textarea):disabled {
+  background: var(--sky-bg);
+  color: var(--sky-ink-muted);
+  border-color: var(--sky-line-strong);
+  cursor: not-allowed;
+}
+
+/*
+ * 同一面板里的按钮跟随控件的紧凑档，保证与输入框同行时高度一致
+ * （旅行表单里「新建旅行」就和标题/日期输入框在同一行）。
+ * 条件必须与输入框的紧凑档逐字一致（宽度 + 精细指针）：只写宽度的话，
+ * 「宽屏触控设备」上输入框是 44px、按钮却变 36px，同一行又对不齐。
+ * 按钮保持胶囊形（DESIGN.md 的主/次按钮语言），只改高度与字号。
+ */
+@media (min-width: 781px) and (pointer: fine) {
+  :is(.nb-search-body, .nb-agent-body, .nb-trips-body, .nb-analysis-body, .nb-organize-body)
+    :is(.primary-button, .secondary-button) {
+    min-height: var(--control-sm);
+    padding: 0 14px;
+    font-size: var(--fs-base);
+  }
+}
+
+.nb-semantic { border: 1px solid var(--sky-line-strong); border-radius: var(--radius-sm); padding: 12px; display: grid; gap: 10px; }
+.nb-semantic h3, .nb-semantic p { margin: 0; }
+.nb-semantic ul { padding-left: 18px; display: grid; gap: 10px; overflow-wrap: anywhere; }
+.nb-semantic button { min-height: 44px; border: 1px solid var(--sky-line-strong); border-radius: var(--radius-sm); background: var(--sky-surface); padding: 6px 10px; }
+.nb-semantic button:disabled { opacity: .5; }
+
+/* P8：检索区域内的「整理检索结果」面板（独立入口，不新增顶层导航）。 */
+.nb-agent {
+  border: 1px solid var(--sky-line-strong);
+  border-radius: var(--radius-sm);
+  display: grid;
+  /* 显式单列 minmax(0,1fr)：格子跟随容器宽度，窄屏下收窄而不是被内容撑宽。 */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  min-width: 0;
+}
+
+.nb-agent-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 8px 4px 0;
+}
+
+.nb-agent-toggle {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--sky-ink);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* 图标与标题文字不参与压缩：窄屏下压缩的是右侧摘要（省略号），不是图标或入口名称。 */
+.nb-agent-toggle svg {
+  flex: 0 0 auto;
+  color: var(--sky-primary);
+}
+
+
+.nb-agent-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.nb-agent-headline {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: auto;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--sky-ink-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nb-agent-chevron { transition: transform 140ms ease; }
+.nb-agent-chevron.is-open { transform: rotate(90deg); }
+
+.nb-agent-body {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 0 12px 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.nb-agent-field {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--sky-ink-muted);
+  min-width: 0;
+}
+
+.nb-agent-field textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.nb-agent-scope {
+  border: 1px solid var(--sky-line-strong);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 12.5px;
+  color: var(--sky-ink-muted);
+}
+
+.nb-agent-scope ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 2px; overflow-wrap: anywhere; }
+.nb-agent-scope-title { font-weight: 600; }
+
+.nb-agent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.nb-agent-busy { font-size: 12.5px; color: var(--sky-ink-muted); }
+
+.nb-agent-note,
+.nb-agent-message,
+.nb-agent-warn,
+.nb-agent-status,
+.nb-agent-text,
+.nb-agent-steps,
+.nb-agent-recover,
+.nb-agent-ungrouped {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--sky-ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.nb-agent-message,
+.nb-agent-warn {
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: rgba(23, 104, 155, 0.08);
+  color: var(--sky-ink);
+}
+
+.nb-agent-warn { background: rgba(164, 85, 28, 0.1); }
+
+.nb-agent-recover,
+.nb-agent-ungrouped {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.nb-agent-steps { padding-left: 18px; display: grid; gap: 2px; }
+.nb-agent-steps li[data-state="failed"] { color: rgb(150, 60, 20); }
+
+.nb-agent-result {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--sky-line-strong);
+  padding-top: 10px;
+}
+
+.nb-agent-title { margin: 0; font-size: 15px; }
+.nb-agent-groups { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.nb-agent-groups li { display: grid; gap: 4px; }
+.nb-agent-sources { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+
+.nb-agent-source {
+  min-height: 32px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--sky-line-strong);
+  border-radius: 999px;
+  background: var(--sky-surface);
+  color: var(--sky-primary);
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.nb-agent-result-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+/* 工具浮层随内容撑高，长内容只在浮层内滚动。 */
+.nb-editor-main {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.nb-editor-content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.nb-work-panel {
+  position: absolute;
+  z-index: 20;
+  top: 8px;
+  right: 8px;
+  width: min(400px, calc(100% - 16px));
+  max-height: min(640px, calc(100% - 16px), calc(100dvh - 120px));
+  border: 1px solid var(--sky-line-strong);
+  border-radius: 14px;
+  background: var(--sky-text-surface);
+  box-shadow: var(--sky-shadow);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.nb-work-panel .nb-regions-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.nb-work-panel :is(.nb-search-head, .nb-analysis-head) {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--sky-text-surface);
+}
+
+.nb-work-panel[data-panel="regions"] {
+  width: min(320px, calc(100% - 16px));
+}
+
+/* 面板自带标题与留白，浮层不再叠加外框。 */
+.nb-work-panel > .nb-search,
+.nb-work-panel > .nb-regions-section,
+.nb-work-panel > .nb-analysis {
+  border-bottom: 0;
+}
+
+.nb-work-panel .nb-search-body,
+.nb-work-panel .nb-analysis-body {
+  /* 工作面板本身滚动，内部不再限制高度。 */
+  max-height: none;
+  padding-bottom: 12px;
+  overflow-y: visible;
+}
+
+/* ===== 行内「⋯」气泡菜单（取代左滑操作栏） ===== */
+.nb-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nb-row > .nb-list-item {
+  flex: 1;
+  min-width: 0;
+}
+
+.nb-row-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.nb-row-menu-open {
+  /*
+   * 尺寸完全交给 `.nb-icon-button`：这里再写一遍 36px 会盖掉
+   * `@media (pointer: coarse)` 的 44px 触控档（同权重、更靠后）。
+   */
+  color: var(--sky-ink-muted);
+}
+
+.nb-row-menu-pop {
+  position: absolute;
+  z-index: 41;
+  top: calc(100% + 4px);
+  right: 0;
+  display: grid;
+  min-width: 148px;
+  border: 1px solid var(--sky-line-strong);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+/*
+ * 列表底部几行：向下弹会被 `.nb-list`（overflow:auto）裁掉，
+ * 由 RowMenu 量出空间不足时加 `is-up`，改成向上弹。
+ */
+.nb-row-menu-pop.is-up {
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+
+.nb-row-menu-item {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  border: 0;
+  border-radius: var(--radius-xs);
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--sky-ink);
+  font-size: var(--fs-base);
+  text-align: left;
+  cursor: pointer;
+}
+
+.nb-row-menu-item:hover {
+  background: rgba(45, 80, 110, 0.07);
+}
+
+.nb-row-menu-item:focus-visible {
+  outline: 2px solid var(--sky-primary);
+  outline-offset: -2px;
+}
+
+.nb-row-menu-item.is-danger {
+  color: var(--danger, #b3261e);
+}
+
+.nb-regions-section { padding: 12px; border-bottom: 1px solid var(--line); }
+
+.page-regions-province-select { display: grid; gap: 8px; width: 100%; min-width: 0; font-size: 13px; color: var(--sky-ink-muted); }
+.page-regions-province-select select { grid-area: 2 / 1; appearance: none; -webkit-appearance: none; width: 100%; min-width: 0; min-height: 44px; padding: 10px 34px 10px 12px; border: 1px solid var(--sky-line-strong); border-radius: 10px; background: var(--card); color: var(--sky-ink); font: inherit; font-size: 16px; cursor: pointer; }
+.page-regions-province-select select:focus-visible { outline: 2px solid var(--sky-primary); outline-offset: 2px; }
+
+/* 统一目录：笔记跟随所属笔记本展开，共用一个滚动区。 */
+.nb-workspace.nb-directory {
+  grid-template-columns: 300px minmax(0, 1fr);
+}
+.nb-directory .nb-book-pages {
+  margin: 0 8px 10px 16px;
+  border-left: 1px solid var(--sky-line);
+  padding-left: 6px;
+}
+.nb-directory .nb-col--notebooks .nb-col--pages {
+  display: flex;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+.nb-directory .nb-book-pages .nb-col-body,
+.nb-directory .nb-book-pages .nb-list {
+  flex: none;
+  overflow: visible;
+}
+.nb-directory .nb-book-pages .nb-col-head {
+  padding: 6px 8px;
+  border: 0;
+  background: transparent;
+}
+.nb-directory .nb-book-pages .nb-col-title {
+  font-size: 12px;
+  color: var(--sky-ink-muted);
+}
+.nb-directory .nb-row > button[aria-expanded="true"] > svg {
+  transform: rotate(90deg);
+}
+@media (min-width: 781px) and (min-height: 601px), (min-width: 781px) and (pointer: fine), (min-width: 1101px) {
+  .nb-workspace.nb-directory[data-notebooks-collapsed="true"] {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+  .nb-workspace.nb-directory.is-trash-open {
+    grid-template-columns: 300px 280px minmax(0, 1fr);
+  }
+  .nb-workspace.nb-directory.is-trash-open[data-notebooks-collapsed="true"] {
+    grid-template-columns: 44px 280px minmax(0, 1fr);
+  }
+}
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  .nb-workspace.nb-directory,
+  .nb-workspace.nb-directory.is-trash-open {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 目录层级：轻量条目与同排操作，减少嵌套面板感。 */
+.nb-directory [data-testid="notebook-list"] > .nb-list {
+  padding: 8px;
+}
+.nb-directory .nb-list li + li { border-top: 0; }
+.nb-directory .nb-row {
+  gap: 0;
+  padding-right: 4px;
+  border-radius: 8px;
+}
+.nb-directory .nb-row:has(> .is-active) {
+  background: color-mix(in srgb, var(--sky-primary) 9%, transparent);
+}
+.nb-directory .nb-row:hover {
+  background: color-mix(in srgb, var(--sky-primary) 6%, transparent);
+}
+.nb-directory .nb-row > .nb-list-item {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  padding: 8px;
+}
+.nb-directory [data-testid="notebook-list"] > .nb-list > li > .nb-row > button {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+}
+.nb-directory [data-testid="notebook-list"] > .nb-list > li > .nb-row > button > svg {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--sky-ink-muted);
+}
+.nb-directory [data-testid="notebook-list"] > .nb-list > li > .nb-row > button > small {
+  font-size: 11px;
+}
+.nb-directory .nb-book-pages {
+  margin: 4px 0 12px 15px;
+  padding-left: 8px;
+}
+.nb-directory .nb-book-pages .nb-col-head {
+  gap: 4px;
+  padding: 4px 8px 6px;
+}
+.nb-directory .nb-search-input {
+  flex: 1;
+  min-width: 0;
+  gap: 6px;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--sky-ink-muted) 6%, transparent);
+}
+.nb-directory .nb-search-input:focus-within {
+  border-color: var(--sky-primary);
+}
+.nb-directory .nb-search-input input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  color: var(--sky-ink);
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+}
+.nb-directory .nb-book-pages .nb-list { padding: 0; }
+.nb-directory .nb-book-pages .nb-list-item {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px 6px;
+  min-height: 42px;
+}
+.nb-directory .nb-book-pages .nb-list-item strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.nb-directory .nb-book-pages .nb-list-item small {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 10px;
+}
+.nb-directory .nb-book-pages .nb-list-item p {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  -webkit-line-clamp: 1;
+  font-size: 11px;
+}
+.nb-directory .nb-capture-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 8px;
+  border: 0;
+  border-radius: 7px;
+  text-align: left;
+  font-size: 11px;
+}
+.nb-directory .nb-capture-toggle:hover {
+  background: color-mix(in srgb, var(--sky-primary) 6%, transparent);
+}
+.nb-directory button:focus-visible {
+  outline: 2px solid var(--sky-primary);
+  outline-offset: -2px;
+}
+@media (pointer: coarse) {
+  .nb-directory .nb-row > .nb-list-item,
+  .nb-directory .nb-capture-toggle,
+  .nb-directory .nb-search-input { min-height: 44px; }
+}
+
+.nb-directory .nb-capture { padding: 4px 0 0; border: 0; }
+.nb-directory .notebook-capture {
+  padding: 10px;
+  gap: 8px;
+  border-radius: 10px;
+  box-shadow: none;
+}
+.nb-directory .notebook-capture label[for="notebook-capture-text"] {
+  font-size: 12px;
+  font-weight: 500;
+}
+.nb-directory .notebook-capture textarea {
+  padding: 8px;
+  font-size: 13px;
+  resize: vertical;
+  min-height: 96px;
+}
+.nb-directory .notebook-capture-actions {
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.nb-capture-tools { display: flex; align-items: center; gap: 4px; }
+.nb-directory .nb-capture-save {
+  color: white;
+  background: var(--sky-primary);
+  border-color: transparent;
+}
+.nb-directory .nb-capture-save:disabled { opacity: .4; }
+
+.nb-directory .nb-col--notebooks { position: relative; }
+.nb-directory-resize { display: none; }
+@media (min-width: 781px) and (min-height: 601px), (min-width: 781px) and (pointer: fine), (min-width: 1101px) {
+  .nb-workspace.nb-directory:not([data-notebooks-collapsed="true"]) {
+    grid-template-columns: var(--nb-directory-width, 300px) minmax(0, 1fr);
+  }
+  .nb-workspace.nb-directory.is-trash-open:not([data-notebooks-collapsed="true"]) {
+    grid-template-columns: var(--nb-directory-width, 300px) 280px minmax(0, 1fr);
+  }
+  .nb-directory:not([data-notebooks-collapsed="true"]) .nb-directory-resize {
+    display: block;
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    touch-action: none;
+    user-select: none;
+  }
+  .nb-directory-resize:hover,
+  .nb-directory-resize:active,
+  .nb-directory-resize:focus-visible {
+    background: color-mix(in srgb, var(--sky-primary) 35%, transparent);
+    outline: none;
+  }
+}
+/* 拖拽即时跟手，避免网格过渡造成边界滞后。 */
+.nb-workspace.nb-directory { transition: none; }
+
+/* 地区面板复用控件尺寸；来源按需展开。 */
+.nb-regions-section .page-regions-select,
+.nb-regions-section .page-regions-column { gap: 8px; }
+.nb-regions-section .page-regions-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.nb-regions-section .page-regions-selected li {
+  max-width: 100%;
+  border-radius: 6px;
+  background: var(--sky-surface);
+  padding: 3px 6px;
+}
+.page-regions-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+.nb-regions-section .nb-icon-button {
+  width: var(--control-md);
+  height: var(--control-md);
+  min-height: var(--control-md);
+  padding: 0;
+}
+.nb-regions-section .page-regions-province-select { gap: 0; }
+.nb-regions-section .page-regions-province-select > span { display: none; }
+.page-regions-select-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.nb-regions-section .page-regions-province-select select {
+  min-height: var(--control-md);
+  padding: 6px 34px 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.nb-regions-section .page-regions-step-list label {
+  min-height: var(--control-md);
+  font-size: 13px;
+}
+.nb-regions-section :is(.primary-button, .secondary-button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: var(--control-md);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.nb-regions-section button:focus-visible,
+.nb-region-sources summary:focus-visible {
+  outline: 2px solid var(--sky-primary);
+  outline-offset: 2px;
+}
+.nb-photo-location { display: grid; gap: 8px; }
+.nb-photo-location-candidates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--sky-line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--sky-lavender-soft) 35%, var(--sky-surface));
+  list-style: none;
+}
+.nb-photo-location-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: var(--control-md);
+  min-width: 0;
+  max-width: 100%;
+  padding: 5px 9px;
+  border: 1px solid color-mix(in srgb, var(--sky-primary) 18%, transparent);
+  border-radius: 7px;
+  background: var(--sky-lavender-soft);
+  color: var(--sky-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.nb-photo-location-chip[data-level="city"] {
+  border-color: color-mix(in srgb, var(--sky-map-border) 20%, transparent);
+  background: var(--sky-teal-soft);
+  color: var(--sky-map-label);
+}
+.nb-photo-location-chip:not(:disabled):hover { border-color: currentColor; filter: brightness(0.97); }
+.nb-photo-location-chip:disabled { opacity: 0.55; cursor: default; }
+.nb-photo-location-chip > svg,
+.nb-photo-location-chip small { flex-shrink: 0; }
+.nb-photo-location-chip > span { min-width: 0; overflow-wrap: anywhere; text-align: left; }
+.nb-photo-location-candidates small { color: inherit; font-size: 11px; font-weight: 400; }
+.nb-photo-location .is-spinning { animation: nb-spin 0.9s linear infinite; }
+@keyframes nb-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .nb-photo-location .is-spinning { animation: none; }
+}
+
+.nb-region-sources { min-width: 0; border-top: 1px solid var(--sky-line); }
+.nb-region-sources summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--control-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.nb-region-sources summary::-webkit-details-marker { display: none; }
+.nb-region-sources summary > svg:last-child { margin-left: auto; }
+.nb-region-sources[open] summary > svg:last-child { transform: rotate(180deg); }
+.nb-region-sources > ul { margin: 0; padding: 4px 0 0; list-style: none; display: grid; gap: 8px; }
+.nb-region-sources > ul > li { display: grid; gap: 4px; }
+.nb-region-sources > ul > .nb-region-source-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+.nb-region-source-row strong { flex: 0 1 auto; max-width: 35%; min-width: 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb-region-source-photo { flex: 1; min-width: 0; font-size: 12px; color: var(--sky-ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb-region-source-row .nb-icon-button { flex-shrink: 0; }
+.nb-region-heading-actions { display: flex; align-items: center; gap: 4px; }
+.nb-region-heading-actions .is-spinning { animation: nb-spin 0.9s linear infinite; }
+.nb-region-save-error { display: flex; align-items: center; gap: 8px; }
+.nb-region-save-error .notebook-error { flex: 1; }
+.nb-photo-location-group { min-width: 0; max-width: 100%; }
+
+/* 日历入口在地区标题内，日期编辑框通过Portal独立于父面板显示。 */
+.nb-region-heading-actions { position: relative; }
+.nb-region-photo-action { display: flex; }
+.nb-trip-date-trigger.is-set { color: var(--sky-primary); background: var(--sky-teal-soft); }
+.nb-trip-date-layer {
+  position: fixed;
+  z-index: 1000;
+  inset: var(--native-viewport-top, 0px) 0 auto;
+  height: var(--native-viewport-height, 100dvh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  pointer-events: none;
+  color: var(--sky-ink);
+}
+.nb-trip-date-popover { width: 264px; min-width: 0; min-height: 0; max-width: 100%; max-height: 100%; margin: 0; padding: 10px; border: 1px solid var(--sky-line-strong); border-radius: 10px; background: var(--sky-text-surface); box-shadow: var(--sky-shadow); overflow-y: auto; overscroll-behavior: contain; pointer-events: auto; }
+.nb-trip-date-popover:focus { outline: none; }
+.nb-trip-date-fields { display: grid; gap: 8px; min-width: 0; margin: 0; border: 0; padding: 0; }
+.nb-trip-date-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; }
+.nb-trip-date-head > .nb-icon-button { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
+.nb-trip-date-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 8px; }
+.nb-trip-date-popover select,
+.nb-trip-date-popover input[type="date"],
+.nb-trip-date-popover input[type="month"],
+.nb-trip-date-popover input[type="number"] { width: 100%; min-width: 0; min-height: var(--control-md); border: 1px solid var(--sky-line); border-radius: 8px; padding: 0 6px; color: var(--sky-ink); background: var(--sky-text-surface); font-size: 13px; }
+/* 沿用设置中的细线箭头样式，装饰不拦截原生选择操作。 */
+:is(.page-regions-province-select, .nb-trip-date-precision)::after {
+  content: "";
+  grid-area: 2 / 1;
+  place-self: center end;
+  width: 7px;
+  height: 7px;
+  margin-inline-end: 14px;
+  border-right: 1.5px solid var(--sky-ink-muted);
+  border-bottom: 1.5px solid var(--sky-ink-muted);
+  transform: translateY(-2px) rotate(45deg);
+  pointer-events: none;
+}
+.nb-trip-date-precision { display: grid; min-width: 0; }
+.nb-trip-date-precision > select,
+.nb-trip-date-precision::after { grid-area: 1 / 1; }
+.nb-trip-date-precision > select { appearance: none; -webkit-appearance: none; padding-inline-end: 28px; cursor: pointer; }
+:is(.page-regions-province-select, .nb-trip-date-precision) > select:disabled { cursor: not-allowed; }
+:is(.page-regions-province-select, .nb-trip-date-precision):has(> select:disabled)::after { opacity: .45; }
+.nb-trip-date-range { font-size: 12px; }
+.nb-trip-date-range > summary { cursor: pointer; padding-block: 4px; color: var(--sky-ink-muted); }
+@media (pointer: coarse), (max-width: 780px) {
+  .nb-trip-date-popover select,
+  .nb-trip-date-popover input { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .nb-region-heading-actions .is-spinning { animation: none; } }
+
+/* 原图入口与定位/删除分别保留。 */
+.page-detail-view-photo:focus-visible { outline: 2px solid var(--sky-primary); outline-offset: 3px; }
+
+.notebook-edit .journal-markdown-content img[role="button"] { cursor: zoom-in; }
+.notebook-edit .journal-markdown-content img[role="button"]:focus-visible { outline: 2px solid var(--sky-primary); outline-offset: 2px; }
+
+/*
+ * Hallmark 共享展示：保留现有可调本/篇目录与连续编辑链，只收敛展示层。
+ * Web与App共用展示，原生存储与触控适配另行保留。
+ */
+html[data-atlas-theme] .app-shell .notebook-page {
+  color: var(--sky-ink);
+  background: var(--theme-canvas);
+}
+html[data-atlas-theme] .app-shell .nb-workspace {
+  background: var(--theme-canvas);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .nb-col--notebooks {
+  background: var(--theme-side-panel);
+  border-right-color: var(--sky-line);
+}
+html[data-atlas-theme] .app-shell .nb-col--editor {
+  background: var(--theme-canvas);
+}
+html[data-atlas-theme] .app-shell :is(.nb-col-head, .nb-editor-bar) {
+  min-height: 60px;
+  gap: 4px 8px;
+  padding: 12px;
+  background: transparent;
+  border-bottom-color: var(--sky-line);
+}
+html[data-atlas-theme] .app-shell .nb-col-head strong {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+html[data-atlas-theme] .app-shell .nb-col-head .nb-icon-button + .nb-icon-button {
+  margin-left: 0;
+}
+html[data-atlas-theme] .app-shell .nb-directory [data-testid="notebook-list"] > .nb-list {
+  padding: 8px;
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-row {
+  padding-right: 4px;
+  border-radius: var(--radius-xs);
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-row:has(> .is-active) {
+  background: color-mix(in srgb, var(--sky-primary) 10%, var(--theme-canvas));
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-row:hover {
+  background: color-mix(in srgb, var(--sky-primary) 6%, var(--theme-canvas));
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-row > .nb-list-item {
+  min-height: 44px;
+  padding: 8px;
+  background: transparent;
+  border-radius: var(--radius-xs);
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-book-pages {
+  margin: 4px 0 16px 12px;
+  padding-left: 8px;
+  border-left-color: var(--sky-line);
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-book-pages .nb-col-head {
+  min-height: 44px;
+  padding: 4px 8px 8px;
+  background: transparent;
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-search-input {
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 0;
+  border-bottom: 1px solid var(--sky-line-strong);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-search-input:focus-within {
+  outline: none;
+  border-color: #7d94b0;
+  background: var(--theme-surface-strong);
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-search-input input {
+  min-height: 28px;
+  font-size: var(--fs-base);
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-book-pages .nb-list-item {
+  row-gap: 4px;
+  padding: 12px 8px;
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-book-pages .nb-list-item strong {
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  font-weight: 550;
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-book-pages .nb-list-item :is(small, p) {
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+}
+html[data-atlas-theme] .app-shell .nb-directory .nb-capture-toggle {
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 8px;
+  border-radius: var(--radius-xs);
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-base);
+}
+html[data-atlas-theme] .app-shell .nb-directory .notebook-capture {
+  gap: 8px;
+  padding: 12px 8px;
+  border: 0;
+  border-radius: 0;
+  background: var(--theme-canvas);
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .nb-trash-entry {
+  margin: 8px;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  font-size: var(--fs-base);
+}
+html[data-atlas-theme] .app-shell .nb-trash-entry:is(:hover, .is-active) {
+  background: color-mix(in srgb, var(--sky-primary) 9%, var(--theme-canvas));
+}
+html[data-atlas-theme] .app-shell .nb-editor-bar {
+  background: var(--theme-canvas);
+}
+html[data-atlas-theme] .app-shell .nb-editor-bar :is(.nb-editor-title, input.nb-editor-title-input) {
+  min-width: 120px;
+  font-family: var(--web-font-note, inherit);
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+html[data-atlas-theme] .app-shell .nb-editor-bar .notebook-save-state:not([data-status="failed"]):not([data-status="conflict"]) {
+  margin-inline: 4px;
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-sm);
+}
+html[data-atlas-theme] .app-shell .nb-col--editor .journal-markdown-toolbar {
+  padding: 6px 12px;
+  gap: 4px 12px;
+  border-bottom-color: var(--sky-line);
+  background: var(--theme-canvas);
+  box-shadow: none;
+}
+html[data-atlas-theme] .app-shell .nb-col--editor .journal-markdown-content {
+  padding: 28px clamp(20px, 5%, 64px) 56px;
+  color: var(--sky-ink);
+  font-size: var(--fs-body);
+  line-height: 1.95;
+}
+html[data-atlas-theme] .app-shell .nb-col--editor .journal-markdown-content :is(p, ul, ol, blockquote) {
+  margin-block: 0 1.25em;
+}
+html[data-atlas-theme] .app-shell .nb-readonly-pane {
+  gap: 16px;
+  padding: 28px clamp(20px, 5%, 64px) 56px;
+  font-size: var(--fs-body);
+  line-height: 1.95;
+}
+html[data-atlas-theme] .app-shell .nb-watermark {
+  color: var(--sky-ink-muted);
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+html[data-atlas-theme] .app-shell :is(.nb-work-panel, .nb-page-info, .nb-page-menu) {
+  border-radius: var(--radius-xs);
+  background: var(--theme-canvas);
+  box-shadow: var(--sky-shadow-soft);
+}
+@media (max-width: 780px), (pointer: coarse) {
+  html[data-atlas-theme] .app-shell :is(.nb-icon-button, .nb-row-menu-open, .journal-batch-image-button) {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+  html[data-atlas-theme] .app-shell .nb-directory .nb-search-input {
+    min-height: 44px;
+  }
+  html[data-atlas-theme] .app-shell .notebook-page :is(input:not([type="checkbox"]):not([type="radio"]):not(.nb-editor-title-input), textarea, select) {
+    font-size: 16px;
+  }
+  html[data-atlas-theme] .app-shell .nb-col--editor .journal-markdown-content {
+    padding: 20px 16px 40px;
+    font-size: 16px;
+  }
+  html[data-atlas-theme] .app-shell .nb-readonly-pane {
+    padding: 20px 16px 40px;
+  }
+}
+
+/* 篇级操作按内容收紧，复用原有展开状态，窄处在组内横滑。 */
+html[data-atlas-theme] .app-shell .nb-editor-actions {
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  max-width: 100%;
+  border-radius: 12px;
+  background: var(--sky-bg);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sky-line-strong) transparent;
+}
+html[data-atlas-theme] .app-shell .nb-editor-actions:empty { display: none; }
+html[data-atlas-theme] .app-shell .notebook-page .nb-editor-bar .nb-editor-actions > .nb-icon-button {
+  position: relative;
+  isolation: isolate;
+  flex: none;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+  border: 0;
+  border-radius: 10px;
+  padding: 0;
+  background: transparent;
+  color: var(--sky-ink-muted);
+}
+.nb-editor-actions > .nb-icon-button::before { position: absolute; inset: 4px; z-index: -1; border-radius: 8px; background: transparent; content: ""; }
+.nb-editor-actions > .nb-icon-button > svg { width: 20px; height: 20px; }
+html[data-atlas-theme] .app-shell .notebook-page .nb-editor-bar .nb-editor-actions > .nb-icon-button:is([aria-expanded="true"], :active:not(:disabled)) { color: var(--sky-primary); }
+html[data-atlas-theme] .app-shell .notebook-page .nb-editor-bar .nb-editor-actions > .nb-icon-button:disabled { opacity: .4; cursor: default; }
+.nb-editor-actions > .nb-icon-button:is([aria-expanded="true"], :active:not(:disabled))::before { background: var(--sky-teal-soft); }
+html[data-atlas-theme] .app-shell .nb-editor-actions > .nb-icon-button:focus-visible { outline: 1px solid var(--sky-focus); outline-offset: -4px; }
+@media (hover: hover) {
+  .nb-editor-actions > .nb-icon-button:hover:not(:disabled):not([aria-expanded="true"])::before { background: var(--sky-surface); }
+}
+
+/* 紧凑编辑栏只占一行，整条横滑；菜单仍由编辑器原控件承载。 */
+html[data-atlas-theme] .app-shell .nb-col--editor .journal-markdown-toolbar--compact {
+  flex-wrap: nowrap;
+  gap: 12px;
+  padding: 4px 8px;
+  min-height: 53px;
+  border-radius: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sky-line-strong) transparent;
+}
+.journal-markdown-toolbar--compact .journal-toolbar-group { position: relative; display: flex; flex: none; align-items: center; gap: 0; }
+.journal-markdown-toolbar--compact .journal-toolbar-group + .journal-toolbar-group::before { position: absolute; left: -7px; top: 50%; width: 1px; height: 16px; background: var(--sky-line); content: ""; transform: translateY(-50%); }
+html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--sky-ink-muted);
+  cursor: pointer;
+}
+html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button svg { width: 20px; height: 20px; color: currentColor; }
+html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button[role="combobox"] { justify-content: space-between; width: 88px; min-width: 88px; gap: 4px; padding-inline: 10px; font-size: 13px; color: var(--sky-ink); }
+html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button[role="combobox"] svg { width: 16px; height: 16px; }
+html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button[role="combobox"][data-placeholder] > span:first-child { color: var(--sky-ink-muted); }
+html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button[role="combobox"] > span:first-child:empty::before { content: "样式"; color: var(--sky-ink-muted); }
+html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button:is([data-state="on"], [data-state="open"]) { background: var(--sky-teal-soft); color: var(--sky-primary); filter: none; }
+html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button:is(:disabled, [data-disabled]) { color: var(--sky-ink-muted); opacity: .4; cursor: default; }
+html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button:focus-visible { outline: 1px solid var(--sky-focus); outline-offset: -2px; }
+@media (hover: hover) {
+  html[data-atlas-theme] .app-shell .journal-markdown-toolbar--compact button:hover:not(:disabled):not([data-disabled]):not([data-state="on"]):not([data-state="open"]) { background: var(--sky-bg); color: var(--sky-ink); }
+}
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  html[data-atlas-theme] .app-shell .nb-editor-bar { gap: 2px 8px; padding: 4px 12px; }
+  html[data-atlas-theme] .app-shell .nb-editor-bar :is(.nb-editor-title, input.nb-editor-title-input) { font-size: 20px; line-height: 1.4; flex: 1 1 calc(100% - 120px); min-width: 0; }
+  html[data-atlas-theme] .app-shell .nb-editor-bar .notebook-save-state { min-width: 0; margin-inline: 0; }
+  html[data-atlas-theme] .app-shell .nb-col--editor .journal-markdown-content { padding-top: 16px; line-height: 1.8; }
+}
+
+@media (max-width: 360px) {
+  html[data-atlas-theme] .app-shell .nb-editor-bar { column-gap: 0; }
+}

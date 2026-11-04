@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="title description">
+  <title id="title">行迹，把旅途留在身边。</title>
+  <desc id="description">行迹的蓝色路线标志与抽象旅途、纸页图形。品牌插画，并非应用截图。</desc>
+  <rect x="1" y="1" width="1278" height="418" rx="28" fill="#f5f8fc" stroke="#e1e8f1" stroke-width="2"/>
+  <path d="M738 362C859 351 787 249 887 235S1045 269 1030 160 1127 114 1170 72" fill="none" stroke="#dbe9fa" stroke-width="52" stroke-linecap="round"/>
+  <path d="M738 362C859 351 787 249 887 235S1045 269 1030 160 1127 114 1170 72" fill="none" stroke="#0668d8" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="738" cy="362" r="13" fill="#ffb94c"/>
+  <circle cx="887" cy="235" r="12" fill="#fff" stroke="#0668d8" stroke-width="5"/>
+  <circle cx="1170" cy="72" r="13" fill="#fff" stroke="#0668d8" stroke-width="5"/>
+  <g transform="translate(68 58)">
+    <rect width="64" height="64" rx="18" fill="#0668d8"/>
+    <path d="M18 42C27 20 37 48 48 18" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round"/>
+    <circle cx="18" cy="42" r="5" fill="#ffb94c"/>
+    <circle cx="48" cy="18" r="5" fill="#fff"/>
+  </g>
+  <g font-family="-apple-system,BlinkMacSystemFont,'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif">
+    <text x="154" y="106" font-size="46" font-weight="750" fill="#18283a">行迹</text>
+    <text x="276" y="103" font-size="22" letter-spacing="5" font-weight="550" fill="#61748a">XINGJI</text>
+    <text x="68" y="232" font-size="66" font-weight="750" letter-spacing="-2" fill="#18283a">把旅途，</text>
+    <text x="68" y="318" font-size="66" font-weight="750" letter-spacing="-2" fill="#0668d8">留在身边。</text>
+  </g>
+  <g transform="translate(916 122) rotate(7 94 106)">
+    <rect width="188" height="214" rx="20" fill="#fff" stroke="#d8e3f0" stroke-width="2"/>
+    <rect x="27" y="29" width="134" height="70" rx="9" fill="#eaf2ff"/>
+    <path d="M49 76 76 53 101 71 119 58 141 77" fill="none" stroke="#80abdf" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="137" cy="47" r="7" fill="#ffb94c"/>
+    <path d="M29 126h103m-103 22h130m-130 22h76" stroke="#c4d0df" stroke-width="7" stroke-linecap="round"/>
+  </g>
+  <path d="m1146 292 7 19 19 7-19 7-7 19-7-19-19-7 19-7Z" fill="#ffb94c"/>
+  <circle cx="800" cy="107" r="5" fill="#bdd5f3"/>
+  <circle cx="1210" cy="230" r="5" fill="#bdd5f3"/>
+</svg>

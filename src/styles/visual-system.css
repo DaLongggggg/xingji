@@ -1,0 +1,492 @@
+/* 行迹视觉语言：暖纸色、深紫操作色与克制的孟菲斯几何点缀。
+   放在所有页面样式之后，让同一组语义变量与控件规则覆盖历史视觉。 */
+:root {
+  --sky-bg: #fbf8f0;
+  --sky-surface: #fffefd;
+  --sky-ink: #29263e;
+  --sky-ink-muted: #5d596e;
+  --sky-primary: #504574;
+  --sky-primary-hover: #40365f;
+  --sky-on-primary: #ffffff;
+  --sky-line: #e0d9e6;
+  --sky-line-strong: #bfb6cc;
+  --sky-glass: #fffaf3;
+  --sky-glass-strong: #fffefd;
+  --sky-text-surface: #ffffff;
+  --sky-shadow: 0 12px 36px rgb(41 38 62 / 12%);
+  --sky-shadow-soft: 0 4px 16px rgb(41 38 62 / 8%);
+  --sky-blur: 0px;
+  --sky-focus: #504574;
+  --sky-accent-pink: #ef6ca5;
+  --sky-accent-yellow: #f3c85a;
+  --sky-accent-teal: #79c9c2;
+  --sky-accent-lavender: #777eaf;
+  --sky-pink-soft: #fae4ed;
+  --sky-yellow-soft: #fcf2d5;
+  --sky-teal-soft: #e1f3f0;
+  --sky-lavender-soft: #eeeff8;
+  --sky-nav: #33304e;
+  --sky-map-journal: #6eb9b0;
+  --sky-map-empty: #cad9d6;
+  --sky-map-county: #b8cac7;
+  --sky-map-border: #64817f;
+  --sky-map-label: #1c3439;
+  --sky-map-label-on-journal: #e6f7f2;
+  --paper-deep: #ece8f2;
+  --green-soft: #e1f3f0;
+  --orange-soft: #fae4ed;
+  --yellow: #f3c85a;
+  --blue: #79c9c2;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 9px;
+  --radius-xs: 7px;
+}
+
+html { background: var(--sky-bg); }
+body {
+  background: var(--sky-bg);
+  color: var(--sky-ink);
+  letter-spacing: 0;
+}
+h1, h2, h3, h4 { letter-spacing: -0.02em; }
+small, time, .wb-session small { font-variant-numeric: tabular-nums; }
+
+/* 深紫导航承载一处稳定的折线标记，粉色只强调当前位置。 */
+.nav-drawer, .nav-drawer.is-open {
+  background: var(--sky-nav);
+  border-color: #4a4669;
+  color: #f7f5ff;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.nav-drawer-head strong { font-size: 18px; font-weight: 650; letter-spacing: .1em; }
+.nav-drawer-brand .brand-mark {
+  border: 1px solid #76709d;
+  border-radius: 9px;
+  background: var(--sky-primary);
+  color: #ffffff;
+  box-shadow: 3px 3px 0 var(--sky-accent-yellow);
+}
+.nav-drawer-brand:hover .brand-mark { background: var(--sky-primary-hover); filter: none; }
+.nav-drawer .nav-button {
+  border-radius: 8px;
+  color: #d5d2e4;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.nav-drawer .nav-button:hover {
+  background: #454160;
+  color: #fff;
+}
+.nav-drawer .nav-button.is-active {
+  background: #494565;
+  color: #ffffff;
+}
+.nav-drawer .nav-button.is-active::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+  width: 4px;
+  border-radius: 0;
+  background: var(--sky-accent-pink);
+  clip-path: polygon(0 0, 100% 5%, 0 11%, 100% 17%, 0 23%, 100% 29%, 0 35%, 100% 41%, 0 47%, 100% 53%, 0 59%, 100% 65%, 0 71%, 100% 77%, 0 83%, 100% 89%, 0 95%, 100% 100%, 0 100%);
+}
+.nav-drawer .nav-group-label { color: #c0bdd2; }
+.nav-drawer .nav-drawer-close,
+.nav-drawer .nav-foot-link { border-color: #585473; background: #3c3959; color: #f0eef8; }
+.nav-drawer .nav-drawer-close:hover,
+.nav-drawer .nav-foot-link:hover { background: #4a4668; }
+.nav-resize-handle:hover,
+.nav-resize-handle:focus-visible { background: rgb(239 108 165 / 35%); }
+.app-mobile-menu { border-color: var(--sky-line-strong); border-radius: 8px; box-shadow: var(--sky-shadow-soft); }
+
+/* 按钮借鉴资源库中清楚的悬停反馈，保持轮廓稳定。 */
+.primary-button, .secondary-button, .capture-record-button {
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: none;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.primary-button, .capture-record-button {
+  border: 1px solid var(--sky-primary);
+  background: var(--sky-primary);
+  color: var(--sky-on-primary);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--sky-accent-yellow) 72%, transparent);
+}
+.primary-button:hover:not(:disabled), .capture-record-button:hover:not(:disabled) {
+  border-color: var(--sky-primary-hover);
+  background: var(--sky-primary-hover);
+}
+.secondary-button {
+  border: 1px solid var(--sky-line-strong);
+  background: var(--sky-surface);
+  color: var(--sky-ink);
+}
+.secondary-button:hover:not(:disabled) {
+  border-color: var(--sky-accent-lavender);
+  background: var(--sky-pink-soft);
+}
+.primary-button:disabled { border-color: #ddd8e8; background: #ebe8f0; color: #5e596f; box-shadow: none; }
+.secondary-button:disabled { border-color: #e8e4eb; background: #f5f3f6; color: #625d70; box-shadow: none; }
+:where(button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--sky-focus);
+  outline-offset: 2px;
+}
+
+/* 地图底色转为淡蓝紫；行政区记录色义与 Leaflet 绘制值保持原样。 */
+.capture-map .atlas-map {
+  background-color: var(--sky-lavender-soft);
+  background-image: radial-gradient(ellipse at 50% 42%, #fffefd 0%, #f5f2fa 58%, #e9e7f3 100%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+@media (min-width: 621px) {
+  .capture-map .atlas-map canvas.leaflet-zoom-animated {
+    filter: drop-shadow(0 7px 10px rgb(43 77 68 / 10%));
+  }
+}
+.atlas-selection-pulse-marker { pointer-events: none; }
+.atlas-map-wrap { position: relative; }
+.atlas-harbor-connector {
+  position: absolute;
+  z-index: 650;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.atlas-harbor-connector line {
+  stroke: #9cb9a9;
+  stroke-width: 1.5;
+  stroke-dasharray: 2 5;
+  opacity: .8;
+}
+.atlas-harbor-magnifier {
+  position: absolute;
+  z-index: 700;
+  right: 22px;
+  bottom: 20px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center;
+  gap: 4px;
+  width: 198px;
+  padding: 0;
+}
+.atlas-harbor-lens { position: relative; width: 178px; aspect-ratio: 1; }
+.atlas-harbor-lens svg { display: block; width: 100%; height: 100%; }
+.atlas-harbor-sea { fill: var(--sky-lavender-soft); }
+.atlas-harbor-grid { fill: none; stroke: #d7d4e6; stroke-width: .55; }
+.atlas-harbor-lens-ring { fill: none; stroke: var(--sky-accent-lavender); stroke-width: 1.6; }
+.atlas-harbor-caption {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 6px;
+  border: 1px solid var(--sky-line);
+  border-radius: 8px;
+  background: var(--sky-surface);
+  color: var(--sky-ink);
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.atlas-harbor-shape { stroke: var(--sky-primary); stroke-width: .6; stroke-linejoin: round; }
+.atlas-harbor-shape.is-hongkong { fill: var(--sky-accent-teal); }
+.atlas-harbor-shape.is-macau { fill: var(--sky-accent-yellow); stroke: #8a7140; }
+.atlas-harbor-shape.is-selected { stroke: var(--sky-accent-pink); stroke-width: 1.7; }
+.atlas-harbor-point { fill: var(--sky-accent-pink); stroke: #fff; stroke-width: 1; }
+.atlas-harbor-choices { display: flex; justify-content: center; flex-wrap: nowrap; width: 100%; gap: 8px; }
+.atlas-harbor-choices button {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 44px;
+  min-height: var(--control-md);
+  padding: 0 4px;
+  border: 1px solid var(--sky-line-strong);
+  border-radius: 8px;
+  background: var(--sky-surface);
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.atlas-harbor-choices button:hover { border-color: var(--sky-accent-pink); background: var(--sky-pink-soft); }
+.atlas-harbor-choices button[aria-pressed="true"] { border-color: var(--sky-primary); background: var(--sky-teal-soft); color: var(--sky-primary); }
+.atlas-harbor-choices button:focus-visible { outline: 2px solid var(--sky-primary); outline-offset: 2px; }
+.atlas-harbor-choices i { flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--sky-accent-teal); }
+.atlas-harbor-choices i.is-macau { background: var(--sky-accent-yellow); }
+@media (max-width: 620px) {
+  .atlas-harbor-magnifier { right: 12px; bottom: 14px; width: 170px; }
+  .atlas-harbor-lens { width: 150px; }
+  .atlas-harbor-magnifier {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (max-height: 520px) {
+  .atlas-harbor-magnifier { width: 142px; left: 10px; right: auto; bottom: 10px; }
+  .atlas-harbor-lens { width: 120px; }
+}
+.atlas-selection-pulse {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border: 2px solid #4caa8e;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgb(76 170 142 / 17%), 0 0 18px rgb(76 170 142 / 26%);
+  animation: atlas-selection-pulse 560ms ease-out both;
+}
+@keyframes atlas-selection-pulse {
+  from { opacity: .85; transform: scale(.35); }
+  to { opacity: 0; transform: scale(1.9); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-selection-pulse { animation: none; display: none; }
+  .atlas-harbor-magnifier { animation: none; }
+}
+.leaflet-tooltip.atlas-region-label {
+  border: 0;
+  border-radius: 5px;
+  background: rgb(255 253 248 / 94%);
+  color: var(--sky-ink);
+  box-shadow: 0 0 0 1px rgb(80 69 116 / 18%), 0 2px 7px rgb(41 38 62 / 8%);
+}
+.leaflet-tooltip.atlas-region-label.is-on-journal,
+.atlas-map.has-journal .leaflet-tooltip.atlas-region-label {
+  background: rgb(255 253 248 / 96%);
+  color: var(--sky-ink);
+}
+/* 笔记目录用暖纸底色；粉色只标出当前所在的笔记。 */
+.nb-workspace { background: #fff; }
+.nb-col--notebooks { background: #fcf8ef; }
+.nb-col-head, .nb-editor-bar { border-color: var(--sky-line); background: #fff; }
+.nb-directory .nb-row { border-radius: 6px; }
+.nb-directory .nb-row:has(> .is-active) { background: var(--sky-pink-soft); box-shadow: inset 3px 0 0 var(--sky-accent-pink); }
+.nb-directory .nb-row:hover { background: var(--sky-lavender-soft); }
+.nb-directory .nb-row > .nb-list-item { border-radius: 6px; }
+.nb-directory .nb-search-input { border-radius: 6px; background: #f4f0f6; }
+.nb-directory .nb-book-pages { border-left-color: #c7c4d9; }
+.nb-watermark { color: var(--sky-primary); font-weight: 600; letter-spacing: .04em; }
+.nb-directory .notebook-capture,
+.nb-icon-button:hover { border-color: var(--sky-accent-lavender); background: var(--sky-pink-soft); }
+
+/* 工作台保持白色阅读区，让输入区成为唯一完整轮廓。 */
+.wb-sessions { background: var(--sky-lavender-soft); }
+.wb-session-list li { border-radius: 7px; }
+.wb-session-list li[data-active="true"] { background: var(--sky-teal-soft); box-shadow: inset 3px 0 0 var(--sky-accent-pink); }
+.wb-session, .wb-icon-button, .wb-scope { border-radius: 7px; }
+.wb-icon-button:hover, .wb-session:hover { background: var(--sky-pink-soft); }
+.wb-chat { background: #fff; }
+.wb-empty h3 { letter-spacing: -0.035em; }
+.wb-message[data-role="user"] {
+  border: 1px solid color-mix(in srgb, var(--sky-accent-yellow) 30%, white);
+  border-radius: 16px 16px 5px 16px;
+  background: var(--sky-yellow-soft);
+}
+.wb-composer {
+  border-color: var(--sky-line-strong);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 2px 3px 0 rgb(121 201 194 / 38%), var(--sky-shadow-soft);
+}
+.wb-composer:focus-within { border-color: var(--sky-primary); box-shadow: 0 0 0 2px rgb(80 69 116 / 15%), var(--sky-shadow-soft); }
+.wb-send { border-radius: 8px; padding: 0; }
+.wb .wb-send > svg { width: 24px; height: 24px; flex-shrink: 0; stroke-width: 2.4; }
+.wb-settings > summary,
+.wb-actions-menu > summary { border-radius: 6px; }
+.wb-settings .wb-composer-tools,
+.wb-actions-menu .wb-quick { border-radius: 10px; }
+.wb-composer-hint { color: var(--sky-ink-muted); }
+
+/* 设置沿用同一色彩层级，弹窗分类用淡粉色标明当前位置。 */
+.settings-dialog {
+  border-color: var(--sky-accent-lavender);
+  border-radius: 14px;
+  box-shadow: 3px 3px 0 var(--sky-accent-yellow), 0 22px 70px rgb(41 38 62 / 20%);
+}
+.settings-dialog::backdrop { background: rgb(41 38 62 / 44%); backdrop-filter: none; }
+.settings-dialog-header { border-bottom: 1px solid var(--sky-line); }
+.settings-dialog .settings-layout { gap: 0; }
+.settings-categories { border-right: 1px solid var(--sky-line); padding-right: 12px; }
+.settings-categories button { border-radius: 6px; }
+.settings-categories button.is-selected {
+  background: var(--sky-pink-soft);
+  color: var(--sky-primary);
+  font-weight: 650;
+  box-shadow: inset 3px 0 0 var(--sky-accent-pink);
+}
+.settings-dialog .settings-close { border-radius: 7px; }
+.settings-dialog .secondary-button { border-color: var(--sky-line-strong); background: var(--sky-surface); }
+.settings-dialog .secondary-button:hover:not(:disabled) { background: var(--sky-pink-soft); }
+.settings-dialog :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) {
+  border-color: var(--sky-line-strong);
+  border-radius: 8px;
+  background: var(--sky-surface);
+}
+.settings-dialog :is(.settings-provider-card, .settings-model-entry, .settings-confirm, .settings-discovery-panel) {
+  border-color: var(--sky-line);
+  border-radius: 10px;
+}
+.settings-dialog .settings-advanced { border-radius: 8px; background: var(--sky-lavender-soft); }
+
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  .nav-drawer { box-shadow: 16px 0 40px rgb(8 24 28 / 18%); }
+  .settings-categories { border-right: 0; border-bottom: 1px solid var(--sky-line); padding-right: 0; }
+  .settings-dialog { border-radius: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .primary-button, .secondary-button, .capture-record-button, .nav-drawer .nav-button { transition: none; }
+}
+
+/* 空态也用页面的阅读网格，不放居中的装饰性 AI 图标。 */
+.wb-empty {
+  justify-items: start;
+  text-align: left;
+  padding-inline: clamp(24px, 5vw, 72px);
+  gap: 8px;
+}
+.wb-empty h3 { font-size: clamp(22px, 2.4vw, 28px); }
+.wb-empty p { margin: 0; }
+.nb-watermark-pane {
+  justify-items: start;
+  text-align: left;
+  padding-inline: max(28px, calc((100% - 760px) / 2));
+  gap: 8px;
+}
+.nb-watermark { font-size: clamp(22px, 3vw, 30px); color: var(--sky-primary); letter-spacing: 0; }
+.nb-watermark-pane .nb-empty { max-width: 32rem; }
+
+/* 孟菲斯装饰只出现在宽屏空状态的右侧留白，不压住文字和操作。 */
+@media (min-width: 1024px) {
+  .wb-empty, .nb-watermark-pane { position: relative; }
+  .wb-empty::before, .nb-watermark-pane::before {
+    content: "";
+    position: absolute;
+    top: clamp(28px, 6vh, 56px);
+    right: clamp(32px, 7vw, 92px);
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, color-mix(in srgb, var(--sky-accent-lavender) 62%, transparent) 1.5px, transparent 1.7px) 0 0 / 16px 16px;
+    pointer-events: none;
+  }
+  .wb-empty::after, .nb-watermark-pane::after {
+    content: "";
+    position: absolute;
+    top: clamp(128px, calc(6vh + 100px), 156px);
+    right: clamp(46px, 8vw, 108px);
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--sky-accent-pink);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+}
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  .wb-empty { padding-inline: 24px; }
+  .nb-watermark-pane { padding-inline: 24px; }
+}
+
+/* 动效仅提示状态变化：进入用短距离与淡入，常驻内容不循环运动。 */
+:root {
+  --motion-quick: 140ms;
+  --motion-enter: 190ms;
+  --motion-ease-out: cubic-bezier(.2, .75, .25, 1);
+}
+@keyframes xj-reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes xj-mark {
+  from { opacity: .25; transform: scaleY(.45); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+
+/* 导航：选中标记从当前行内出现，不推动内容。 */
+.nav-drawer .nav-button.is-active::before {
+  transform-origin: center;
+  animation: xj-mark var(--motion-enter) var(--motion-ease-out) both;
+}
+
+/* 笔记目录：箭头指示展开方向，笔记列表随后轻量进入。 */
+.nb-directory [data-testid="notebook-list"] > .nb-list > li > .nb-row > button > svg {
+  transition: transform var(--motion-enter) var(--motion-ease-out), color var(--motion-quick) ease;
+}
+.nb-directory .nb-book-pages {
+  animation: xj-reveal var(--motion-enter) var(--motion-ease-out) both;
+}
+.nb-directory .nb-row {
+  transition: background-color var(--motion-quick) ease;
+}
+
+/* 工作台：焦点与打开的功能层给出清晰反馈。 */
+.wb-composer {
+  transition: border-color var(--motion-quick) ease, box-shadow var(--motion-quick) ease;
+}
+.wb-actions-menu[open] .wb-quick,
+.wb-settings[open] .wb-composer-tools {
+  animation: xj-reveal var(--motion-enter) var(--motion-ease-out) both;
+}
+.wb-send > svg { transition: transform var(--motion-quick) var(--motion-ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .wb-send:hover:not(:disabled) > svg { transform: translateY(-2px); }
+}
+
+/* 设置：弹窗本体短暂进入，分类高亮跟随点击。 */
+.settings-dialog[open] .settings-dialog-surface {
+  animation: xj-reveal var(--motion-enter) var(--motion-ease-out) both;
+}
+.settings-categories button {
+  transition: background-color var(--motion-quick) ease, color var(--motion-quick) ease;
+}
+
+/* 会话过程以轻量文字行显示，状态仍有明确文案。 */
+.wb-traces {
+  border-left: 2px solid var(--sky-accent-lavender);
+  padding-left: 10px;
+}
+.wb-traces li::before { color: var(--sky-accent-pink); }
+.wb-block {
+  color: var(--sky-ink-muted);
+}
+.wb-block-tool[data-ok="pending"] > summary { color: var(--sky-primary); }
+.wb-block-tool[data-ok="false"] > summary { color: #a1351f; }
+.wb-answer {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* 叠牌内部有逐卡 z-index，隔离后不再越过其相邻的设置弹层。 */
+.wb-note-image-deck {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+.wb-composer:has(.wb-settings[open]),
+.wb-composer:has(.wb-actions-menu[open]) {
+  z-index: 2;
+  isolation: isolate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-drawer .nav-button.is-active::before,
+  .nb-directory .nb-book-pages,
+  .wb-actions-menu[open] .wb-quick,
+  .wb-settings[open] .wb-composer-tools,
+  .settings-dialog[open] .settings-dialog-surface { animation: none; }
+  .nb-directory [data-testid="notebook-list"] > .nb-list > li > .nb-row > button > svg,
+  .nb-directory .nb-row,
+  .wb-composer,
+  .wb-send > svg,
+  .settings-categories button { transition: none; }
+}

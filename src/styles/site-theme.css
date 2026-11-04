@@ -1,0 +1,569 @@
+/*
+ * Web与App统一绿色：地图“地貌水彩 / 纸纹行政图”只切换地图与背景材质。
+ * 复用现有偏好和绿色token，不另造主题开关；原生与浏览器共用配色，不改变存储标记。
+ * 素材只用于页面外围和导航，不铺在可读正文上。
+ */
+:root[data-atlas-theme] {
+  --sky-bg: #f1ece1;
+  --sky-surface: #fbf7ed;
+  --sky-text-surface: #fbf7ee;
+  --sky-ink: #26382f;
+  --sky-ink-muted: #5f6f63;
+  --sky-primary: #315443;
+  --sky-primary-hover: #274636;
+  --sky-on-primary: #fffdf5;
+  --sky-line: #d9cebb;
+  --sky-line-strong: #b9a98f;
+  --sky-glass: #f7f1e5e8;
+  --sky-glass-strong: #f7f1e5f5;
+  --sky-shadow: 0 12px 34px rgb(53 55 40 / 12%);
+  --sky-shadow-soft: 0 4px 16px rgb(53 55 40 / 8%);
+  --sky-focus: #8d6b3d;
+  --sky-nav: #253a30;
+  --sky-nav-line: #496154;
+  --sky-accent-pink: #a97652;
+  --sky-accent-yellow: #c1a06a;
+  --sky-accent-teal: #718b7b;
+  --sky-accent-lavender: #9a9584;
+  --sky-pink-soft: #f1e7da;
+  --sky-yellow-soft: #f4ecd8;
+  --sky-teal-soft: #e8efe6;
+  --sky-lavender-soft: #eeeadf;
+  --green-soft: #e8efe6;
+  --orange-soft: #f1e7da;
+  --theme-canvas: #fbf7ee;
+  --theme-surface: #f8f2e6;
+  --theme-surface-strong: #fffaf0;
+  --theme-side-panel: #e7ecd9;
+  --theme-panel: #f4f3e8;
+  --theme-display-ink: #2f4f3f;
+}
+
+:root[data-atlas-theme="terrain"] {
+  --theme-page: #f1ece1;
+  --theme-texture: url("/textures/linen-board.webp");
+  --theme-texture-veil: rgb(242 238 229 / 86%);
+}
+
+:root[data-atlas-theme="paper"] {
+  --theme-page: #f3ede3;
+  --theme-texture: url("/textures/paper-cotton.webp");
+  --theme-texture-veil: rgb(247 242 233 / 34%);
+}
+
+:root[data-atlas-theme] {
+  color-scheme: light;
+}
+
+html[data-atlas-theme],
+html[data-atlas-theme] body {
+  background-color: var(--theme-page);
+  background-image: linear-gradient(var(--theme-texture-veil), var(--theme-texture-veil)), var(--theme-texture);
+  background-size: cover, cover;
+  background-attachment: fixed, fixed;
+  background-repeat: no-repeat, no-repeat;
+  color: var(--sky-ink);
+}
+
+html[data-atlas-theme] body {
+  min-height: 100dvh;
+}
+
+/* 内容页的清稿面：材质只留在页面边缘，正文区不用纹理。 */
+html[data-atlas-theme] .app-main,
+html[data-atlas-theme] .capture-page[data-view="record"] {
+  background: transparent;
+}
+html[data-atlas-theme] .nb-workspace,
+html[data-atlas-theme] .wb-chat,
+html[data-atlas-theme] .wb-sessions,
+html[data-atlas-theme] .settings-content {
+  background: transparent;
+}
+html[data-atlas-theme] .wb-sessions,
+html[data-atlas-theme] .nb-col--notebooks {
+  background-color: var(--theme-side-panel);
+  background-image: linear-gradient(var(--theme-texture-veil), var(--theme-texture-veil)), var(--theme-texture);
+  background-size: cover, 560px;
+  background-repeat: no-repeat, repeat;
+}
+
+/* 设置弹窗保持一张连续纸面；分类靠间距和选中态区分，不再铺一块侧栏色板。 */
+html[data-atlas-theme] .settings-categories {
+  background: transparent;
+  border: 0;
+}
+html[data-atlas-theme] .nb-col--notebooks {
+  background-blend-mode: normal;
+}
+html[data-atlas-theme] .notebook-page,
+html[data-atlas-theme] .settings-page {
+  color: var(--sky-ink);
+}
+
+/* 导航复用界面token：两端固定深林绿，保留当前页标记。 */
+html[data-atlas-theme] .nav-drawer,
+html[data-atlas-theme] .nav-drawer.is-open {
+  background: var(--sky-nav);
+  border-color: var(--sky-nav-line);
+  color: #f4eddf;
+}
+html[data-atlas-theme] .nav-drawer-brand .brand-mark {
+  border-color: color-mix(in srgb, var(--sky-accent-yellow) 64%, transparent);
+  border-radius: 9px;
+  background: var(--sky-accent-yellow);
+  color: var(--sky-nav);
+  box-shadow: none;
+}
+html[data-atlas-theme] .nav-drawer-brand:hover .brand-mark {
+  background: color-mix(in srgb, var(--sky-accent-yellow) 86%, white);
+}
+html[data-atlas-theme] .nav-drawer .nav-button {
+  border-radius: 8px;
+  color: #d8d1c3;
+}
+html[data-atlas-theme] .nav-drawer .nav-button:hover {
+  background: color-mix(in srgb, white 10%, transparent);
+  color: #fffaf0;
+}
+html[data-atlas-theme] .nav-drawer .nav-button.is-active {
+  background: color-mix(in srgb, white 13%, transparent);
+  color: #fffaf0;
+}
+html[data-atlas-theme] .nav-drawer .nav-button.is-active::before {
+  background: var(--sky-accent-yellow);
+  clip-path: none;
+  border-radius: 2px;
+  width: 3px;
+}
+html[data-atlas-theme] .nav-drawer .nav-group-label {
+  color: #bfb6a7;
+}
+html[data-atlas-theme] .nav-drawer .nav-foot-link {
+  border-color: var(--sky-nav-line);
+  background: color-mix(in srgb, white 7%, transparent);
+  color: #f0e8d9;
+}
+html[data-atlas-theme] .nav-drawer .nav-foot-link:hover {
+  background: color-mix(in srgb, white 12%, transparent);
+}
+html[data-atlas-theme] .nav-drawer .nav-drawer-close {
+  border-color: transparent;
+  background: transparent;
+  color: #f0e8d9;
+}
+html[data-atlas-theme] .nav-drawer .nav-drawer-close:hover {
+  background: color-mix(in srgb, white 10%, transparent);
+}
+
+/* 按钮与输入：固定轮廓、清楚状态，不再用紫色和黄色错位阴影。 */
+html[data-atlas-theme] :is(.primary-button, .capture-record-button) {
+  border-color: var(--sky-primary);
+  background: var(--sky-primary);
+  color: var(--sky-on-primary);
+  box-shadow: none;
+}
+html[data-atlas-theme] :is(.primary-button, .capture-record-button):hover:not(:disabled) {
+  border-color: var(--sky-primary-hover);
+  background: var(--sky-primary-hover);
+}
+html[data-atlas-theme] .secondary-button {
+  border-color: var(--sky-line-strong);
+  background: var(--theme-surface-strong);
+  color: var(--sky-ink);
+}
+html[data-atlas-theme] .secondary-button:hover:not(:disabled) {
+  border-color: var(--sky-accent-yellow);
+  background: var(--theme-surface);
+}
+html[data-atlas-theme] :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border-color: var(--sky-line-strong);
+  background: var(--theme-surface-strong);
+  color: var(--sky-ink);
+}
+html[data-atlas-theme] :is(input, textarea)::placeholder {
+  color: color-mix(in srgb, var(--sky-ink-muted) 76%, transparent);
+}
+html[data-atlas-theme] :where(button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--sky-focus);
+  outline-offset: 2px;
+}
+
+/* 卡片/面板：统一暖纸表面、细边和克制阴影。 */
+html[data-atlas-theme] :is(.settings-block, .notebook-sidebar, .page-detail, .capture-composer, .capture-editor-pane, .nb-sidebar, .nb-editor) {
+  border-color: var(--sky-line);
+  background: var(--theme-panel);
+  box-shadow: var(--sky-shadow-soft);
+}
+html[data-atlas-theme] :is(.settings-block, .page-detail) {
+  background: var(--theme-surface-strong);
+}
+html[data-atlas-theme] :is(h1, h2) {
+  color: var(--theme-display-ink);
+}
+
+/* 弹出层、菜单、标签与分隔线使用同一套暖色层级。 */
+html[data-atlas-theme] :is(.settings-dialog, .page-detail, .nb-trip-date-popover, .nav-drawer) {
+  border-color: var(--sky-line-strong);
+}
+html[data-atlas-theme] :is(.settings-categories button.is-selected, .nb-section-tab[aria-selected="true"]) {
+  color: var(--sky-primary);
+}
+html[data-atlas-theme] .settings-block-note,
+html[data-atlas-theme] .settings-block p {
+  color: var(--sky-ink-muted);
+}
+html[data-atlas-theme] .settings-map-style {
+  border-color: var(--sky-line);
+  background: var(--theme-surface-strong);
+}
+html[data-atlas-theme] .settings-map-style[data-selected="true"] {
+  border-color: var(--sky-primary);
+  background: color-mix(in srgb, var(--sky-primary) 8%, var(--theme-surface-strong));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sky-primary) 18%, transparent);
+}
+html[data-atlas-theme] .settings-map-style:hover {
+  border-color: var(--sky-line-strong);
+  background: var(--theme-surface);
+}
+html[data-atlas-theme] .settings-map-style input {
+  accent-color: var(--sky-primary);
+}
+
+/* 图标按钮统一为无框风格：静默时只有图形，悬停/展开时淡底提示可点。
+   .app-mobile-menu 浮在地图上，保留纸面底以保证可读性。
+   主操作（如保存）由自身实心样式覆盖，不在这里降级。 */
+html[data-atlas-theme] .app-mobile-menu {
+  border-color: transparent;
+  background: var(--theme-surface-strong);
+  color: var(--sky-ink);
+}
+html[data-atlas-theme] .app-mobile-menu:hover {
+  background: var(--theme-surface);
+}
+html[data-atlas-theme] :is(.wb-icon-button, .nb-icon-button):not(.nb-capture-save) {
+  border-color: transparent;
+  background: transparent;
+  color: var(--sky-ink-muted);
+}
+html[data-atlas-theme] :is(.wb-icon-button, .nb-icon-button):not(.nb-capture-save):hover,
+html[data-atlas-theme] :is(.wb-icon-button, .nb-icon-button):not(.nb-capture-save)[aria-expanded="true"],
+html[data-atlas-theme] :is(.wb-icon-button, .nb-icon-button):not(.nb-capture-save)[aria-pressed="true"] {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--sky-primary) 9%, transparent);
+  color: var(--sky-ink);
+}
+
+/* 照片/媒体保持原色，只统一容器背景和边框。 */
+html[data-atlas-theme] :is(.photo-viewer, .notebook-image-dialog, .page-detail-body figure) img {
+  filter: none;
+}
+
+/* 设置弹窗内部的历史灰底也要跟随主题，避免暖纸壳里嵌一组冷灰控件。 */
+html[data-atlas-theme] .settings-dialog .secondary-button {
+  border-color: var(--sky-line-strong);
+  background: var(--theme-surface);
+  color: var(--sky-ink);
+}
+html[data-atlas-theme] .settings-dialog .secondary-button:hover:not(:disabled) {
+  background: var(--theme-surface-strong);
+}
+html[data-atlas-theme] .settings-dialog :is(input:not([type="checkbox"]):not([type="file"]), select, textarea) {
+  border-color: var(--sky-line);
+  background: var(--theme-surface-strong);
+  color: var(--sky-ink);
+}
+html[data-atlas-theme] .settings-dialog :is(.settings-provider-card, .settings-model-entry, .settings-confirm, .settings-discovery-panel, .settings-advanced) {
+  border-color: var(--sky-line);
+  background: var(--theme-surface);
+}
+html[data-atlas-theme] .settings-dialog :is(.settings-advanced > summary, .wb-cap-block) {
+  background: var(--theme-surface);
+}
+html[data-atlas-theme] .settings-dialog .settings-close:hover {
+  background: var(--theme-surface);
+}
+html[data-atlas-theme] :is(.page-heading h1, .settings-dialog-header h1, .settings-block h2, .wb-empty h3, .nb-empty h2) {
+  font-family: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+  letter-spacing: -0.01em;
+  font-weight: 650;
+}
+
+/* 聊天和手账辅助面板保持浅底，但不再沿用原来的冷蓝灰提示色。 */
+html[data-atlas-theme] :is(.wb-scope, .nb-organize, .nb-image-dialog, .capture-hint) {
+  border-color: var(--sky-line);
+  background: color-mix(in srgb, var(--theme-surface) 88%, transparent);
+}
+html[data-atlas-theme] .wb-message[data-role="user"] {
+  background: color-mix(in srgb, var(--sky-primary) 8%, var(--theme-surface));
+}
+html[data-atlas-theme] :is(.wb-scope, .nb-organize, .nb-image-dialog-field) {
+  color: var(--sky-ink-muted);
+}
+
+/* 媒体查看器沿用各主题的深色外框；照片本身不做任何滤镜。 */
+html[data-atlas-theme] .wb-image-preview-dialog {
+  background: var(--sky-nav);
+  color: #f4eddf;
+}
+html[data-atlas-theme] .wb-image-preview-dialog ::backdrop {
+  background: rgb(25 30 24 / 82%);
+}
+html[data-atlas-theme] .wb-image-preview-toolbar {
+  border-bottom-color: color-mix(in srgb, white 14%, transparent);
+}
+html[data-atlas-theme] .wb-image-preview-toolbar button {
+  color: #f4eddf;
+}
+html[data-atlas-theme] .wb-image-preview-toolbar button:hover:not(:disabled) {
+  background: color-mix(in srgb, white 13%, transparent);
+}
+html[data-atlas-theme] .photo-info-panel {
+  background: color-mix(in srgb, var(--sky-nav) 88%, black);
+}
+html[data-atlas-theme] .photo-info-panel :is(dt, p) {
+  color: color-mix(in srgb, #f4eddf 78%, transparent);
+}
+
+/* 工作台保持独立深色画布；默认笔记/地图查看器沿用上方主题。 */
+html[data-atlas-theme] .wb-image-preview-dialog[data-variant="workbench"] { background: #141a23; color: #f4f6fa; }
+html[data-atlas-theme] .wb-image-preview-dialog[data-variant="workbench"]::backdrop { background: rgb(10 13 17 / 92%); }
+html[data-atlas-theme] .wb-image-preview-dialog[data-variant="workbench"] .photo-info-panel { background: transparent; }
+html[data-atlas-theme] .wb-image-preview-dialog[data-variant="workbench"] .wb-viewer-edit-input textarea { background: transparent; color: #f5f5f2; border-color: transparent; }
+html[data-atlas-theme] .wb-image-preview-dialog[data-variant="workbench"] .wb-viewer-edit-input textarea::placeholder { color: #b9c1ba; }
+
+/* 本内搜索是复合控件：焦点反馈挂在整块搜索行上，内部 input 不再叠一圈粗框。 */
+html[data-atlas-theme] .nb-directory .nb-search-input input {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+html[data-atlas-theme] .nb-directory .nb-search-input input:focus-visible {
+  outline: none;
+}
+html[data-atlas-theme] .nb-directory .nb-search-input:focus-within {
+  border-color: color-mix(in srgb, var(--sky-primary) 48%, var(--sky-line));
+  background: color-mix(in srgb, var(--sky-primary) 5%, var(--theme-surface-strong));
+  box-shadow: none;
+}
+/* 目录里的搜索框和「⋯」跟随暖纸底，不再嵌一块冷色输入框和一排实心小方块。 */
+html[data-atlas-theme] .nb-directory .nb-search-input {
+  border-color: var(--sky-line);
+  background: var(--theme-surface-strong);
+}
+html[data-atlas-theme] .nb-directory .nb-search-input:hover:not(:focus-within) {
+  border-color: var(--sky-line-strong);
+}
+html[data-atlas-theme] .nb-row-menu-open {
+  border-color: transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--sky-ink-muted);
+}
+html[data-atlas-theme] .nb-row-menu-open:hover,
+html[data-atlas-theme] .nb-row-menu-open[aria-expanded="true"] {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--sky-primary) 9%, transparent);
+  color: var(--sky-ink);
+}
+
+/* 笔记本顶部工具条：去掉一排实心小方块，只保留图标和悬停/展开反馈。 */
+html[data-atlas-theme] .nb-col-head {
+  gap: 4px;
+}
+html[data-atlas-theme] .nb-col-head .nb-icon-button + .nb-icon-button {
+  margin-left: -4px;
+}
+html[data-atlas-theme] .nb-col-head input.nb-notebook-name {
+  border-color: transparent;
+  background: transparent;
+  padding-inline: 2px;
+  font-size: 14px;
+}
+html[data-atlas-theme] .nb-col-head input.nb-notebook-name:hover {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--sky-primary) 7%, transparent);
+}
+html[data-atlas-theme] .nb-col-head input.nb-notebook-name:focus-visible {
+  outline: none;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: inset 0 -2px 0 var(--sky-primary);
+}
+html[data-atlas-theme] .nb-editor-bar {
+  gap: 2px 6px;
+}
+html[data-atlas-theme] .nb-editor-bar input.nb-editor-title-input {
+  border-color: transparent;
+  background: transparent;
+  padding-inline: 2px;
+  font-size: 17px;
+}
+html[data-atlas-theme] .nb-editor-bar input.nb-editor-title-input:hover {
+  background: color-mix(in srgb, var(--sky-primary) 4%, transparent);
+}
+html[data-atlas-theme] .nb-editor-bar input.nb-editor-title-input:focus-visible {
+  outline: none;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: inset 0 -2px 0 var(--sky-primary);
+}
+html[data-atlas-theme] :is(.nb-col-head, .nb-editor-bar) .nb-icon-button {
+  border-color: transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--sky-ink-muted);
+}
+html[data-atlas-theme] :is(.nb-col-head, .nb-editor-bar) .nb-icon-button:hover,
+html[data-atlas-theme] :is(.nb-col-head, .nb-editor-bar) .nb-icon-button[aria-expanded="true"] {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--sky-primary) 9%, transparent);
+  color: var(--sky-ink);
+}
+html[data-atlas-theme] :is(.nb-col-head, .nb-editor-bar) .nb-icon-button:focus-visible {
+  outline: 2px solid var(--sky-focus);
+  outline-offset: 2px;
+}
+html[data-atlas-theme] .nb-editor-bar .notebook-save-state {
+  margin-inline: 2px 4px;
+  font-size: 11px;
+}
+
+/* 设置弹窗内的 section 不铺独立卡片面；卡片只留给真正的选项/输入控件。 */
+html[data-atlas-theme] .settings-dialog .settings-block {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ============================================================
+ * 工作台输入区：同一张暖纸上的连续输入面。
+ * 去掉旧版白色内条、错位青影和混杂高度，只保留一个清晰焦点。
+ * ============================================================ */
+html[data-atlas-theme] .wb-composer {
+  padding: 8px 10px;
+  border: 1px solid var(--sky-line);
+  border-radius: 16px;
+  background: var(--theme-surface);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--theme-surface-strong) 78%, transparent),
+    0 6px 20px color-mix(in srgb, var(--sky-ink) 7%, transparent);
+  gap: 4px;
+}
+html[data-atlas-theme] .wb-composer:focus-within {
+  border-color: color-mix(in srgb, var(--sky-primary) 68%, var(--sky-line-strong));
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--sky-primary) 12%, transparent),
+    0 6px 20px color-mix(in srgb, var(--sky-ink) 7%, transparent);
+}
+html[data-atlas-theme] .wb-composer .wb-input-row {
+  gap: 2px;
+}
+html[data-atlas-theme] .wb-composer .wb-input-row textarea {
+  min-height: 46px;
+  padding: 7px 8px 5px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--sky-ink);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+html[data-atlas-theme] .wb-composer .wb-input-row textarea:focus-visible {
+  outline: none;
+}
+html[data-atlas-theme] .wb-composer .wb-input-row textarea::placeholder {
+  color: color-mix(in srgb, var(--sky-ink-muted) 62%, transparent);
+}
+html[data-atlas-theme] .wb-composer .wb-input-actions {
+  gap: 4px;
+  padding-top: 2px;
+}
+html[data-atlas-theme] .wb-composer :is(.wb-input-left, .wb-input-right) {
+  gap: 5px;
+}
+
+/* 次级操作：加号/模型为幽灵按钮，图像生成为浅纸芯片。 */
+html[data-atlas-theme] .wb-composer .wb-actions-menu > summary,
+html[data-atlas-theme] .wb-composer .wb-settings > summary {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--sky-ink-muted);
+  box-shadow: none;
+}
+html[data-atlas-theme] .wb-composer .wb-settings > summary {
+  width: auto;
+  min-width: 0;
+  padding: 0 8px;
+  justify-content: flex-start;
+  font-size: 12.5px;
+}
+html[data-atlas-theme] .wb-composer :is(.wb-actions-menu, .wb-settings) > summary:hover {
+  background: color-mix(in srgb, var(--theme-surface-strong) 68%, transparent);
+  color: var(--sky-ink);
+}
+html[data-atlas-theme] .wb-composer .wb-send {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  flex: 0 0 40px;
+  padding: 0;
+  border: 1px solid var(--sky-primary);
+  border-radius: 50%;
+  background: var(--sky-primary);
+  color: var(--sky-on-primary);
+  box-shadow: 0 2px 7px color-mix(in srgb, var(--sky-primary) 28%, transparent);
+}
+html[data-atlas-theme] .wb-composer .wb-send:hover:not(:disabled) {
+  border-color: var(--sky-primary-hover);
+  background: var(--sky-primary-hover);
+}
+html[data-atlas-theme] .wb-composer .wb-send:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+}
+html[data-atlas-theme] .wb-composer .wb-send > svg {
+  width: 18px;
+  height: 18px;
+}
+html[data-atlas-theme] .wb-composer-hint {
+  margin-top: 2px;
+  color: var(--sky-ink-muted);
+  font-size: 11.5px;
+}
+
+/* 触屏仍保留 44px 命中区，视觉尺寸不抢焦点。 */
+@media (pointer: coarse) {
+  html[data-atlas-theme] .wb-composer .wb-actions-menu > summary,
+  html[data-atlas-theme] .wb-composer .wb-settings > summary,
+  html[data-atlas-theme] .wb-composer .wb-send {
+    height: 44px;
+    min-height: 44px;
+  }
+  html[data-atlas-theme] .wb-composer .wb-send {
+    width: 44px;
+    min-width: 44px;
+    flex-basis: 44px;
+  }
+}
+
+@media (max-width: 620px) {
+  /* 手机窄行只保留模型名与下拉箭头，把空间留给当前模型值。 */
+  html[data-atlas-theme] .wb-composer .wb-settings > summary {
+    max-width: min(170px, 46vw);
+    gap: 4px;
+  }
+  html[data-atlas-theme] .wb-composer .wb-settings > summary > svg:first-child {
+    display: none;
+  }
+}

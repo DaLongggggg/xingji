@@ -1,0 +1,944 @@
+/*
+ * 020-A 天空主题 token。
+ *
+ * 语义名（--sky-*）是唯一主题来源；下方历史变量名只作**兼容别名**，
+ * 旧组件与旧页面无须改 API 就能换到新主题，避免大范围改组件。
+ * 新增颜色一律用 --sky-*，不要再写死纸色/深绿/橙色。
+ */
+:root {
+  /* 天空主题语义 token —— 本轮对齐 Apple 官网观感：低饱和浅底、弱分割、极简阴影 */
+  --sky-bg: #f2f6f9;
+  --sky-surface: #ffffff;
+  --sky-ink: #1d2939;
+  --sky-ink-muted: #66788a;
+  --sky-primary: #17689b;
+  --sky-primary-hover: #12567f;
+  --sky-on-primary: #ffffff;
+  /*
+   * 分割线：原先 0.12 在浅灰蓝底上几乎看不见，“哪里是一块”全靠留白猜。
+   * 提到 0.16/0.26 让结构可读，仍属弱对比，不抢内容。
+   */
+  --sky-line: rgba(45, 80, 110, 0.16);
+  --sky-line-strong: rgba(45, 80, 110, 0.26);
+  --sky-glass: rgba(255, 255, 255, 0.78);
+  --sky-glass-strong: rgba(255, 255, 255, 0.94);
+  --sky-text-surface: #ffffff;
+  --sky-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 12px 32px rgba(16, 24, 40, 0.08);
+  --sky-shadow-soft:
+    0 1px 2px rgba(16, 24, 40, 0.03),
+    0 6px 16px rgba(16, 24, 40, 0.06);
+  --sky-blur: 18px;
+  --sky-focus: rgba(23, 104, 155, 0.4);
+  /* 本轮调整：全站顶部导航栏高度（菜单按钮 + 页面标题同一行）。 */
+  --app-topbar-h: 0px;
+  /* 桌面左导航收起后的轨道宽度。 */
+  --nav-rail-w: 64px;
+
+  /*
+   * 系统刻度（本轮视觉整理）：此前字号散落 19 档（含 8/9/11.5/12.5px 等
+   * 一次性取值）、圆角 22 档，页面因此“不像一套东西”。下面几组刻度是唯一来源；
+   * 只保留当前**已被引用**的档位，不做未被使用的预留。
+   */
+  /* 字号：正文固定 15px（DESIGN.md），其余按层级取档 */
+  --fs-sm: 12px;
+  --fs-base: 13px;
+  --fs-body: 15px;
+  --fs-title: 17px;
+  --fs-h2: 20px;
+  --fs-h1: 25px;
+  --fs-display: 33px;
+
+  /* 控件高度：44 为触控下限，36 为桌面紧凑档 */
+  --control-sm: 36px;
+  --control-md: 44px;
+
+  --sky-map-journal: #8fc3e8;
+  --sky-map-empty: #bfd0dd;
+  --sky-map-county: #a8bcca;
+  --sky-map-border: #3f6b8c;
+  --sky-map-label: rgba(24, 51, 72, 0.86);
+  --sky-map-label-on-journal: rgba(233, 245, 253, 0.95);
+
+  /* 兼容别名：旧变量名继续可用，实际颜色已切到天空主题 */
+  --paper: var(--sky-bg);
+  --paper-deep: #dceaf6;
+  --card: var(--sky-surface);
+  --ink: var(--sky-ink);
+  --muted: var(--sky-ink-muted);
+  --line: var(--sky-line);
+  --green: var(--sky-primary);
+  --green-soft: rgba(23, 104, 155, 0.1);
+  --orange: var(--sky-primary);
+  --orange-soft: rgba(23, 104, 155, 0.12);
+  --yellow: #f0c96a;
+  --blue: #6ea8d0;
+  --red: #b64432;
+  --shadow: var(--sky-shadow);
+  /* 圆角四档。此前代码里还散着 4/6/7/8/10/11/13/15/17px 等 22 档取值，
+     已统一收敛到这四档（见各组件样式）。 */
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--sky-bg);
+  color: var(--sky-ink);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  /*
+   * 平底色：原先的三段渐变在“内容很少”的页面上（记录/设置）会读成渲染脏块，
+   * 而不是有意的留白。改为单一 --sky-bg，卡片与画布的关系更干净。
+   */
+  background: var(--sky-bg);
+  color: var(--sky-ink);
+  font-family:
+    system-ui,
+    -apple-system,
+    "SF Pro Text",
+    Inter,
+    ui-sans-serif,
+    "PingFang SC",
+    "Helvetica Neue",
+    "Microsoft YaHei",
+    sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+ * 标题层级：此前 30 处标题规则里只有 2 处声明了 font-weight，
+ * 于是几乎所有标题都以正文的 400 字重渲染 —— 标题和正文只差几像素，
+ * 页面因此「平」。这里把字重与字号统一到刻度上，作为全局默认；
+ * 组件若要特殊处理只需覆盖字号（如首页主视觉），不必再各自补字重。
+ */
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: var(--fs-h1);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+}
+
+h3 {
+  font-size: var(--fs-title);
+}
+
+h4 {
+  font-size: var(--fs-body);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--sky-focus);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+/*
+ * 020-A：固定侧栏曾是 1.x 时代的常驻导航，现在导航统一走左侧抽屉。
+ * 保留组件与样式（旧页面仍可能渲染它），但不再占用布局宽度与视觉位置，
+ * 因此正文工作区可以真正居中，而不是被 236px 侧栏顶偏。
+ */
+.app-sidebar {
+  display: none;
+}
+
+.brand-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  padding: 0 8px 30px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.brand-button > span:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-button strong {
+  font-size: 25px;
+  letter-spacing: 0.08em;
+}
+
+.brand-button small {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+}
+
+.brand-mark {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  place-items: center;
+  border-radius: 15px 15px 15px 5px;
+  background: var(--orange);
+  color: white;
+}
+
+.app-sidebar nav {
+  display: grid;
+  gap: 7px;
+}
+
+.nav-button {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 13px 14px;
+  background: transparent;
+  color: var(--sky-ink-muted);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+  text-align: left;
+}
+
+.nav-button:hover {
+  color: var(--sky-ink);
+  background: rgba(45, 80, 110, 0.06);
+}
+
+.nav-button.is-active {
+  background: rgba(23, 104, 155, 0.1);
+  color: var(--sky-primary);
+  font-weight: 600;
+}
+
+.nav-count {
+  display: grid;
+  min-width: 22px;
+  height: 22px;
+  margin-left: auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+  font-size: 11px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #71daa6;
+  box-shadow: 0 0 0 5px rgba(113, 218, 166, 0.1);
+}
+
+.mobile-navigation {
+  display: none;
+}
+
+.app-main {
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  /* 顶部让位给固定顶栏（菜单按钮 + 页面标题）。 */
+  padding: calc(var(--app-topbar-h) + 20px) clamp(16px, 3vw, 40px) 70px;
+}
+
+.topbar {
+  position: sticky;
+  z-index: 30;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+  margin: 0 0 22px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--sky-line);
+  background: var(--sky-glass);
+  box-shadow: 0 1px 0 rgba(94, 140, 173, 0.1);
+  -webkit-backdrop-filter: blur(var(--sky-blur)) saturate(1.1);
+  backdrop-filter: blur(var(--sky-blur)) saturate(1.1);
+}
+
+/* 顶栏左侧：菜单按钮 + 搜索，两者在同一行不互相挤压。 */
+.topbar-left {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  margin-right: auto;
+}
+
+/* 020-A：为 fixed 菜单按钮让开左侧，避免正文被按钮遮住。 */
+.topbar--with-menu {
+  padding-left: 96px;
+}
+
+/* 020-A：去掉顶层大标题后的紧凑页面说明。 */
+.page-note {
+  margin: 0;
+  max-width: 900px;
+  color: var(--sky-ink-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.topbar-left > :last-child {
+  min-width: 0;
+}
+
+.selected-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 15px;
+  background: var(--card);
+  cursor: pointer;
+}
+
+.global-notice {
+  position: fixed;
+  z-index: 70;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(480px, calc(100vw - 32px));
+  margin: 0;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  background: var(--sky-surface);
+  color: var(--sky-ink);
+  box-shadow: var(--sky-shadow-soft);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  overflow-wrap: anywhere;
+  /* 轻量 Toast：不拦截底层操作，只做提示。 */
+  pointer-events: none;
+}
+
+.global-notice > span { min-width: 0; }
+
+.global-notice button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--control-sm);
+  height: var(--control-sm);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--orange);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.primary-button,
+.secondary-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition:
+    background 160ms ease,
+    opacity 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.primary-button {
+  border: 0;
+  background: var(--sky-primary);
+  color: white;
+  box-shadow: none;
+}
+
+.secondary-button {
+  border: 0;
+  background: rgba(45, 80, 110, 0.06);
+  color: var(--sky-ink);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: var(--sky-primary-hover);
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: rgba(45, 80, 110, 0.1);
+}
+
+/*
+ * 禁用态：不再用整体 opacity: 0.4 压暗。那会把按钮标签压到约 2:1，
+ * 用户连“这个按钮是做什么的”都读不出来；而这个标签本身是有信息的。
+ * 改为明确的弱化底色 + 弱化文字色：一眼可辨“不可点”，标签仍然可读，
+ * 且与次按钮的常态浅灰底（0.06）拉开层次。
+ */
+.primary-button:disabled,
+.secondary-button:disabled {
+  cursor: not-allowed;
+}
+
+.primary-button:disabled {
+  /* 0.35 的蓝底仍配白字时只有约 1.8:1：改成浅蓝底 + 蓝色文字，才符合上面这条注释的本意。 */
+  background: rgba(23, 104, 155, 0.12);
+  color: var(--sky-primary);
+  box-shadow: none;
+}
+
+.secondary-button:disabled {
+  background: rgba(45, 80, 110, 0.035);
+  color: var(--sky-ink-muted);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.text-link,
+.text-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.destination-search {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  width: min(620px, 100%);
+  min-height: 61px;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(23, 37, 31, 0.12);
+  border-radius: 17px;
+  padding: 0 18px;
+  background: var(--card);
+  box-shadow: 0 16px 45px rgba(23, 37, 31, 0.12);
+}
+
+.destination-search.is-compact {
+  min-height: 48px;
+  max-width: 520px;
+  border-radius: 13px;
+  box-shadow: none;
+}
+
+.destination-search input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+}
+
+.destination-search input::placeholder {
+  color: #9ca49f;
+}
+
+.search-shortcut {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 3px 7px;
+  color: #9ca49f;
+  font-size: 10px;
+}
+
+.search-results {
+  position: absolute;
+  z-index: 100;
+  top: calc(100% + 9px);
+  right: 0;
+  left: 0;
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 7px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.search-results button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.search-results button:hover,
+.search-results button.is-active {
+  background: var(--paper);
+}
+
+.search-results button.is-active {
+  background: var(--green-soft);
+  outline: 2px solid rgba(23, 72, 61, 0.15);
+  outline-offset: -2px;
+}
+
+.search-results button span {
+  display: grid;
+  gap: 4px;
+}
+
+.search-results button small,
+.search-results p {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.search-results button em {
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: var(--paper-deep);
+  color: var(--muted);
+  font-size: 10px;
+  font-style: normal;
+}
+
+.search-results p {
+  margin: 0;
+  padding: 18px;
+  text-align: center;
+}
+
+/* 016：地图首页全屏外壳。地图页收起侧栏与顶栏，把整个视口交给地图；
+   手机底栏保留（它是地图页唯一能回记录/手帐本的入口），由地图页自行留出安全边距。 */
+.app-shell--immersive {
+  min-height: 0;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.app-shell--immersive .app-sidebar {
+  display: none;
+}
+
+/* 地图页把主区域整体固定在视口内：不做滚动容器，地图绝对定位即可铺满。 */
+/* 地图页：不套正文宽度与内边距，恢复全屏；顶部让位给全站顶栏。 */
+.app-main--immersive {
+  position: fixed;
+  inset: 0;
+  top: calc(var(--app-topbar-h) + env(safe-area-inset-top, 0px));
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 017：地图首页的左上角菜单按钮与左侧导航抽屉。 */
+/*
+ * 本轮调整：菜单按钮不再悬浮视口左上，而是并入全站统一的顶部导航栏
+ * （.app-topbar），与页面标题同一行；点击区域保持 ≥44px，抽屉交互不变。
+ */
+.app-topbar {
+  position: fixed;
+  z-index: 510;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: calc(var(--app-topbar-h) + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) 14px 0;
+  border-bottom: 1px solid var(--sky-line);
+  background: var(--sky-glass);
+  -webkit-backdrop-filter: blur(var(--sky-blur)) saturate(1.1);
+  backdrop-filter: blur(var(--sky-blur)) saturate(1.1);
+}
+
+.app-topbar-title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--sky-ink);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-topbar-menu {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0 14px;
+  background: transparent;
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.app-topbar-menu:hover {
+  background: rgba(23, 104, 155, 0.08);
+}
+
+.nav-drawer {
+  position: fixed;
+  z-index: 540;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  /*
+   * 常驻 flex + transform：关闭时向左滑出，而不是 display:none 直接消失。
+   * visibility 延迟到滑出动画结束（220ms）才切回 hidden，因此滑出过程中
+   * 里面的按钮不会被 Tab / 读屏命中，动画结束后也彻底移出可访问性树。
+   */
+  display: flex;
+  width: min(300px, calc(100vw - 56px));
+  flex-direction: column;
+  gap: 14px;
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 18px
+    calc(20px + env(safe-area-inset-bottom, 0px));
+  border-right: 1px solid var(--sky-line);
+  background: var(--sky-glass-strong);
+  color: var(--sky-ink);
+  box-shadow: var(--sky-shadow);
+  -webkit-backdrop-filter: blur(var(--sky-blur)) saturate(1.1);
+  backdrop-filter: blur(var(--sky-blur)) saturate(1.1);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s linear 220ms;
+}
+
+.nav-drawer.is-open {
+  transform: none;
+  visibility: visible;
+  transition:
+    transform 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s linear 0s;
+}
+
+.nav-drawer-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-drawer-head strong {
+  font-size: 20px;
+  letter-spacing: 0.08em;
+}
+
+/*
+ * logo 即导航开关：收起态点它展开、展开态点它收起。做成按钮后要显式
+ * 去掉默认边框/内边距，视觉上仍是原来那枚圆角标记。
+ */
+.nav-drawer-brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
+}
+
+.nav-drawer-brand .brand-mark {
+  transition: filter 160ms ease;
+}
+
+.nav-drawer-brand:hover .brand-mark {
+  filter: brightness(1.08);
+}
+
+.nav-drawer-close {
+  margin-left: auto;
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* 抽屉里的导航项沿用侧栏外观，但底色是深绿，需要反色文字。 */
+.nav-drawer .nav-button {
+  color: inherit;
+}
+
+.nav-drawer .nav-button:hover {
+  background: rgba(45, 80, 110, 0.07);
+}
+
+.nav-drawer .nav-button.is-active {
+  background: var(--sky-primary);
+  color: var(--sky-on-primary);
+}
+
+.nav-drawer .nav-group-label {
+  color: var(--sky-ink-muted);
+}
+
+/* 手机点遮罩关闭抽屉；左右抽屉不会同时铺满（后开者在下层被遮罩挡住）。 */
+/* 020-A：抽屉底部的单个“去设置”入口（旧工具不再顶层展示）。 */
+.nav-foot-link {
+  margin-top: auto;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: rgba(45, 80, 110, 0.05);
+  color: var(--sky-ink);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nav-foot-link:hover {
+  background: rgba(45, 80, 110, 0.09);
+}
+
+.drawer-scrim {
+  position: fixed;
+  z-index: 530;
+  inset: 0;
+  border: 0;
+  background: rgba(32, 74, 108, 0.28);
+}
+
+/* 019：非地图页的顶栏菜单按钮。与地图页菜单按钮同一外观，但参与顶栏流式布局。 */
+.page-menu-button {
+  position: static;
+  flex: 0 0 auto;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 14px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.page-menu-button:hover {
+  border-color: var(--sky-primary);
+  background: var(--sky-surface);
+}
+
+/* Persisted desktop sidebar; mobile retains the overlay drawer. */
+.nav-resize-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+}
+.nav-resize-handle:hover,
+.nav-resize-handle:focus-visible {
+  background: rgba(100, 170, 220, 0.35);
+  outline: none;
+}
+@media (min-width: 781px) and (min-height: 601px), (min-width: 781px) and (pointer: fine), (min-width: 1101px) {
+  /*
+   * 桌面：左侧导航改为常驻的「收缩 / 展开」轨道，宽度做渐进式过渡，
+   * 不再是点一下整条消失。
+   * - 收起：保留一列图标，宽度受限（--nav-rail-w）；
+   * - 展开：按用户记忆的宽度（220–420px）显示完整导航；
+   * - 正文、顶栏与地图都跟着让位，三者与轨道同步过渡，不出现跳变。
+   */
+  .app-shell {
+    padding-left: var(--nav-rail-w);
+    transition: padding-left 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .app-shell[data-nav-open="true"] {
+    padding-left: var(--nav-width, 280px);
+  }
+
+  /* 桌面常驻可见：收起/展开只用宽度表达，因此不再位移、不再隐藏。 */
+  .nav-drawer,
+  .nav-drawer.is-open {
+    transform: none;
+    visibility: visible;
+    box-shadow: none;
+    transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .app-shell .nav-drawer {
+    width: var(--nav-rail-w);
+  }
+
+  .app-shell[data-nav-open="true"] .nav-drawer {
+    width: var(--nav-width, 280px);
+  }
+
+  /* 收起态：只留图标（文字、备注、关闭按钮、拖拽手柄都收掉），图标居中。 */
+  .app-shell .nav-drawer:not(.is-open) {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .app-shell .nav-drawer:not(.is-open) .nav-drawer-head strong,
+  .app-shell .nav-drawer:not(.is-open) .nav-drawer-close,
+  .app-shell .nav-drawer:not(.is-open) .nav-resize-handle,
+  .app-shell .nav-drawer:not(.is-open) .nav-button > span {
+    display: none;
+  }
+
+  .app-shell .nav-drawer:not(.is-open) .nav-drawer-head {
+    justify-content: center;
+  }
+
+  .app-shell .nav-drawer:not(.is-open) .nav-button {
+    justify-content: center;
+    gap: 0;
+    padding: 13px 0;
+  }
+
+  /* 顶栏与地图同步让位（两者都是 fixed，不跟随 padding）。 */
+  .app-shell > .app-topbar {
+    left: var(--nav-rail-w);
+    transition: left 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .app-shell[data-nav-open="true"] > .app-topbar {
+    left: var(--nav-width, 280px);
+  }
+
+  /*
+   * 桌面不再保留顶栏的专用菜单按钮：导航栏常驻可见，收起态点最上面的
+   * logo 展开（logo 的可访问名称在收起态就是「打开导航菜单」）。
+   * 手机上这条不生效，抽屉仍由顶栏按钮打开。
+   */
+  .app-shell > .app-topbar > .app-topbar-menu {
+    display: none;
+  }
+
+  .app-shell .capture-map {
+    left: var(--nav-rail-w);
+    transition: left 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .app-shell[data-nav-open="true"] .capture-map {
+    left: var(--nav-width, 280px);
+  }
+}

@@ -1,0 +1,1107 @@
+/* 2.0 记录与聊天布局。 */
+
+/* 020-A：记录页不再自带宽度与左偏移，交给 .app-main 的公共容器居中。 */
+.capture-page {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* 016：同一份状态承载地图页与记录页；非当前页 hidden 收起，仍然挂载。 */
+.capture-pane {
+  display: contents;
+}
+
+.capture-pane[hidden] {
+  display: none;
+}
+
+/* Shared read-only journal panel, outside both hidden/inert page panes. */
+.capture-page-detail {
+  position: fixed;
+  z-index: 1100;
+  top: max(72px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  width: min(440px, calc(100vw - 24px));
+  max-height: calc(100dvh - 96px - env(safe-area-inset-bottom));
+  overflow: auto;
+  border-radius: var(--radius-md);
+  background: var(--sky-bg);
+  box-shadow: var(--sky-shadow);
+}
+
+.capture-record {
+  display: grid;
+  gap: 20px;
+}
+
+/* 记录页没有地图，输入与记录箱都是单列，宽度便于阅读。 */
+/*
+ * 020-A 反馈：记录页去掉地图后，单一列正文如果还贴左就会显得偏。
+ * 输入区、最近记录与完整记录流统一收成**居中的阅读列**（760px）。
+ */
+.capture-page[data-view="record"] .capture-side,
+.capture-page[data-view="record"] .capture-stream {
+  max-width: 760px;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.capture-page[data-view="record"] .capture-page-head {
+  max-width: 760px;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.capture-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/*
+ * 地图页（017）：地图铺满主区域；导航与地区入口都在左右抽屉里，
+ * 地图上不再保留左下角列表、选中详情、返回全国等散落浮层。
+ */
+.capture-map {
+  position: absolute;
+  inset: 0;
+}
+
+.capture-page[data-view="map"] {
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.capture-page[data-view="map"] .capture-pane--map {
+  display: block;
+  min-height: 0;
+  height: 100%;
+}
+
+.capture-page[data-view="map"] .capture-hero {
+  min-height: 0;
+  height: 100%;
+  align-items: stretch;
+}
+
+.capture-map .atlas-slot {
+  position: relative;
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.capture-map .atlas-map-wrap,
+.capture-map .atlas-map {
+  height: 100%;
+  min-height: 0;
+}
+
+.capture-map .atlas-map-wrap {
+  position: absolute;
+  inset: 0;
+  gap: 0;
+}
+
+.capture-map .atlas-map {
+  border: 0;
+  border-radius: 0;
+}
+
+.capture-map .atlas-map--placeholder {
+  background: var(--paper);
+}
+
+/* “去记录”：017 起在右侧侧栏顶部；折叠时用窄列竖排文字，仍然一直可达。 */
+.capture-record-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 18px;
+  background: var(--green);
+  color: var(--sky-on-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--sky-shadow-soft);
+}
+
+.capture-record-button:hover {
+  background: var(--sky-primary-hover);
+}
+
+.capture-page-head h1 {
+  margin: 0;
+  font-size: clamp(var(--fs-h2), 2.4vw, var(--fs-display));
+  letter-spacing: -0.03em;
+}
+
+.capture-page-stats {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* 桌面：地图约 2/3，紧凑记录区约 1/3；不足 1200px 切单列。 */
+.capture-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.capture-hero > * {
+  min-width: 0;
+}
+
+.capture-atlas-slot {
+  display: grid;
+  gap: 12px;
+}
+
+.capture-side {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+/* 紧凑记录输入：小卡片、轻阴影，减少嵌套大卡片。 */
+.capture-composer {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: var(--card);
+}
+
+.capture-composer h2 {
+  margin: 0;
+  font-size: var(--fs-base);
+}
+
+.capture-composer form {
+  display: grid;
+  gap: 8px;
+}
+
+.capture-composer textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  /* 020-A：输入/长文区域接近不透明，保证文字清晰。 */
+  background: var(--sky-text-surface);
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+}
+
+.capture-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.capture-file {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.capture-file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.capture-file:focus-within {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.capture-draft-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.capture-draft-photos li {
+  position: relative;
+}
+
+.capture-draft-photos img {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.capture-draft-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.capture-draft-remove:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.capture-error {
+  margin: 0;
+  color: var(--red);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* 最近记录：只读摘要，最多 3 条。 */
+.capture-recent {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  background: var(--card);
+}
+
+.capture-recent-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.capture-recent-head h2 {
+  margin: 0;
+  font-size: var(--fs-title);
+}
+
+.capture-link {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--green);
+  font: inherit;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.capture-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.capture-recent-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.capture-recent-list li {
+  display: grid;
+  gap: 2px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  font-size: 13px;
+}
+
+.capture-recent-list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.capture-recent-list time {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.capture-recent-list p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.capture-recent-media {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.capture-recent-media img {
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  /* 20px 小缩略图：8px 会圆掉近一半，保留原有轻微圆角。 */
+  border-radius: 4px;
+  object-fit: cover;
+  vertical-align: middle;
+}
+
+/* 完整记录流：唯一具备勾选/删除/整理的列表。 */
+.capture-stream {
+  display: grid;
+  gap: 12px;
+  scroll-margin-top: 16px;
+}
+
+.capture-stream-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.capture-stream-head h2 {
+  margin: 0;
+  font-size: var(--fs-title);
+}
+
+.capture-stream-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.capture-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.capture-list li {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green-soft);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  background: var(--card);
+}
+
+.capture-select {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.capture-select input {
+  width: 20px;
+  height: 20px;
+}
+
+.capture-status {
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 11px;
+}
+
+.capture-status--draft {
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+
+.capture-status--saved {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.capture-text {
+  margin: 0;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.capture-media {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.capture-media img {
+  width: 104px;
+  height: 104px;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+  background: var(--paper);
+}
+
+.capture-layout {
+  display: grid;
+  gap: 10px;
+  border: 1px dashed var(--green);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  background: var(--green-soft);
+}
+
+.capture-layout h2 {
+  margin: 0;
+  font-size: var(--fs-title);
+}
+
+.capture-layout-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.capture-layout label {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.capture-layout input[type="text"],
+.capture-layout textarea,
+.capture-layout select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+}
+
+/* 手机：地图在上、记录入口在下且首屏可见。 */
+@media (max-width: 1199px) {
+  .capture-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  /* 手机底栏是地图页回记录/手帐本的入口：地图页给它留出安全边距。 */
+  .capture-page[data-view="map"] {
+    min-height: 100dvh;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* 菜单按钮已并入全站顶栏；这里只需让顶栏在窄屏更紧凑。 */
+  .app-topbar {
+    --app-topbar-h: 52px;
+    gap: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .capture-map .atlas-map {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  /* 只作用于记录页；地图页的内边距由 [data-view="map"] 规则单独控制。 */
+  .capture-page[data-view="record"] {
+    gap: 14px;
+  }
+
+  .capture-atlas-slot {
+    order: -1;
+  }
+
+  .capture-composer {
+    padding: 14px;
+  }
+}
+
+/* 超小屏：收紧标题与输入区，确保“记下来”仍在首屏、且不被底部导航遮挡。 */
+@media (max-width: 380px) {
+  .capture-page[data-view="record"] {
+    gap: 8px;
+  }
+
+  .capture-page-head h1 {
+    font-size: clamp(var(--fs-h2), 2.4vw, var(--fs-display));
+  }
+
+  .capture-composer h2 {
+    font-size: var(--fs-base);
+  }
+
+  .capture-recent-head h2 {
+    font-size: var(--fs-title);
+  }
+
+  .capture-page-stats {
+    font-size: 12px;
+  }
+
+  .capture-composer {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .capture-composer textarea {
+    min-height: 64px;
+    padding: 8px 10px;
+  }
+
+  .capture-recent {
+    padding: 12px;
+  }
+}
+
+/* 014-B：记录归属选择与追加目标（沿用既有卡片与按钮风格，不新增视觉体系）。 */
+.capture-target {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  background: var(--sky-surface);
+}
+
+.capture-target label {
+  font-size: 12px;
+  color: var(--sky-ink-muted);
+}
+
+.capture-target select {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--sky-line);
+  background: var(--sky-surface);
+  font: inherit;
+}
+
+.capture-target-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--sky-ink-muted);
+}
+
+.capture-layout-target {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+}
+
+.capture-layout-target legend {
+  padding: 0 6px;
+  font-size: 12px;
+  color: var(--sky-ink-muted);
+}
+
+.capture-target-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.capture-target-modes label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.capture-target-new,
+.capture-target-existing {
+  display: grid;
+  gap: 6px;
+}
+
+.capture-duplicate,
+.capture-pending {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #e0c48a;
+  border-radius: var(--radius-sm);
+  background: #fdf7e8;
+}
+
+.capture-duplicate p,
+.capture-pending p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b5a2a;
+}
+
+.capture-duplicate .capture-actions,
+.capture-pending .capture-actions {
+  flex-wrap: wrap;
+}
+/* 020-C：记录页笔记本模式（桌面列表 + 右侧编辑，手机分步）。 */
+.capture-notebook {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.capture-list {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: var(--sky-glass);
+  box-shadow: var(--sky-shadow-soft);
+  -webkit-backdrop-filter: blur(var(--sky-blur));
+  backdrop-filter: blur(var(--sky-blur));
+}
+
+.capture-list-tools {
+  display: grid;
+  gap: 8px;
+}
+
+.capture-list-tools input[type="search"] {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  background: var(--sky-text-surface);
+  color: var(--sky-ink);
+  font: inherit;
+}
+
+.capture-list-items {
+  display: grid;
+  max-height: 62vh;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.capture-list-items label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.capture-list-item {
+  display: grid;
+  width: 100%;
+  gap: 2px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.capture-list-item strong {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.capture-list-item small {
+  color: var(--sky-ink-muted);
+  font-size: 11px;
+}
+
+.capture-list-items label.is-open .capture-list-item,
+.capture-list-item[aria-current="true"] {
+  border-color: var(--sky-line-strong);
+  background: var(--sky-text-surface);
+}
+
+.capture-list-empty {
+  margin: 0;
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* 右侧编辑区：长文接近不透明，便于专心写。 */
+.capture-editor {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+
+.capture-back-list {
+  display: none;
+}
+
+.capture-editor-pane {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: var(--sky-text-surface);
+  box-shadow: var(--sky-shadow);
+}
+
+.capture-editor-pane header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--sky-line);
+  padding-bottom: 8px;
+}
+
+.capture-save-state {
+  color: var(--sky-ink-muted);
+  font-size: 12px;
+}
+
+.capture-editor-pane textarea {
+  width: 100%;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: var(--sky-text-surface);
+  color: var(--sky-ink);
+  font: inherit;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.capture-edit-photos {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.capture-edit-photos li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.capture-edit-photos img {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+/* 手机：列表 → 单篇编辑，可返回列表。 */
+@media (max-width: 900px) {
+  .capture-notebook {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .capture-back-list {
+    display: inline-flex;
+  }
+}
+
+/* 022：居中消息流 + 底部输入区，复用原记录保存链。 */
+.capture-chat {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 92px);
+  min-height: 360px;
+  gap: 12px;
+}
+.capture-chat .capture-page-head {
+  flex: 0 0 auto;
+}
+.capture-chat .capture-page-stats {
+  font-weight: 600;
+}
+.capture-chat .capture-back-map {
+  display: none;
+}
+.capture-chat .capture-stream {
+  order: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 12px;
+  overscroll-behavior: contain;
+}
+.capture-chat .capture-stream-head h2 {
+  font-size: var(--fs-base);
+}
+.capture-chat .capture-stream-head p {
+  font-size: 12px;
+}
+.capture-chat .capture-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  border: 0;
+  padding: 16px 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.capture-chat .capture-list li {
+  align-self: flex-end;
+  max-width: 88%;
+  min-width: 0;
+  border: 1px solid var(--sky-line);
+  border-radius: 22px 22px 6px 22px;
+  padding: 16px 20px;
+  background: rgba(222, 238, 250, 0.8);
+  overflow-wrap: anywhere;
+}
+.capture-chat .capture-text {
+  white-space: pre-wrap;
+  line-height: 1.8;
+}
+.capture-chat .capture-empty {
+  border: 0;
+  background: none;
+  text-align: center;
+  padding: clamp(35px, 10vh, 110px) 12px;
+}
+.capture-chat .capture-empty h2 {
+  font-size: clamp(var(--fs-h2), 3vw, var(--fs-display));
+  font-weight: 550;
+}
+.capture-chat .capture-empty p {
+  color: var(--muted);
+  line-height: 1.8;
+}
+.capture-chat .capture-side {
+  order: 3;
+  flex: 0 0 auto;
+  display: block;
+}
+.capture-chat .capture-composer {
+  padding: 14px 18px;
+  border: 1px solid var(--sky-line);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 30px rgba(80, 126, 158, 0.1);
+}
+.capture-chat .capture-composer h2 {
+  display: none;
+}
+.capture-chat .capture-composer .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.capture-chat .capture-composer form {
+  gap: 8px;
+}
+.capture-chat .capture-target {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.capture-chat .capture-target select {
+  min-height: var(--control-sm);
+  flex: 1;
+  min-width: 0;
+}
+/*
+ * 记录页输入卡（chat 布局）：按常见 agent 产品的输入框组织——
+ * 上方是纯文字区（无边框、可增高），下方一条工具行：
+ * 左侧「存入」小胶囊 +「图片」图标按钮，右侧圆形发送按钮。
+ * 用 form 本身的双列网格让「目标」和「按钮行」共占同一行，
+ * 不再各自撑满一整行；非 chat 布局不受影响。
+ */
+.capture-chat .capture-composer form {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.capture-chat .capture-composer textarea,
+.capture-chat .capture-draft-photos {
+  grid-column: 1 / -1;
+}
+
+.capture-chat .capture-target {
+  grid-column: 1;
+}
+
+.capture-chat .capture-actions {
+  grid-column: 2;
+  margin-top: 0;
+}
+.capture-chat .capture-actions {
+  display: flex;
+  justify-content: space-between;
+}
+/* 存入读作小胶囊，不再是一条撑满整行的输入框。 */
+.capture-chat .capture-target label {
+  font-size: var(--fs-sm);
+  color: var(--sky-ink-muted);
+}
+.capture-chat .capture-target select {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
+  min-height: 32px;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(45, 80, 110, 0.06);
+  color: var(--sky-ink);
+  font-size: var(--fs-sm);
+}
+/* 图片：ghost 图标按钮，去掉原来的虚线方框与文字。 */
+.capture-chat .capture-file {
+  width: 36px;
+  min-height: 36px;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sky-ink-muted);
+}
+.capture-chat .capture-file:hover {
+  background: rgba(45, 80, 110, 0.06);
+  color: var(--sky-ink);
+}
+.capture-chat .capture-file-label {
+  display: none;
+}
+.capture-chat .capture-stream:has(.capture-empty) {
+  scrollbar-width: none;
+}
+.app-main:has(.capture-page[data-view="record"]) {
+  padding-bottom: 12px;
+}
+.capture-chat .capture-composer textarea {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  min-height: 68px;
+  max-height: 160px;
+  padding: 6px;
+  resize: vertical;
+}
+/*
+ * 该输入框按设计是**无边框透明**的，默认 ::-webkit-resizer 的斜纹会浮在卡片里
+ * 像一处脏点。只清掉底纹：resize 能力与右下角命中区域都保留，指针移到角上
+ * 仍可拖拽（Firefox 没有这个伪元素，行为不受影响）。
+ */
+.capture-chat .capture-composer textarea::-webkit-resizer {
+  background: transparent;
+}
+.capture-chat .capture-target {
+  font-size: 12px;
+  gap: 6px;
+}
+.capture-chat .capture-target select {
+  max-width: 100%;
+  padding: 6px;
+  min-height: var(--control-sm);
+}
+.capture-chat .capture-target-current {
+  display: none;
+}
+/*
+ * 发送按钮：原写法只给了 width/height 40px，被 .primary-button 的
+ * min-height: 44px 覆盖，实际渲染成 40×44 的椭圆，并不是圆。这里把
+ * min-height 一起压到 36，与左侧图片按钮同高，工具行三个元素对齐。
+ */
+.capture-chat .capture-actions button[type="submit"] {
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+}
+.capture-chat .capture-chat-disclaimer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+.capture-chat .capture-draft-photos {
+  max-height: 110px;
+  overflow-y: auto;
+}
+.capture-chat .capture-layout {
+  order: 2;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+  width: min(100%, 760px);
+  margin-inline: auto;
+}
+.capture-chat:has(.capture-layout) .capture-stream {
+  flex: 0 1 120px;
+}
+@media (max-width: 600px) {
+  .capture-chat {
+    height: calc(100dvh - 80px);
+    gap: 6px;
+  }
+  .capture-chat .capture-stream {
+    padding: 4px;
+  }
+  .capture-chat .capture-list li {
+    max-width: 96%;
+    padding: 12px;
+  }
+  .capture-chat .capture-composer {
+    padding: 10px 12px;
+  }
+  .capture-chat .capture-stream-head {
+    flex-wrap: wrap;
+  }
+}

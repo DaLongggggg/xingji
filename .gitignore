@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Tests and coverage
+coverage/
+playwright-report/
+test-results/
+.pnpm-store/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local and generated files
+.DS_Store
+.reasonix/
+*.log
+*.local
+/exports/
+*.tsbuildinfo
+
+# Atlas 素材（本地只读，两套各 392 份）与准备产物
+/map-data/
+/map-data-echarts/
+/.local/atlas/
+# 本机自助模型配置：加密文档与主密钥（运行时私有，绝不入库/备份）
+/.local/ai-settings/
+/.local/ai-memory/
+# Only the four project resources are versioned; user Skill folders stay private.
+!/.local/
+/.local/*
+!/.local/skills/
+/.local/skills/*
+!/.local/skills/gc-minimal-zine-poster/
+!/.local/skills/huashu-gpt-image/
+
+# Editors
+.idea/
+.vscode/
+
+# Local development and personal materials
+/AGENTS.md
+/TODO.md
+/DESIGN.md
+/architecture.md
+/component-api.md
+/development.md
+/project-overview.md
+/docs/api.md
+/docs/data-model.md
+/docs/ai-data-model.md
+/docs/ai-safety-boundary.md
+/docs/creation-capability-map.md
+/docs/testing.md
+/docs/document-map.md
+/backups/
+/.archify/
+/.mimosa/
+/求职材料/
+/行迹项目总结-*/
+/导学-*.md
+/面经-*.md
+/career-claim-ledger.json
+/image/

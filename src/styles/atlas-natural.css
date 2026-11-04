@@ -1,0 +1,1238 @@
+/*
+ * 地貌水彩版地图页的视觉层。
+ *
+ * 这里只做覆盖：地图数据、GeoJSON、卡片布局与下钻会话都不改。
+ * 底色、纸张、黄铜和墨绿统一在本文件收敛，避免继续在旧木墙规则上叠色。
+ */
+
+.capture-map {
+  --atlas-wood: #22382f;
+  --atlas-wood-deep: #182a23;
+  --atlas-wood-raised: #314b3e;
+  --atlas-paper: #f3eddf;
+  --atlas-paper-bright: #fbf7ec;
+  --atlas-ink: #263d33;
+  --atlas-ink-muted: #66756a;
+  --atlas-cream: #e8e2d3;
+  --atlas-cream-muted: #b9b7a6;
+  --atlas-brass: #ae8853;
+  --atlas-brass-bright: #d7bd8d;
+  --atlas-thread: #96a08d;
+  --atlas-stamp-paper: #f8f1e3;
+  --atlas-stamp-ink: #30463a;
+  --atlas-stamp-muted: #6d7769;
+  --atlas-stamp-rule: #baa27b;
+  --atlas-water-ink: #6f8585;
+  background: #1d3028;
+}
+
+/* 照片墙底板：地貌模式为浅亚麻布，纸纹模式为手工纸拼贴。 */
+.capture-map .atlas-map-wrap.is-memory-wall {
+  position: relative;
+  overflow: hidden;
+  background-color: #e8dfcf;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow:
+    inset 0 0 0 1px #ffffff4d,
+    inset 0 0 100px #7c6a4d16;
+}
+.capture-map .atlas-map-wrap.is-memory-wall > .atlas-map,
+.capture-map .atlas-map-wrap.is-memory-wall > .atlas-harbor-connector {
+  z-index: 2;
+}
+.capture-map .atlas-map-wrap.is-memory-wall::before,
+.capture-map .atlas-map-wrap.is-memory-wall::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+/* A：浅亚麻布板。纹理只铺底，不在地图和卡片上叠滤镜。 */
+.capture-map .atlas-map-wrap.is-memory-wall.is-terrain-map {
+  --atlas-thread: #818b79;
+  --atlas-ui-surface: #f7f0e2e8;
+  --atlas-ui-line: #b5a88f;
+  background-color: #e9dfcf;
+  background-image:
+    linear-gradient(125deg, #fff8e91f 0%, transparent 34%, #6f5d4318 100%),
+    url("/textures/linen-board.webp");
+  background-size: 100% 100%, cover;
+  background-position: center;
+  box-shadow:
+    inset 0 0 0 1px #ffffff5c,
+    inset 0 0 96px #7c6a4d17;
+}
+.capture-map .atlas-map-wrap.is-terrain-map::before {
+  inset: 0;
+  background: linear-gradient(112deg, #fff8e91c 0%, transparent 34%, transparent 68%, #6f5d4311 100%);
+}
+.capture-map .atlas-map-wrap.is-terrain-map::after {
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 46%, transparent 52%, #6d5e4810 100%);
+}
+
+/* B：手工纸拼贴，暖白主纸在上，少量衬纸从边角后侧露出。 */
+.capture-map .atlas-map-wrap.is-memory-wall.is-paper-map {
+  --atlas-thread: #948b79;
+  --atlas-ui-surface: #fbf7efeb;
+  --atlas-ui-line: #c9c0b0;
+  background-color: #f6f1e7;
+  background-image: url("/textures/paper-cotton.webp");
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 26px #5e4b3710;
+}
+.capture-map .atlas-map-wrap.is-paper-map::before,
+.capture-map .atlas-map-wrap.is-paper-map::after {
+  opacity: 1;
+  background-color: transparent;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 1px 2px #4a3f2f12);
+  clip-path: none;
+}
+.capture-map .atlas-map-wrap.is-paper-map::before {
+  left: 0;
+  top: 0;
+  width: clamp(240px, 24vw, 360px);
+  height: clamp(170px, 15vw, 230px);
+  transform: rotate(-0.6deg);
+  background-image: url("/textures/corner-sage.webp");
+}
+.capture-map .atlas-map-wrap.is-paper-map::after {
+  right: 0;
+  bottom: 0;
+  width: clamp(220px, 21vw, 320px);
+  height: clamp(150px, 13.5vw, 205px);
+  transform: rotate(180deg);
+  background-image: url("/textures/corner-khaki.webp");
+}
+@media (max-width: 620px) {
+  .capture-map .atlas-map-wrap.is-memory-wall.is-terrain-map {
+    background-size: 100% 100%, auto 160%;
+  }
+  .capture-map .atlas-map-wrap.is-paper-map::before {
+    left: 0;
+    top: 0;
+    width: 220px;
+    height: 170px;
+    opacity: 1;
+  }
+  .capture-map .atlas-map-wrap.is-paper-map::after {
+    right: 0;
+    bottom: 0;
+    width: 200px;
+    height: 155px;
+    opacity: 1;
+  }
+}
+
+.capture-map .is-memory-wall .atlas-map {
+  background: transparent;
+}
+
+/* 真实地貌图：栅格在独立 pane（z 350），边界 SVG 仍在上面。 */
+.atlas-terrain-image {
+  pointer-events: none;
+  user-select: none;
+  filter: saturate(1.3) contrast(1.07) brightness(0.985);
+}
+.capture-map .is-memory-wall .atlas-map .leaflet-overlay-pane {
+  filter: drop-shadow(0 1px 1px #f8f0ddb8) drop-shadow(0 5px 12px #3044363d);
+}
+.capture-map .is-memory-wall .atlas-map .leaflet-overlay-pane path.leaflet-interactive {
+  filter: none;
+  stroke-linejoin: round;
+}
+/* 地貌已显示时，旧的身份纹样只作为离线兜底；保留描边和点击命中。 */
+.atlas-map-wrap.has-terrain .atlas-map .leaflet-overlay-pane svg path.leaflet-interactive {
+  fill: transparent !important;
+  pointer-events: all;
+}
+.atlas-map-wrap.has-terrain .atlas-map .leaflet-overlay-pane path.leaflet-interactive:hover {
+  stroke: #9d7b48 !important;
+}
+.atlas-map-wrap.has-terrain .atlas-map .leaflet-overlay-pane path.leaflet-interactive:focus-visible {
+  outline: none;
+}
+/* 旧地区徽章是纸面符号；真实地貌版本不再叠加，保留 DOM 与数据钩子。 */
+.atlas-map-wrap.has-terrain .leaflet-atlasEmblem-pane,
+.atlas-map-wrap.has-terrain .leaflet-atlasEmblemPane-pane {
+  display: none;
+}
+
+/* 地名签：米纸贴纸，细黄铜边；悬停才有，不抢地图。 */
+.capture-map .is-memory-wall .leaflet-tooltip.atlas-region-label {
+  padding: 2px 7px;
+  border: 1px solid #a88b5e99;
+  border-radius: 4px;
+  background: #f8f1e3f2;
+  color: #30463a;
+  box-shadow: 0 2px 7px #2f423027;
+}
+.capture-map .is-memory-wall .leaflet-tooltip.atlas-region-label::after {
+  border-color: #a88b5e99;
+  background: #f8f1e3f2;
+}
+
+/* 导航与地图页外框：深墨绿，黄铜只做小面积强调。 */
+.app-shell--immersive {
+  --sky-focus: #d7bd8d;
+  background: #1d3028;
+}
+.app-shell--immersive .nav-drawer,
+.app-shell--immersive .nav-drawer.is-open {
+  border-color: #3d5144;
+  background: #20362d;
+  color: #eee8da;
+  box-shadow: inset -1px 0 0 #f8f2e10d;
+}
+.app-shell--immersive .nav-drawer .nav-button {
+  color: #b8c5b6;
+}
+.app-shell--immersive .nav-drawer .nav-button:hover {
+  background: #2e4a3c;
+  color: #fbf7ec;
+}
+.app-shell--immersive .nav-drawer .nav-button.is-active {
+  background: #355443;
+  color: #fbf7ec;
+}
+.app-shell--immersive .nav-drawer .nav-button.is-active::before {
+  background: #c3a26f;
+}
+.app-shell--immersive .nav-drawer-brand .brand-mark {
+  border-color: #7f6949;
+  background: #355443;
+  color: #fbf7ec;
+  box-shadow: 2px 2px 0 #a98655;
+}
+.app-shell--immersive .nav-drawer .nav-count {
+  background: #c3a26f;
+  color: #1d3028;
+}
+.app-shell--immersive .nav-drawer .status-dot {
+  background: #c3a26f;
+  box-shadow: 0 0 0 5px #c3a26f20;
+}
+.app-shell--immersive .nav-drawer-head strong {
+  color: #fbf7ec;
+}
+.app-shell--immersive .nav-drawer .nav-drawer-close,
+.app-shell--immersive .nav-drawer .nav-foot-link {
+  border-color: #486353;
+  background: #2b4739;
+  color: #f3eddf;
+}
+.app-shell--immersive .nav-drawer .nav-drawer-close:hover,
+.app-shell--immersive .nav-drawer .nav-foot-link:hover {
+  background: #355443;
+}
+.app-shell--immersive .app-mobile-menu {
+  border-color: #a88b5e80;
+  background: #20362dd9;
+  color: #f8f1e3;
+  box-shadow: 0 2px 8px #1a2b222e;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.app-shell--immersive .app-mobile-menu:hover {
+  border-color: #d7bd8d;
+  background: #2e4a3c;
+}
+@media (max-width: 900px) {
+  .app-shell--immersive {
+    background: #e9e3d5;
+  }
+  .app-shell--immersive .app-main--immersive {
+    top: 0;
+  }
+}
+
+/* 地图页的纸白语义：卡片、操作条、镜片与分页统一到同一组色。 */
+.atlas-slot--map:has(.is-memory-wall) {
+  --sky-surface: #f6f0e3;
+  --sky-ink: #263d33;
+  --sky-ink-muted: #66756a;
+  --sky-line: #c9c9b9;
+  --sky-line-strong: #a88b5e;
+  --sky-lavender-soft: #e8e4d6;
+  --sky-primary: #3d5f4c;
+  --sky-primary-hover: #2b4739;
+  --sky-on-primary: #fbf7ec;
+  --sky-focus: #b69661;
+  --sky-teal-soft: #e4e7db;
+  --sky-accent-lavender: #a88b5e;
+  --sky-accent-teal: #789183;
+  --sky-accent-yellow: #c3a26f;
+  --sky-accent-pink: #8b7b68;
+}
+
+/* Keep the path in layout: both desktop and App maps draw below a real header. */
+html[data-atlas-theme] .capture-map .atlas-slot--map {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+html[data-atlas-theme] .capture-map .atlas-slot--map > .atlas-map-wrap,
+html[data-atlas-theme] .capture-map .atlas-slot--map > .atlas-map--placeholder {
+  position: relative;
+  inset: auto;
+  flex: 1 1 0;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+}
+html[data-atlas-theme] .capture-map .atlas-slot--map > .atlas-map-header {
+  position: relative;
+  inset: auto;
+  z-index: 1;
+  flex: none;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 4px 16px;
+  pointer-events: none;
+  border-bottom: 1px solid rgb(102 117 106 / 14%);
+  background-color: var(--theme-page, #f1ece1);
+}
+html[data-atlas-theme] .capture-map .atlas-map-header:not(:has(.atlas-map-context)):has(.atlas-map-status:empty) { display: none; }
+html[data-atlas-theme] .capture-map .atlas-slot--map .atlas-map-context {
+  position: static;
+  inset: auto;
+  pointer-events: auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+html[data-atlas-theme] .capture-map .atlas-slot--map .atlas-breadcrumb nav {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #b7b9a5 transparent;
+}
+html[data-atlas-theme] .capture-map .atlas-slot--map .atlas-breadcrumb-path {
+  width: max-content;
+  max-width: none;
+  flex-wrap: nowrap;
+  gap: 0 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #536858;
+}
+html[data-atlas-theme] .capture-map .atlas-slot--map .atlas-breadcrumb-path li { flex: none; min-height: 44px; white-space: nowrap; }
+html[data-atlas-theme] .capture-map .atlas-slot--map .atlas-breadcrumb-link {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 4px;
+  border-radius: 6px;
+  color: #536858;
+}
+html[data-atlas-theme] .capture-map .atlas-slot--map .atlas-breadcrumb-link:focus-visible { outline-offset: -2px; }
+html[data-atlas-theme] .capture-map .atlas-slot--map .atlas-map-status {
+  position: static;
+  inset: auto;
+  width: fit-content;
+  max-width: 100%;
+  max-height: min(24dvh, 160px);
+  overflow: auto;
+  pointer-events: auto;
+}
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  html[data-atlas-theme] .capture-map .atlas-slot--map > .atlas-map-header {
+    min-height: 56px;
+    padding: 4px max(12px, env(safe-area-inset-right, 0px)) 4px calc(64px + env(safe-area-inset-left, 0px));
+  }
+}
+
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-path {
+  color: #6a786b;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-path li + li::before {
+  color: #a88b5e;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-path li:last-child {
+  color: #263d33;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-link {
+  color: #66756a;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-link:hover {
+  color: #263d33;
+  background: #e5e7d9;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-breadcrumb-link:focus-visible {
+  outline-color: #8f744b;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-status {
+  top: 58px;
+  left: 12px;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-status .atlas-state-note {
+  padding: 6px 10px;
+  border: 1px solid #a88b5e80;
+  border-radius: 7px;
+  background: #f8f1e3ee;
+  color: #3d5144;
+  box-shadow: 0 3px 10px #32463724;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-status .atlas-state {
+  border: 1px solid #a88b5e;
+  background: #fbf7ec;
+  color: #263d33;
+  box-shadow: 0 8px 24px #30443630;
+}
+.atlas-slot--map:has(.is-memory-wall) .atlas-map-status .secondary-button {
+  border-color: #a88b5e;
+  background: #fbf7ec;
+  color: #263d33;
+}
+
+/* 卡片：保留现有邮票壳和布局尺寸，只把纸、墨、齿孔统一到米白/墨绿/黄铜。 */
+.memory-wall-card.atlas-memory-card {
+  color: #30463a;
+}
+.memory-card-stamp {
+  background:
+    radial-gradient(ellipse at 18% 0%, #fffdf7 0%, transparent 58%),
+    linear-gradient(160deg, #fbf6e9 0%, var(--atlas-stamp-paper) 100%);
+  color: #30463a;
+  filter: drop-shadow(0 1px 1px #243b3133) drop-shadow(0 5px 9px #243b3129);
+}
+.memory-wall-card:hover .memory-card-stamp,
+.memory-wall-card:focus-visible .memory-card-stamp {
+  filter: drop-shadow(0 2px 2px #243b3140) drop-shadow(0 9px 14px #243b3133);
+}
+.memory-wall-card.is-selected .memory-card-stamp {
+  background:
+    radial-gradient(ellipse at 18% 0%, #fffdf7 0%, transparent 58%),
+    linear-gradient(160deg, #fbf5e6 0%, #f1e7d5 100%);
+  filter: drop-shadow(0 2px 2px #243b3140) drop-shadow(0 9px 14px #243b3133)
+    drop-shadow(0 0 6px #d7bd8d85);
+}
+.memory-wall-card.is-selected .memory-card-stamp::before {
+  border-color: #8d754d;
+}
+.memory-card-stamp::after {
+  border-color: #5c7a6a55;
+  background: radial-gradient(circle, transparent 0 7px, #5c7a6a3d 7.5px 8.5px, transparent 9px);
+}
+.memory-card-visual {
+  border-color: #52685a3d;
+  box-shadow: 0 0 0 1px #fffdf7;
+  background: #e0ddd0;
+}
+.memory-card-visual > img {
+  filter: none;
+}
+.memory-card-title {
+  color: #30463a;
+}
+.memory-card-caption {
+  color: #6d7769;
+}
+.memory-card-date {
+  color: #6d7769;
+}
+.memory-card-place {
+  color: #788273;
+}
+.memory-wall-card.is-stack .memory-card-place {
+  color: #8b6a3f;
+}
+.memory-stack-count,
+.memory-photo-count {
+  border-color: #d7bd8d59;
+  background: #263d33eb;
+  color: #fbf7ec;
+}
+.memory-stack-sheets > span {
+  border-color: #fbf5e6;
+  box-shadow: 0 0 0 1px #bda77f;
+}
+.memory-stack-sheets img {
+  filter: none;
+}
+
+/* 黄铜图钉保留体积，降低橙色，改为旧铜。 */
+.memory-card-pin,
+.memory-pin-head {
+  border-color: #3e2f1d;
+  background:
+    radial-gradient(circle at 66% 76%, #c7a66c42 0%, transparent 34%),
+    radial-gradient(
+      circle at 30% 21%,
+      #fffdf0 0%,
+      #f4e6c2 8%,
+      #d8bb7c 22%,
+      #b48b4c 45%,
+      #86602f 69%,
+      #54391c 88%,
+      #2b1d0e 100%
+    );
+  box-shadow:
+    0 3px 4px #2430248f,
+    0 1px 1px #00000040,
+    inset 0 1px 1px #fff9dfe6,
+    inset 0 -2px 3px #3b2a14cc;
+}
+.memory-card-pin {
+  left: var(--pin-x);
+  top: var(--pin-y);
+}
+.memory-wall-card:hover .memory-card-pin,
+.memory-wall-card:focus-visible .memory-card-pin,
+.memory-wall-card.is-selected .memory-card-pin {
+  box-shadow:
+    0 3px 6px #243024a6,
+    0 0 0 3px #d7bd8d3d,
+    inset 0 1px 1px #fff8dce6,
+    inset 0 -2px 3px #3b2a14cc;
+}
+.memory-region-pin.is-selected .memory-pin-head {
+  outline-color: #d7bd8d;
+  box-shadow:
+    0 3px 6px #243024a6,
+    0 0 0 3px #a88b5e55,
+    inset 0 1px 1px #fff8dce6,
+    inset 0 -2px 3px #3b2a14cc;
+}
+.memory-pin-label {
+  border-color: #a88b5e80;
+  background: #f8f1e3f2;
+  color: #30463a;
+}
+.memory-region-pin:hover .memory-pin-label,
+.memory-region-pin:focus-visible .memory-pin-label,
+.memory-region-pin.is-selected .memory-pin-label {
+  border-color: #a88b5e;
+  background: #fbf7ecf5;
+}
+
+/* 线是低饱和细绳：跨地貌时仍能读，但不变成深色围栏。 */
+.memory-wall-threads path {
+  stroke: #7c8c7a;
+  stroke-width: 1.05;
+  opacity: 0.62;
+  filter: drop-shadow(0 1px 1px #3044363d);
+}
+.memory-wall-threads path.is-emphasized {
+  stroke: #a88b5e;
+  stroke-width: 1.5;
+  opacity: 0.95;
+}
+.memory-wall-threads path.is-muted {
+  opacity: 0.16;
+}
+.capture-map .is-memory-wall .atlas-harbor-connector line {
+  stroke: #8b9b88;
+  opacity: 0.65;
+  filter: none;
+}
+
+/* 选择条、底部分页、港澳镜片：纸白浮条 + 墨绿操作。 */
+.memory-region-actions {
+  border-color: #b8a98f;
+  background: #f8f1e3;
+  color: #263d33;
+  box-shadow:
+    0 3px 10px #30443633,
+    inset 0 1px 0 #fffdf5;
+}
+.memory-region-name {
+  color: #3d5144;
+}
+.memory-region-name svg {
+  color: #8f744b;
+}
+.memory-region-actions button {
+  border-color: #c4b291;
+  background: #eee6d7;
+  color: #3d5144;
+}
+.memory-region-actions button:hover {
+  border-color: #a88b5e;
+  background: #e5dccb;
+}
+.memory-region-count {
+  background: #c3a26f;
+  color: #263d33;
+}
+.memory-region-actions .memory-region-enter {
+  border-color: #314b3e;
+  background: #314b3e;
+  color: #fbf7ec;
+}
+.memory-region-actions .memory-region-enter:hover {
+  border-color: #263d33;
+  background: #263d33;
+}
+.memory-region-actions button:disabled {
+  color: #9da596;
+}
+.memory-region-actions button:disabled .memory-region-count {
+  background: #e7e1d2;
+  color: #8f9889;
+}
+.memory-wall-footer {
+  color: #3d5144;
+  text-shadow: none;
+}
+.memory-wall-footer button {
+  padding: 0 11px;
+  border: 1px solid #b8a98f;
+  border-radius: 999px;
+  background: #f8f1e3e8;
+  color: #30463a;
+  text-shadow: none;
+  box-shadow: 0 2px 8px #30443624;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.memory-wall-footer button:hover {
+  border-color: #a88b5e;
+  background: #fbf7ec;
+}
+.memory-wall-footer button:disabled {
+  border-color: #d0cabb;
+  background: #f1ece0b8;
+  color: #9da596;
+}
+.memory-wall-footer [role="alert"] {
+  color: #8a5d42;
+}
+.memory-wall-pagination {
+  border-color: #b8a98f;
+  background: #f8f1e3e8;
+  box-shadow: 0 2px 8px #30443624;
+  text-shadow: none;
+}
+.memory-wall-pagination button:hover:not(:disabled) {
+  background: #e5e7d9;
+}
+.memory-wall-pagination button:disabled {
+  color: #a0a89b;
+}
+.capture-map .is-memory-wall .atlas-harbor-magnifier {
+  color: #3d5144;
+  filter: drop-shadow(0 5px 10px #30443624);
+}
+.capture-map .is-memory-wall .atlas-harbor-caption {
+  border-color: #b49a6c;
+  background: #f8f1e3f2;
+  color: #3d5144;
+  box-shadow: 0 1px 3px #30443624;
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button {
+  border-color: #b8a98f;
+  background: #f8f1e3e8;
+  color: #3d5144;
+  box-shadow: 0 2px 6px #30443624;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button:hover {
+  border-color: #a88b5e;
+  background: #fbf7ec;
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button[aria-pressed="true"] {
+  border-color: #a88b5e;
+  background: #c3a26f;
+  color: #263d33;
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button:focus-visible {
+  outline-color: #8f744b;
+}
+.capture-map .is-memory-wall .atlas-harbor-choices button:focus-visible,
+.memory-wall-footer button:focus-visible,
+.memory-region-actions button:focus-visible {
+  outline-color: #8f744b;
+}
+.capture-map .is-memory-wall .atlas-harbor-lens-ring {
+  stroke: #b49a6c;
+}
+.capture-map .is-memory-wall .atlas-harbor-grid {
+  stroke: #6f858522;
+}
+.capture-map .is-memory-wall .atlas-harbor-shape.is-hongkong {
+  fill: #7c8c7a;
+}
+.capture-map .is-memory-wall .atlas-harbor-shape.is-macau {
+  fill: #b49a6c;
+}
+.capture-map .is-memory-wall .atlas-map:focus-visible {
+  outline-color: #8f744b;
+}
+
+/*
+ * 显示风格切换：
+ * - 地貌模式在栅格就绪前只显示中性地区底色，不闪回纸纹/徽章；
+ * - 纸纹模式不请求高程，纹样由细纤维和极淡母题构成，边界保留纸图册质感。
+ */
+.atlas-map-wrap.is-terrain-map:not(.has-terrain) .leaflet-overlay-pane svg path.leaflet-interactive {
+  fill: #e9e1d1 !important;
+  fill-opacity: 0.9;
+}
+.atlas-map-wrap.is-terrain-map:not(.has-terrain) .leaflet-atlasEmblem-pane,
+.atlas-map-wrap.is-terrain-map:not(.has-terrain) .leaflet-atlasEmblemPane-pane {
+  display: none;
+}
+.atlas-map-wrap.is-paper-map .leaflet-atlasTerrain-pane {
+  display: none;
+}
+.atlas-map-wrap.is-paper-map .atlas-map .leaflet-overlay-pane {
+  filter: drop-shadow(0 1px 1px #fff9edb8) drop-shadow(0 7px 16px #3d4e4033);
+}
+.atlas-map-wrap.is-paper-map .leaflet-atlasEmblem-pane,
+.atlas-map-wrap.is-paper-map .leaflet-atlasEmblemPane-pane {
+  opacity: 0.84;
+}
+
+@media (max-width: 620px) {
+  .atlas-map-wrap.is-paper-map .leaflet-atlasEmblem-pane,
+  .atlas-map-wrap.is-paper-map .leaflet-atlasEmblemPane-pane {
+    display: none;
+  }
+}
+
+/* 照片墙配套：地图不是矩形卡片，而是落在布面/纸面上的展示。 */
+.capture-map .is-memory-wall .memory-card-stamp {
+  filter: drop-shadow(0 1px 1px #3f322340) drop-shadow(0 5px 9px #3f322326);
+}
+.capture-map .is-memory-wall .memory-card-visual {
+  border-color: #d8cbb4;
+  box-shadow:
+    0 0 0 1px #fffdf8,
+    0 1px 2px #3f32231f;
+}
+.capture-map .is-memory-wall .memory-wall-threads path {
+  stroke: var(--atlas-thread);
+  stroke-width: 1.05;
+}
+.capture-map .is-memory-wall .memory-wall-threads path.is-emphasized {
+  stroke: #a88b5e;
+  stroke-width: 1.45;
+}
+.capture-map .is-memory-wall .memory-region-actions,
+.capture-map .is-memory-wall .memory-wall-footer button,
+.capture-map .is-memory-wall .memory-wall-pagination,
+.capture-map .is-memory-wall .atlas-harbor-caption,
+.capture-map .is-memory-wall .atlas-harbor-choices button {
+  border-color: var(--atlas-ui-line);
+  background: var(--atlas-ui-surface);
+}
+.capture-map .is-terrain-map .atlas-map .leaflet-overlay-pane {
+  filter: drop-shadow(0 1px 0 #fffdf8b8) drop-shadow(0 6px 11px #6c5b432b);
+}
+.capture-map .is-paper-map .atlas-map .leaflet-overlay-pane {
+  filter: drop-shadow(0 1px 0 #fffdf8b8) drop-shadow(0 5px 10px #5d55432b);
+}
+.atlas-slot--map:has(.is-terrain-map) .atlas-map-context,
+.atlas-slot--map:has(.is-paper-map) .atlas-map-context {
+  border-color: var(--atlas-ui-line, #b5a88f);
+  background: var(--atlas-ui-surface, #f7f0e2e8);
+}
+
+/* 小尺寸、低光泽黄铜钉；命中区仍由原按钮/卡片承担。 */
+.capture-map .is-memory-wall .memory-card-pin,
+.capture-map .is-memory-wall .memory-pin-head {
+  width: 9px;
+  height: 9px;
+  background:
+    radial-gradient(circle at 34% 28%, #f7ecd2 0%, #dfc998 18%, #bf9d65 43%, #8b6a3e 69%, #5a4325 100%);
+  box-shadow:
+    0 2px 3px #3f32235c,
+    inset 0 1px 1px #fff7dfa8,
+    inset 0 -1px 2px #3d2c16a8;
+}
+.capture-map .is-memory-wall .memory-card-pin {
+  left: var(--pin-x);
+  top: var(--pin-y);
+  transform: translate(-50%, -50%);
+}
+
+/* 只有两篇笔记：两张照片实际放大，围绕图钉向外生长，不动地图与连线端点。 */
+.atlas-memory-wall[data-large-cards="true"] .memory-wall-card {
+  transform: rotate(var(--wall-tilt)) scale(var(--wall-card-scale, 1));
+}
+.atlas-memory-wall[data-large-cards="true"] .memory-card-pin {
+  transform: translate(-50%, -50%) scale(var(--wall-pin-scale, 1));
+}
+
+/* 卡片随地图主题：两套相纸、墨色、计数标签与装饰色只由变量控制。
+ * 印花齿孔来自同一张卡纸；齿孔镂空仍透明，背景不会被旧主题色回填。 */
+.capture-map .atlas-map-wrap.is-memory-wall.is-terrain-map {
+  --memory-card-surface: #cfddc8;
+  --memory-card-surface-deep: #c1d2ba;
+  --memory-card-surface-highlight: #dce8d5;
+  --memory-card-surface-selected: #c8d8c1;
+  --memory-card-title: #305047;
+  --memory-card-meta: #53634e;
+  --memory-card-line: #8ca181;
+  --memory-card-line-strong: #667b61;
+  --memory-card-count-bg: #45614f;
+  --memory-card-count-ink: #ffffff;
+  --memory-card-postmark: #53634ea8;
+  --memory-card-postmark-soft: #53634e55;
+  --memory-card-photo-lining: #fff9ef;
+  --memory-card-photo-border: #8ca181;
+  --memory-card-photo-highlight: #fff9ef;
+  --memory-card-edge: #6f8569;
+  --memory-card-shadow:
+    drop-shadow(0.55px 0 0 var(--memory-card-edge))
+    drop-shadow(-0.55px 0 0 var(--memory-card-edge))
+    drop-shadow(0 0.55px 0 var(--memory-card-edge))
+    drop-shadow(0 -0.55px 0 var(--memory-card-edge))
+    drop-shadow(0 3px 5px #2f4035a6)
+    drop-shadow(0 10px 22px #2f40355c);
+  --memory-card-shadow-hover:
+    drop-shadow(0.65px 0 0 var(--memory-card-edge))
+    drop-shadow(-0.65px 0 0 var(--memory-card-edge))
+    drop-shadow(0 0.65px 0 var(--memory-card-edge))
+    drop-shadow(0 -0.65px 0 var(--memory-card-edge))
+    drop-shadow(0 4px 6px #2f4035b8)
+    drop-shadow(0 12px 25px #2f403566);
+  --memory-card-shadow-selected:
+    drop-shadow(0.75px 0 0 var(--memory-card-line-strong))
+    drop-shadow(-0.75px 0 0 var(--memory-card-line-strong))
+    drop-shadow(0 0.75px 0 var(--memory-card-line-strong))
+    drop-shadow(0 -0.75px 0 var(--memory-card-line-strong))
+    drop-shadow(0 4px 6px #2f4035b8)
+    drop-shadow(0 12px 25px #2f403566)
+    drop-shadow(0 0 8px #6f8a7766);
+  --memory-card-focus: #667b61;
+}
+
+.capture-map .atlas-map-wrap.is-memory-wall.is-paper-map {
+  --memory-card-surface: #e6c3ab;
+  --memory-card-surface-deep: #dbb59b;
+  --memory-card-surface-highlight: #f2d6c1;
+  --memory-card-surface-selected: #e0bba3;
+  --memory-card-title: #614638;
+  --memory-card-meta: #684f40;
+  --memory-card-line: #b78f73;
+  --memory-card-line-strong: #91684f;
+  --memory-card-count-bg: #916247;
+  --memory-card-count-ink: #ffffff;
+  --memory-card-postmark: #775d4cb0;
+  --memory-card-postmark-soft: #775d4c58;
+  --memory-card-photo-lining: #fff9ef;
+  --memory-card-photo-border: #b78f73;
+  --memory-card-photo-highlight: #fff9ef;
+  --memory-card-edge: #926b53;
+  --memory-card-shadow:
+    drop-shadow(0.55px 0 0 var(--memory-card-edge))
+    drop-shadow(-0.55px 0 0 var(--memory-card-edge))
+    drop-shadow(0 0.55px 0 var(--memory-card-edge))
+    drop-shadow(0 -0.55px 0 var(--memory-card-edge))
+    drop-shadow(0 3px 5px #5f4a3ab3)
+    drop-shadow(0 10px 22px #5f4a3a66);
+  --memory-card-shadow-hover:
+    drop-shadow(0.65px 0 0 var(--memory-card-edge))
+    drop-shadow(-0.65px 0 0 var(--memory-card-edge))
+    drop-shadow(0 0.65px 0 var(--memory-card-edge))
+    drop-shadow(0 -0.65px 0 var(--memory-card-edge))
+    drop-shadow(0 4px 6px #5f4a3ac7)
+    drop-shadow(0 12px 25px #5f4a3a73);
+  --memory-card-shadow-selected:
+    drop-shadow(0.75px 0 0 var(--memory-card-line-strong))
+    drop-shadow(-0.75px 0 0 var(--memory-card-line-strong))
+    drop-shadow(0 0.75px 0 var(--memory-card-line-strong))
+    drop-shadow(0 -0.75px 0 var(--memory-card-line-strong))
+    drop-shadow(0 4px 6px #5f4a3ac7)
+    drop-shadow(0 12px 25px #5f4a3a73)
+    drop-shadow(0 0 8px #c39b7b66);
+  --memory-card-focus: #91684f;
+}
+
+/* 蒙版只裁卡纸本身；投影必须挂在外层 frame 上，否则 drop-shadow 会被 mask 裁掉。 */
+.capture-map .is-memory-wall .memory-card-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  filter: var(--memory-card-shadow);
+  transition: filter 140ms ease;
+}
+
+.capture-map .is-memory-wall .memory-card-stamp {
+  padding-bottom: 10px;
+  box-shadow:
+    inset 0 1px 0 #ffffff8c,
+    inset 0 -1px 0 #3d4f3d1f;
+  background:
+    linear-gradient(
+      160deg,
+      var(--memory-card-surface-highlight) 0%,
+      var(--memory-card-surface) 38%,
+      var(--memory-card-surface-deep) 100%
+    );
+  color: var(--memory-card-title);
+  filter: none;
+}
+
+.capture-map .is-memory-wall .memory-wall-card:hover .memory-card-frame,
+.capture-map .is-memory-wall .memory-wall-card:focus-visible .memory-card-frame {
+  filter: var(--memory-card-shadow-hover);
+}
+
+.capture-map .is-memory-wall .memory-wall-card.is-selected .memory-card-stamp {
+  background:
+    linear-gradient(
+      160deg,
+      var(--memory-card-surface-highlight) 0%,
+      var(--memory-card-surface) 36%,
+      var(--memory-card-surface-selected) 100%
+    );
+  filter: none;
+}
+
+.capture-map .is-memory-wall .memory-wall-card.is-selected .memory-card-frame {
+  filter: var(--memory-card-shadow-selected);
+}
+
+.capture-map .is-memory-wall .memory-card-stamp::after {
+  border-color: var(--memory-card-postmark);
+  border-width: 1.5px;
+  background: radial-gradient(
+    circle,
+    transparent 0 7px,
+    var(--memory-card-postmark-soft) 7.5px 8.5px,
+    transparent 9px
+  );
+  box-shadow: 0 0 0 1px var(--memory-card-line);
+}
+
+.capture-map .is-memory-wall .memory-wall-card:hover .memory-card-stamp::before,
+.capture-map .is-memory-wall .memory-wall-card:focus-visible .memory-card-stamp::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  inset: 6px;
+  border: 1px solid var(--memory-card-line-strong);
+  border-radius: 2px;
+  opacity: 0.82;
+  pointer-events: none;
+}
+
+.capture-map .is-memory-wall .memory-wall-card.is-selected .memory-card-stamp::before {
+  border-width: 1.5px;
+  border-color: var(--memory-card-line-strong);
+  opacity: 1;
+}
+
+.capture-map .is-memory-wall .memory-card-visual {
+  border: 3px solid var(--memory-card-photo-lining);
+  box-shadow: 0 0 0 1px var(--memory-card-photo-border);
+  background: var(--memory-card-surface-deep);
+}
+
+.capture-map .is-memory-wall .memory-card-visual.is-paper {
+  background:
+    repeating-linear-gradient(
+      transparent 0 17px,
+      var(--memory-card-line) 18px 19px
+    ),
+    var(--memory-card-surface-deep);
+}
+
+/* 照片本身不做颜色/透明度/混合模式处理。 */
+.capture-map .is-memory-wall .memory-card-visual > img,
+.capture-map .is-memory-wall .memory-stack-sheets img {
+  filter: none;
+  opacity: 1;
+}
+
+.capture-map .is-memory-wall .memory-card-title {
+  color: var(--memory-card-title);
+}
+
+.capture-map .is-memory-wall .memory-card-caption,
+.capture-map .is-memory-wall .memory-card-date,
+.capture-map .is-memory-wall .memory-card-place {
+  color: var(--memory-card-meta);
+}
+
+.capture-map .is-memory-wall .memory-wall-card.is-stack .memory-card-place {
+  color: var(--memory-card-title);
+}
+
+.capture-map .is-memory-wall .memory-stack-count,
+.capture-map .is-memory-wall .memory-photo-count {
+  border-color: var(--memory-card-line);
+  background: var(--memory-card-count-bg);
+  color: var(--memory-card-count-ink);
+}
+
+.capture-map .is-memory-wall .memory-stack-sheets > span {
+  border-color: var(--memory-card-surface);
+  box-shadow: 0 0 0 1px var(--memory-card-line-strong);
+}
+
+.capture-map .is-memory-wall .memory-wall-card:focus-visible {
+  outline-color: var(--memory-card-focus);
+}
+
+
+/* 旧规则仍把投影挂在内层 stamp 上；在最终层统一停用，避免蒙版裁切。 */
+.capture-map .is-memory-wall .memory-card-stamp,
+.capture-map .is-memory-wall .memory-wall-card:hover .memory-card-stamp,
+.capture-map .is-memory-wall .memory-wall-card:focus-visible .memory-card-stamp {
+  filter: none;
+}
+
+/* 齿孔减密：横向 7 个、纵向 7 个，保持邮票识别但不形成密齿。 */
+.capture-map {
+  --stamp-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTQ0Ij48cGF0aCBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wIDBIMTIwVjE0NEgwWk01LjYwIDAuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME01LjYwIDE0NC4wMGE0LjQgNC40IDAgMSAwIDguOCAwYTQuNCA0LjQgMCAxIDAgLTguOCAwTTIyLjI3IDAuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME0yMi4yNyAxNDQuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME0zOC45MyAwLjAwYTQuNCA0LjQgMCAxIDAgOC44IDBhNC40IDQuNCAwIDEgMCAtOC44IDBNMzguOTMgMTQ0LjAwYTQuNCA0LjQgMCAxIDAgOC44IDBhNC40IDQuNCAwIDEgMCAtOC44IDBNNTUuNjAgMC4wMGE0LjQgNC40IDAgMSAwIDguOCAwYTQuNCA0LjQgMCAxIDAgLTguOCAwTTU1LjYwIDE0NC4wMGE0LjQgNC40IDAgMSAwIDguOCAwYTQuNCA0LjQgMCAxIDAgLTguOCAwTTcyLjI3IDAuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME03Mi4yNyAxNDQuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME04OC45MyAwLjAwYTQuNCA0LjQgMCAxIDAgOC44IDBhNC40IDQuNCAwIDEgMCAtOC44IDBNODguOTMgMTQ0LjAwYTQuNCA0LjQgMCAxIDAgOC44IDBhNC40IDQuNCAwIDEgMCAtOC44IDBNMTA1LjYwIDAuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME0xMDUuNjAgMTQ0LjAwYTQuNCA0LjQgMCAxIDAgOC44IDBhNC40IDQuNCAwIDEgMCAtOC44IDBNLTQuNDAgMTIuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME0xMTUuNjAgMTIuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME0tNC40MCAzMi4wMGE0LjQgNC40IDAgMSAwIDguOCAwYTQuNCA0LjQgMCAxIDAgLTguOCAwTTExNS42MCAzMi4wMGE0LjQgNC40IDAgMSAwIDguOCAwYTQuNCA0LjQgMCAxIDAgLTguOCAwTS00LjQwIDUyLjAwYTQuNCA0LjQgMCAxIDAgOC44IDBhNC40IDQuNCAwIDEgMCAtOC44IDBNMTE1LjYwIDUyLjAwYTQuNCA0LjQgMCAxIDAgOC44IDBhNC40IDQuNCAwIDEgMCAtOC44IDBNLTQuNDAgNzIuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME0xMTUuNjAgNzIuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME0tNC40MCA5Mi4wMGE0LjQgNC40IDAgMSAwIDguOCAwYTQuNCA0LjQgMCAxIDAgLTguOCAwTTExNS42MCA5Mi4wMGE0LjQgNC40IDAgMSAwIDguOCAwYTQuNCA0LjQgMCAxIDAgLTguOCAwTS00LjQwIDExMi4wMGE0LjQgNC40IDAgMSAwIDguOCAwYTQuNCA0LjQgMCAxIDAgLTguOCAwTTExNS42MCAxMTIuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME0tNC40MCAxMzIuMDBhNC40IDQuNCAwIDEgMCA4LjggMGE0LjQgNC40IDAgMSAwIC04LjggME0xMTUuNjAgMTMyLjAwYTQuNCA0LjQgMCAxIDAgOC44IDBhNC40IDQuNCAwIDEgMCAtOC44IDAiLz48L3N2Zz4=");
+}
+
+/* ============================================================
+ * 01 · 极简相纸：两主题共用同一张纸卡，仅靠相纸/衬纸/文字色区分。
+ * 所有颜色集中为 --memory-card-* 语义变量；照片不参与任何滤镜。
+ * ============================================================ */
+.capture-map .atlas-map-wrap.is-memory-wall.is-terrain-map {
+  --memory-card-paper: #f6f8f4;
+  --memory-card-paper-deep: #edf3ed;
+  --memory-card-paper-wash: linear-gradient(165deg, #ffffffc7 0%, #ffffff26 42%, #dbe7df 100%);
+  --memory-card-backing: #607761;
+  --memory-card-title: #284f42;
+  --memory-card-meta: #607169;
+  --memory-card-place-bg: #4b6a55;
+  --memory-card-place-ink: #f8fbf5;
+  --memory-card-thread: #87968b;
+  --memory-card-line: #bcc9bf;
+  --memory-card-line-strong: #607761;
+  --memory-card-count-bg: #4b6a55;
+  --memory-card-count-ink: #f8fbf5;
+  --memory-card-focus: #4b6a55;
+  --memory-card-shadow:
+    drop-shadow(0 1px 1px #25382d20) drop-shadow(0 4px 9px #25382d22);
+  --memory-card-shadow-hover:
+    drop-shadow(0 1px 2px #25382d30) drop-shadow(0 7px 15px #25382d36);
+  --memory-card-shadow-selected:
+    drop-shadow(0 1px 2px #25382d38) drop-shadow(0 7px 15px #25382d42);
+}
+
+.capture-map .atlas-map-wrap.is-memory-wall.is-paper-map {
+  --memory-card-paper: #f2e1c7;
+  --memory-card-paper-deep: #ead4b7;
+  --memory-card-paper-wash:
+    linear-gradient(160deg, #fff8e9b8 0%, #fff5e11f 46%, #c59b6d42 100%),
+    repeating-linear-gradient(0deg, #7753320a 0 1px, transparent 1px 4px);
+  --memory-card-backing: #b28a62;
+  --memory-card-title: #62442d;
+  --memory-card-meta: #76583f;
+  --memory-card-place-bg: #9c5f3d;
+  --memory-card-place-ink: #fff8ee;
+  --memory-card-thread: #a28b77;
+  --memory-card-line: #d1b99b;
+  --memory-card-line-strong: #b28a62;
+  --memory-card-count-bg: #9c5f3d;
+  --memory-card-count-ink: #fff8ee;
+  --memory-card-focus: #a56a43;
+  --memory-card-shadow:
+    drop-shadow(0 1px 1px #4b322223) drop-shadow(0 4px 9px #4b322225);
+  --memory-card-shadow-hover:
+    drop-shadow(0 1px 2px #4b322232) drop-shadow(0 7px 15px #4b322238);
+  --memory-card-shadow-selected:
+    drop-shadow(0 1px 2px #4b32223a) drop-shadow(0 7px 15px #4b322244);
+}
+
+/* 相纸边框与衬纸：衬纸只从右侧/下侧露出 3px。 */
+.capture-map .is-memory-wall .memory-card-frame {
+  position: relative;
+  isolation: isolate;
+  filter: var(--memory-card-shadow);
+}
+.capture-map .is-memory-wall .memory-card-frame::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 3px -3px -3px 3px;
+  border-radius: 3px;
+  background: var(--memory-card-backing);
+  box-shadow: 0 1px 1px #2d20151f;
+  pointer-events: none;
+}
+.capture-map .is-memory-wall .memory-card-stamp {
+  position: relative;
+  z-index: 1;
+  border-radius: 3px;
+  padding: 4px 3px 5px;
+  background-color: var(--memory-card-paper);
+  background-image: var(--memory-card-paper-wash);
+  color: var(--memory-card-title);
+  box-shadow: inset 0 1px 0 #ffffffa6;
+  -webkit-mask-image: none;
+  mask-image: none;
+  overflow: hidden;
+}
+/* 齿孔、邮戳和旧的内框都不再属于相纸。 */
+.capture-map .is-memory-wall .memory-card-stamp::before,
+.capture-map .is-memory-wall .memory-card-stamp::after {
+  content: none;
+  display: none;
+}
+.capture-map .is-memory-wall .memory-wall-card.is-selected .memory-card-stamp::before {
+  content: none;
+  display: none;
+}
+
+/* 照片是主体：不加边框、滤镜或色调层。 */
+.capture-map .is-memory-wall .memory-card-visual {
+  flex: 1 1 auto;
+  margin: 0;
+  border: 0;
+  border-radius: 2px;
+  background: var(--memory-card-paper-deep);
+  box-shadow: none;
+}
+.capture-map .is-memory-wall .memory-card-visual > img {
+  border-radius: 2px;
+  filter: none;
+  opacity: 1;
+}
+.capture-map .is-memory-wall .memory-card-visual.is-paper {
+  background: var(--memory-card-paper-deep);
+}
+
+/* 底部文字区：和相纸同底，标题 13–15px，日期/地点保持紧凑但对比足够。 */
+.capture-map .is-memory-wall .memory-card-title {
+  margin-top: 5px;
+  color: var(--memory-card-title);
+  font-size: clamp(12px, calc(var(--wall-card-width) * 0.14), 13.5px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+.capture-map .is-memory-wall .memory-card-caption {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 2px;
+  color: var(--memory-card-meta);
+  font-size: 9.5px;
+  line-height: 13px;
+}
+.capture-map .is-memory-wall .memory-card-date {
+  flex: 0 0 auto;
+  color: var(--memory-card-meta);
+  font-size: 9.5px;
+  line-height: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.capture-map .is-memory-wall .memory-card-place {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: calc(100% - 52px);
+  padding: 1px 2px;
+  border-radius: 2px;
+  background: var(--memory-card-place-bg);
+  color: var(--memory-card-place-ink);
+  font-size: 9px;
+  line-height: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.capture-map .is-memory-wall .memory-wall-card.is-stack .memory-card-place {
+  color: var(--memory-card-place-ink);
+}
+.capture-map .is-memory-wall .memory-text-excerpt {
+  color: var(--memory-card-meta);
+  font-size: 10.5px;
+  line-height: 17px;
+}
+
+/* 数量徽标仍服务聚合机制，但只做小标签，不再像邮戳。 */
+.capture-map .is-memory-wall .memory-stack-count,
+.capture-map .is-memory-wall .memory-photo-count {
+  border: 0;
+  border-radius: 2px;
+  background: var(--memory-card-count-bg);
+  color: var(--memory-card-count-ink);
+  padding: 1px 3px;
+  font-size: 8.5px;
+  line-height: 12px;
+  transform: scale(calc(1 / var(--wall-card-scale)));
+  transform-origin: 100% 100%;
+  box-shadow: 0 1px 2px #2d20153d;
+}
+/* 聚合卡的第三张纸片不再堆叠，聚合信息由数量标签承担。 */
+.capture-map .is-memory-wall .memory-stack-sheets {
+  display: none;
+}
+
+/* 细黄铜钉在右上角；连接线端点由组件同一坐标计算。 */
+.capture-map .is-memory-wall .memory-card-pin {
+  z-index: 5;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #66502f80;
+  background:
+    radial-gradient(circle at 34% 26%, #fff8de 0%, #e5c98e 22%, #c59b5d 48%, #8c6739 78%, #4f371d 100%);
+  box-shadow:
+    0 1px 2px #2d201557,
+    inset 0 1px 0 #fff9e6b3;
+}
+
+/* 连线只做细分隔，不抢照片。 */
+.capture-map .is-memory-wall .memory-wall-threads path {
+  stroke: var(--memory-card-thread);
+  stroke-width: 1;
+  opacity: 0.66;
+  filter: none;
+}
+.capture-map .is-memory-wall .memory-wall-threads path.is-emphasized {
+  stroke: var(--memory-card-line-strong);
+  stroke-width: 1.35;
+  opacity: 0.92;
+}
+.capture-map .is-memory-wall .memory-wall-threads path.is-muted {
+  opacity: 0.16;
+}
+
+/* 悬停/选中只改阴影和一条 1px 线，不做厚边框。 */
+.capture-map .is-memory-wall .memory-wall-card:hover .memory-card-frame,
+.capture-map .is-memory-wall .memory-wall-card:focus-visible .memory-card-frame {
+  filter: var(--memory-card-shadow-hover);
+}
+.capture-map .is-memory-wall .memory-wall-card.is-selected .memory-card-frame {
+  filter: var(--memory-card-shadow-selected);
+}
+.capture-map .is-memory-wall .memory-wall-card.is-selected .memory-card-stamp {
+  background-color: var(--memory-card-paper);
+  background-image: var(--memory-card-paper-wash);
+  box-shadow:
+    inset 0 1px 0 #ffffffa6,
+    0 0 0 1px var(--memory-card-line-strong);
+}
+.capture-map .is-memory-wall .memory-wall-card.is-selected {
+  outline: none;
+  box-shadow: none;
+}
+.capture-map .is-memory-wall .memory-wall-card:focus-visible {
+  outline: 2px solid var(--memory-card-focus);
+  outline-offset: 4px;
+}

@@ -1,0 +1,29 @@
+# 生成产物与本地配置（重生成步骤见 README）
+node_modules/
+www/app.js
+www/server-config.js
+# 原生工程源码保留；依赖、同步资源和本机状态不入库。
+/android/.gradle/
+/android/.kotlin/
+/android/**/build/
+/android/local.properties
+/android/capacitor.settings.gradle
+/android/app/capacitor.build.gradle
+/android/app/src/main/assets/
+/android/capacitor-cordova-android-plugins/
+/android/app/src/androidTest/
+/android/app/src/test/
+/ios/**/build/
+/ios/**/xcuserdata/
+/ios/DerivedData/
+/ios/App/CapApp-SPM/Package.swift
+/ios/App/App/public/
+/ios/App/App/capacitor.config.json
+/ios/App/App/config.xml
+/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+native/xingji-host/android/build/
+.mimosa/

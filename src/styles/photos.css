@@ -1,0 +1,123 @@
+.wb-image-preview-toolbar button:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+
+.wb-image-preview-dialog {
+  width: min(960px, calc(100vw - 32px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+  height: min(820px, calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  border: 0;
+  padding: 0;
+  border-radius: 12px;
+  background: #17282d;
+  color: white;
+  overflow: hidden;
+}
+
+.wb-image-preview-dialog[open] { display: flex; flex-direction: column; }
+.wb-image-preview-dialog::backdrop { background: rgb(8 19 21 / 86%); }
+.wb-image-preview-toolbar {
+  display: flex;
+  min-height: 56px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 1px solid rgb(255 255 255 / 12%);
+  padding: 6px 8px 6px 16px;
+}
+.wb-image-preview-nav { display: flex; align-items: center; gap: 2px; }
+.wb-image-preview-position { min-width: 44px; text-align: center; font-size: 12px; font-variant-numeric: tabular-nums; opacity: .85; }
+.wb-image-preview-name {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wb-image-preview-toolbar button {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+}
+.wb-image-preview-toolbar button:hover:not(:disabled) { background: rgb(255 255 255 / 12%); }
+.wb-image-preview-toolbar button:disabled { opacity: .35; cursor: default; }
+.wb-image-preview-toolbar .wb-image-preview-scale { width: 52px; flex-basis: 52px; font: inherit; font-size: 12px; }
+.wb-image-preview-close { margin-left: 4px; }
+.wb-image-preview-content { min-height: 0; flex: 1; overflow: auto; overscroll-behavior: contain; touch-action: none; cursor: grab; }
+.wb-image-preview-content:active { cursor: grabbing; }
+.wb-image-preview-content:focus-visible { outline: 2px solid white; outline-offset: -4px; }
+.wb-image-preview-stage { display: grid; width: max-content; min-width: 100%; height: max-content; min-height: 100%; place-items: center; padding: 16px; }
+.wb-image-preview-stage img { display: block; max-width: min(720px, calc(100vw - 96px)); max-height: min(560px, 60dvh); object-fit: contain; user-select: none; }
+
+/* 原图查看与照片信息由笔记、工作台共用。 */
+.wb-image-preview-toolbar .photo-viewer-text-button { width: 48px; flex-basis: 48px; font-size: 12px; }
+.photo-viewer-percent { min-width: 36px; font-size: 12px; text-align: center; font-variant-numeric: tabular-nums; }
+.photo-info-panel { flex: 0 0 auto; max-height: 36dvh; overflow: auto; padding: 12px 16px; margin: 0; background: #20343b; font-size: 12px; }
+.photo-info-panel dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px 20px; margin: 0; }
+.photo-info-panel dl > div { display: flex; gap: 8px; }
+.photo-info-panel dt { flex: 0 0 56px; color: #bdd0d5; }
+.photo-info-panel dd { margin: 0; overflow-wrap: anywhere; }
+.photo-info-panel p { margin: 10px 0 0; color: #bdd0d5; }
+@media (max-width: 600px) {
+  .wb-image-preview-toolbar { flex-wrap: wrap; padding: 4px; }
+  .wb-image-preview-name { flex-basis: calc(100% - 52px); order: -2; }
+  .wb-image-preview-close { order: -1; margin-left: auto; }
+  .wb-image-preview-toolbar button { height: 40px; }
+}
+
+/* 工作台只更换展示外壳，笔记和地图继续使用上方原图查看器。 */
+.wb-image-preview-dialog[data-variant="workbench"] {
+  /* Share the native visible viewport so iOS keyboard panning cannot hide the toolbar. */
+  inset: var(--native-viewport-top, 0px) 0 auto;
+  width: 100vw;
+  height: var(--native-viewport-height, 100dvh);
+  margin: 0;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  box-sizing: border-box;
+  border-radius: 0;
+  background: #141a23;
+  color: #f4f6fa;
+  color-scheme: dark;
+}
+.wb-image-preview-dialog[data-variant="workbench"]::backdrop { background: rgb(10 13 17 / 92%); }
+.wb-image-preview-dialog[data-variant="workbench"] > .wb-image-preview-toolbar { flex-wrap: wrap; min-height: 56px; gap: 8px; padding: 6px 12px; border: 0; border-bottom: 1px solid #ffffff14; }
+.wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-nav { margin-right: auto; }
+.wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-toolbar button { min-width: 44px; height: 44px; flex-basis: 44px; color: inherit; }
+.wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-toolbar .wb-image-preview-scale { width: auto; min-width: 80px; flex-basis: auto; padding-inline: 8px; font-variant-numeric: tabular-nums; }
+.wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-close { order: 0; margin-left: 4px; }
+.wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-stage img { width: auto; height: auto; max-width: calc(100vw - 32px); max-height: calc(100dvh - 112px); }
+.photo-viewer-workbench-info { flex: none; max-height: 25dvh; overflow: auto; padding: 10px 16px; color: inherit; background: rgb(0 0 0 / 20%); font-size: 12px; }
+.photo-viewer-workbench-info > dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 6px 20px; margin: 0; }
+.photo-viewer-workbench-info > dl > div { display: flex; gap: 10px; min-width: 0; }
+.photo-viewer-workbench-info dt { flex: none; opacity: .7; }
+.photo-viewer-workbench-info dd { margin: 0; overflow-wrap: anywhere; }
+.photo-viewer-workbench-info a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.photo-viewer-workbench-info .photo-info-panel { max-height: none; padding: 10px 0 0; overflow: visible; background: transparent; }
+.photo-viewer-original { min-height: 44px; margin-top: 4px; padding: 4px 8px; border: 0; border-radius: 6px; background: transparent; color: inherit; font-size: 12px; cursor: pointer; }
+.photo-viewer-original:hover { background: rgb(255 255 255 / 12%); }
+.photo-viewer-original:focus-visible, .photo-viewer-workbench-info a:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+.photo-viewer-notice { flex: none; margin: 0; padding: 6px 16px; color: inherit; font-size: 12px; overflow-wrap: anywhere; }
+.photo-viewer-workbench-footer { flex: 0 1 auto; min-height: 0; width: min(880px, 100%); max-height: calc(var(--native-viewport-height, 100dvh) * .46); margin-inline: auto; padding: 4px 12px; border-top: 1px solid #ffffff1a; border-radius: 16px 16px 0 0; background: #202733; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+@media (max-width: 600px) {
+  .wb-image-preview-dialog[data-variant="workbench"] > .wb-image-preview-toolbar { display: grid; grid-template-columns: 44px minmax(80px, 1fr) repeat(3, 44px); gap: 4px 8px; }
+  .wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-nav { grid-column: 1 / -2; grid-row: 1; margin: 0; justify-content: center; }
+  .wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-close { grid-column: -2 / -1; grid-row: 1; margin: 0; }
+  .wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-toolbar > button:not(.wb-image-preview-close) { grid-row: 2; width: 100%; }
+  .wb-image-preview-dialog[data-variant="workbench"] > .wb-image-preview-toolbar:has(> button[aria-label="分享图片"]) { grid-template-columns: repeat(6, minmax(44px, 1fr)); column-gap: 4px; }
+  .wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-toolbar:has(> button[aria-label="分享图片"]) .wb-image-preview-scale { min-width: 0; padding-inline: 0; line-height: 1.2; }
+  .photo-viewer-workbench-footer { width: 100%; }
+}
+.wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-stage { position: relative; }
+.wb-viewer-overlay-plane { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+.wb-viewer-selection { position: absolute; inset: 0; pointer-events: auto; touch-action: none; cursor: crosshair; }
+.wb-viewer-selection-box { position: absolute; border: 2px solid #8fcbff; background: rgb(20 118 197 / 20%); pointer-events: none; box-shadow: 0 0 0 1px #153b56; }
+.wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-content { min-height: min(96px, calc(var(--native-viewport-height, 100dvh) * .2)); }
+.wb-image-preview-dialog[data-variant="workbench"] .wb-image-preview-stage img { background-color: #fff; background-image: conic-gradient(#ddd 25%, #fff 0 50%, #ddd 0 75%, #fff 0); background-size: 16px 16px; }

@@ -1,0 +1,28 @@
+{
+  "name": "xingji-mobile-beta",
+  "version": "1.2.0",
+  "versionCode": 3,
+  "private": true,
+  "description": "行迹移动应用：地图、图文笔记与 AI 工作台",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "sync:ios": "npm run build && cap sync ios && node scripts/prepare-native.mjs ios",
+    "set-server": "node scripts/set-server.mjs",
+    "prepare-native": "node scripts/prepare-native.mjs"
+  },
+  "dependencies": {
+    "@capacitor-community/sqlite": "^8.1.1",
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/ios": "^8.5.3",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "8.0.3",
+    "capacitor-secure-storage-plugin": "^0.13.0",
+    "xingji-host": "file:native/xingji-host"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
+    "esbuild": "^0.28.2"
+  }
+}

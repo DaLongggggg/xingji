@@ -1,0 +1,14 @@
+{
+  "name": "xingji-host",
+  "version": "1.0.0",
+  "description": "行迹受信 WebView 边界与受控原生能力（可信 origin 登记、受控标记、SHA-256 摘要、安全随机）。仅 file: 依赖由 Capacitor 自动注册，不 fork node_modules。",
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    },
+    "android": {
+      "src": "android"
+    }
+  },
+  "private": true
+}

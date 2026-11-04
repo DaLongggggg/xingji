@@ -1,0 +1,413 @@
+@media (max-width: 1200px) {
+  /* 020-A：工作区宽度与边距统一由 .app-main 的 max-width + clamp 控制，
+     旧的内边距覆盖与 topbar 负边距（为旧固定侧栏服务）已移除。 */
+
+  .hero-section {
+    grid-template-columns: 1fr 0.78fr;
+  }
+
+  .hero-art {
+    min-height: 420px;
+  }
+
+  .passport-card {
+    width: 210px;
+    height: 275px;
+    left: 7%;
+  }
+
+  .spot-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .destination-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .app-sidebar {
+    display: none;
+  }
+
+  .mobile-navigation {
+    position: fixed;
+    z-index: 70;
+    right: 9px;
+    bottom: 9px;
+    left: 9px;
+    display: grid;
+    /* 016：主入口从 5 个变成 4 个（地图/记录/手帐本/设置），按项数自适应。 */
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-md);
+    padding: 7px;
+    background: var(--sky-glass-strong);
+    box-shadow: var(--sky-shadow);
+    -webkit-backdrop-filter: blur(var(--sky-blur)) saturate(1.1);
+    backdrop-filter: blur(var(--sky-blur)) saturate(1.1);
+  }
+
+  .mobile-navigation button {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    padding: 8px 2px;
+    background: transparent;
+    color: var(--sky-ink-muted);
+    font-size: 8px;
+  }
+
+  .mobile-navigation button.is-active {
+    background: var(--sky-primary);
+    color: white;
+  }
+
+  /* 手机：顶栏（菜单 + 页面标题）占首行，正文随容器自然收缩。 */
+  .app-main {
+    padding: calc(var(--app-topbar-h) + 16px + env(safe-area-inset-top, 0px))
+      clamp(16px, 3vw, 24px) calc(100px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .topbar {
+    margin: 0 -22px 22px;
+    padding: 12px 22px;
+  }
+
+  .selected-summary {
+    flex: 0 0 auto;
+  }
+
+  .hero-section {
+    grid-template-columns: 1fr;
+    padding-top: 45px;
+  }
+
+  .hero-art {
+    order: -1;
+    min-height: 330px;
+  }
+
+  .passport-card {
+    top: 55px;
+    left: 24%;
+    width: 200px;
+    height: 245px;
+  }
+
+  .feature-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-strip article + article {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .destination-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-controls {
+    position: static;
+  }
+
+  .ai-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  /* 020-A：横向边距由 .app-main 的 clamp(16px,3vw,40px) 统一处理，
+     不再叠加旧侧栏时代的覆盖值。 */
+
+  .topbar .search-shortcut,
+  .selected-summary {
+    display: none;
+  }
+
+  .global-notice {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+  }
+
+  .hero-section {
+    min-height: auto;
+    gap: 25px;
+  }
+
+  .hero-copy h1 {
+    font-size: 49px;
+  }
+
+  .hero-art {
+    min-height: 280px;
+  }
+
+  .passport-card {
+    top: 35px;
+    left: 16%;
+    width: 180px;
+    height: 220px;
+    padding: 24px;
+  }
+
+  .passport-card strong {
+    font-size: 33px;
+  }
+
+  .hero-stamp {
+    width: 70px;
+    height: 70px;
+    font-size: 14px;
+  }
+
+  .destination-search {
+    min-height: 55px;
+    padding-right: 13px;
+    padding-left: 13px;
+  }
+
+  .feature-strip {
+    margin-bottom: 65px;
+  }
+
+  .section-heading,
+  .destination-header {
+    display: grid;
+    align-items: start;
+  }
+
+  .destination-stat {
+    align-items: flex-start;
+    border-right: 0;
+    border-left: 4px solid var(--orange);
+    padding-right: 0;
+    padding-left: 13px;
+  }
+
+  .category-tabs {
+    overflow-x: auto;
+  }
+
+  .category-tabs button {
+    flex: 0 0 auto;
+  }
+
+  .spot-card {
+    grid-template-columns: 115px minmax(0, 1fr);
+  }
+
+  .spot-visual {
+    min-height: 210px;
+  }
+
+  .spot-glyph {
+    font-size: 43px;
+  }
+
+  .spot-meta span:nth-child(2),
+  .spot-card-footer span {
+    display: none;
+  }
+
+  .map-card {
+    padding: 11px;
+  }
+
+  .local-map,
+  .amap-container,
+  .leaflet-map-shell,
+  .local-map svg,
+  .leaflet-map {
+    min-height: 420px;
+    height: 420px;
+  }
+
+  .leaflet-map-shell .leaflet-control-zoom {
+    margin-top: 12px;
+    margin-right: 12px;
+  }
+
+  .leaflet-fit-button {
+    top: 108px;
+    left: 12px;
+  }
+
+  .leaflet-tile-error {
+    top: 12px;
+    max-width: calc(100% - 24px);
+  }
+
+  .leaflet-map-shell .map-provider-label {
+    top: 12px;
+    right: 57px;
+  }
+
+  .leaflet-route-note {
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .map-selected-bar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .map-selected-bar > div {
+    display: none;
+  }
+
+  .trip-result {
+    padding: 15px;
+  }
+
+  .trip-result .section-heading {
+    display: grid;
+  }
+
+  .export-toolbar {
+    justify-content: stretch;
+  }
+
+  .export-toolbar button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .day-support-grid,
+  .saved-grid,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .route-leg {
+    flex-wrap: wrap;
+  }
+
+  .route-leg small {
+    margin-left: 0;
+  }
+
+  .province-wheel {
+    border-width: 8px;
+  }
+
+  .wheel-label {
+    padding-top: 10%;
+    font-size: clamp(7px, 2.2vw, 9px);
+  }
+
+  .wheel-label__text {
+    max-width: 34px;
+  }
+
+  .wheel-center {
+    font-size: 17px;
+  }
+
+  .chat-input {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-answer {
+    grid-template-columns: auto 1fr;
+  }
+
+  .chat-answer button {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .notebook-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .notebook-page {
+    padding-bottom: 84px;
+  }
+
+  /* P2：窄屏下前后正文改为单列堆叠，保持可读且不横向滚动。 */
+  .nb-organize-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nb-organize-diff {
+    max-height: 46vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    /*
+     * 延迟也要清零：导航抽屉靠 `visibility ... 220ms` 的延迟衔接滑出动画，
+     * 只清 duration 会留下这 220ms —— 抽屉已滑出却仍短暂留在可访问性树里。
+     * 无动画时不需要这个延迟。
+     */
+    transition-delay: 0s !important;
+  }
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .app-sidebar,
+  .mobile-navigation,
+  .topbar,
+  .planner-controls,
+  .export-toolbar,
+  .trip-result .primary-button,
+  .global-notice {
+    display: none !important;
+  }
+
+  .app-main {
+    margin: 0;
+    padding: 0;
+  }
+
+  .planner-layout {
+    display: block;
+    padding: 0;
+  }
+
+  .trip-result {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .day-card {
+    break-inside: avoid;
+  }
+}
+
+/* 大屏手机横屏：导航轨道与内容共同让开侧边安全区。 */
+@media (pointer: coarse) and (min-width: 781px) and (max-width: 1000px) {
+  .app-shell { padding-left: calc(var(--nav-rail-w) + env(safe-area-inset-left, 0px)); padding-right: env(safe-area-inset-right, 0px); }
+  .app-shell[data-nav-open="true"] { padding-left: calc(var(--nav-width, 280px) + env(safe-area-inset-left, 0px)); }
+  .app-shell .nav-drawer { left: env(safe-area-inset-left, 0px); }
+  .app-shell > .app-topbar, .app-shell .capture-map { left: calc(var(--nav-rail-w) + env(safe-area-inset-left, 0px)); right: env(safe-area-inset-right, 0px); }
+  .app-shell[data-nav-open="true"] > .app-topbar, .app-shell[data-nav-open="true"] .capture-map { left: calc(var(--nav-width, 280px) + env(safe-area-inset-left, 0px)); }
+}
+
+/* 全站移除页标题栏；小屏保留独立导航入口。 */
+.app-mobile-menu { display: none; }
+@media (max-width: 780px), (pointer: coarse) and (max-height: 600px) and (max-width: 1100px) {
+  :root { --app-topbar-h: 48px; }
+  .app-mobile-menu { position: fixed; z-index: 510; top: env(safe-area-inset-top, 0px); left: max(8px, env(safe-area-inset-left, 0px)); display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--sky-line); border-radius: 12px; background: var(--card); color: var(--sky-ink); }
+  .app-mobile-menu:focus-visible { outline: 2px solid var(--sky-primary); outline-offset: 2px; }
+}

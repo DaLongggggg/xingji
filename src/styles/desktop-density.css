@@ -1,0 +1,96 @@
+/* 电脑鼠标工作区的尺寸覆盖；触屏与小视口沿用原有布局。 */
+@media (min-width: 1024px) and (pointer: fine) {
+  :root {
+    --app-topbar-h: 0px;
+    --nav-rail-w: 52px;
+    --control-sm: 32px;
+    --control-md: 36px;
+    --fs-sm: 12px;
+    --fs-base: 14px;
+    --fs-body: 14px;
+    --fs-title: 16px;
+    --fs-h2: 18px;
+    --fs-h1: 22px;
+    --fs-display: 28px;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+  }
+
+  body { font-size: 14px; line-height: 1.5; }
+  .app-main:not(.app-main--workbench, :has(.notebook-page)) { padding: calc(var(--app-topbar-h) + 16px) clamp(20px, 2.4vw, 32px) 48px; }
+  .topbar { min-height: 48px; margin-bottom: 16px; padding-block: 6px; }
+  .page-menu-button { min-height: 34px; padding-inline: 11px; }
+  .app-topbar-title { font-size: 14px; }
+  .nav-drawer-brand .brand-mark { width: 36px; height: 36px; }
+  .app-shell .nav-drawer:not(.is-open) .nav-button { min-height: 36px; padding: 8px 0; }
+  .nav-button svg { width: 18px; height: 18px; }
+  .wb[data-panel="open"] { grid-template-columns: minmax(0, var(--wb-sidebar-width, 260px)) minmax(0, 1fr) 340px; }
+  .wb[data-sidebar="collapsed"][data-panel="open"] { grid-template-columns: minmax(0, 1fr) 340px; }
+  .wb :is(.wb-icon-button, .wb-send, .wb-actions-menu > summary) > svg { width: 16px; height: 16px; }
+  .app-topbar { padding-block: 2px; }
+  .primary-button, .secondary-button { min-height: 32px; padding: 6px 11px; font-size: 13px; }
+  .nav-drawer-item { min-height: 40px; font-size: 14px; }
+  .nav-drawer { gap: 12px; padding: 16px 14px; }
+  .nav-drawer-close { width: 36px; height: 36px; }
+  .nav-foot-link { padding: 9px 11px; }
+
+  /* 笔记本：栏头更薄，编辑正文保留独立阅读字号。 */
+  .nb-col-head, .nb-editor-bar { min-height: 39px; padding: 4px 10px; gap: 6px; }
+  .nb-editor-bar .nb-editor-title-input { font-size: 16px; }
+  .nb-watermark { font-size: 26px; }
+  .page-regions-province-select select { min-height: 32px; padding: 7px 10px; font-size: 14px; }
+
+  /* 对话：工具区采用桌面规格，输入与回复使用14px。 */
+  .wb-chat { padding: 0 0 8px; gap: 8px; }
+  .wb-chat-head { padding-block: 3px; }
+  .wb-icon-button { min-width: 32px; min-height: 32px; width: 32px; height: 32px; }
+  .wb-scope { min-height: 32px; font-size: 13px; }
+  .wb-sessions { padding: 8px; gap: 8px; }
+  .wb-session { padding: 6px 8px; }
+  .wb-empty h3 { font-size: 22px; }
+  .wb-message { font-size: 14px; }
+  .wb-message p { line-height: 1.6; }
+  .wb-composer { padding: 7px 10px; border-radius: var(--radius-lg); gap: 5px; }
+  .wb-input-row textarea { min-height: 0; max-height: 166px; font-size: 14px; line-height: 1.4; padding: 6px 10px; resize: none; overflow-y: auto; }
+  .wb-send { width: 38px; min-width: 38px; min-height: 38px; height: 38px; flex-basis: 38px; }
+  .wb-send > svg { width: 20px; height: 20px; }
+  .wb-settings > summary, .wb-actions-menu > summary, .wb-image-options > summary { min-height: 34px; }
+  .wb-actions-menu > summary { width: 34px; min-width: 34px; }
+  .wb-image-options > summary { max-width: 210px; padding-inline: 8px; }
+  .wb-image-options > summary small { max-width: 126px; }
+  .wb-image-options select { min-height: 34px; padding-block: 6px; font-size: 13px; }
+  .wb-image-options-panel { padding: 10px; gap: 8px; }
+  .wb-actions-menu .wb-quick { padding: 6px; gap: 2px; }
+  .wb-actions-menu .wb-quick button { min-height: 32px; padding: 8px 10px; gap: 10px; }
+  .wb-quick button > span { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  .wb-quick strong { font-size: 13px; }
+  .wb-quick small { font-size: 12px; }
+  .wb-settings .wb-composer-tools { padding: 12px; }
+  .wb-settings .wb-connection { gap: 8px; }
+  .wb-settings .wb-model select { min-height: 36px; padding: 7px 32px 7px 10px; font-size: 14px; }
+  .wb-settings .wb-authorize { gap: 8px; padding-top: 12px; }
+  .wb-model-refresh { min-width: 32px; min-height: 32px; }
+  .wb-panel-slot > :is(.wb-notes, .wb-capabilities) { padding: 16px; gap: 16px; }
+  .wb-modal-card { padding: 16px; gap: 12px; }
+  .wb-composer .wb-atts li { flex-basis: 88px; height: 88px; }
+
+  /* 设置：缩减表单外壳与控件留白，长内容仍可自然换行。 */
+  .settings-page { gap: 14px; }
+  .settings-block { padding: 14px; gap: 10px; border-radius: var(--radius-md); box-shadow: var(--sky-shadow-soft); }
+  .settings-provider-form { gap: 10px; }
+  .settings-provider-form .settings-field :is(input:not([type="checkbox"]), select) { min-height: 34px; padding: 6px 10px; font-size: 14px; }
+  .settings-field input:not([type="checkbox"]), .settings-field select { min-height: 32px; padding: 7px 10px; font-size: 14px; }
+  .settings-model-row { gap: 8px; }
+  .settings-categories button { min-height: 34px; padding-block: 6px; }
+  .settings-dialog :is(.primary-button, .secondary-button) { min-height: 34px; }
+}
+
+/* 4K原生宽视口：内容适度加宽，工具仍保持紧凑规格。 */
+@media (min-width: 2800px) and (pointer: fine) {
+  .wb[data-panel="open"] { grid-template-columns: minmax(0, var(--wb-sidebar-width, 260px)) minmax(0, 1fr) 380px; }
+  .wb[data-sidebar="collapsed"][data-panel="open"] { grid-template-columns: minmax(0, 1fr) 380px; }
+  .nb-edit-window, .nb-readonly-pane { padding-inline: max(24px, calc((100% - 1120px) / 2)); }
+  .app-main:has(> .settings-page) { max-width: 1320px; }
+}
